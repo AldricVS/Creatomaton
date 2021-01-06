@@ -14,7 +14,6 @@ public class Transition {
 	 */
 	private char letter;
 	
-	
 	private State destination;
 	
 	public Transition(char letter, State destination) {
@@ -52,5 +51,36 @@ public class Transition {
 
 	public void setDestination(State destination) {
 		this.destination = destination;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((destination == null) ? 0 : destination.hashCode());
+		result = prime * result + letter;
+		return result;
+	}
+
+	/**
+	 * Two transitions are the same if they have the same letter and the same transiting state
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Transition other = (Transition) obj;
+		if (destination == null) {
+			if (other.destination != null)
+				return false;
+		} else if (!destination.equals(other.destination))
+			return false;
+		if (letter != other.letter)
+			return false;
+		return true;
 	}
 }
