@@ -3,6 +3,12 @@ package data;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * An Automaton is the main class that will hold information of all the machine.<p>
+ * It contains the alphabet and a list of all the starting states 
+ * 
+ * @author Aldric Vitali Silvestre <aldric.vitali@outlook.fr>
+ */
 public class Automaton {
 
 	private String alphabet;
