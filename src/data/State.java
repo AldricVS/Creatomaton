@@ -5,7 +5,8 @@ import java.util.List;
 
 /**
  * A State is a part of an automaton, and can lead to other ones with
- * Transitions. Each State can be final / initial or not.<p>
+ * Transitions. Each State can be final / initial or not.
+ * <p>
  * By default, a State is non-final
  * 
  * @author Aldric Vitali Silvestre <aldric.vitali@outlook.fr>
@@ -21,7 +22,7 @@ public class State {
 	 */
 	private String name;
 
-	//private boolean isInitial;
+	// private boolean isInitial;
 
 	private boolean isFinal;
 
@@ -42,13 +43,13 @@ public class State {
 		super();
 		this.id = id;
 		this.name = name;
-		//this.isInitial = isInitial;
+		// this.isInitial = isInitial;
 		this.isFinal = isFinal;
 	}
 
 	public State(int id, boolean isFinal) {
 		super();
-		//this.isInitial = isInitial;
+		// this.isInitial = isInitial;
 		this.isFinal = isFinal;
 	}
 
@@ -62,7 +63,6 @@ public class State {
 		super();
 		this.id = id;
 	}
-	
 
 	public int getId() {
 		return id;
@@ -97,6 +97,60 @@ public class State {
 	}
 
 	/**
+	 * Get the next state that goes from this state with a specified letter. This
+	 * one can only return one State (the first one found in all transitions).
+	 * 
+	 * @param letter the letter of the transition
+	 * @return the next state or {@code null} if no one can be found
+	 * @see {@linkplain State#findNextStatesList(char)}
+	 */
+	public State findNextState(char letter) {
+		// iteration time
+		for (Transition t : transitions) {
+			if (t.getLetter() == letter) {
+				return t.getDestination();
+			}
+		}
+		// no one is found
+		return null;
+	}
+
+	/**
+	 * Get ALL states that goes from this state with a specified letter.
+	 * 
+	 * @param letter the letter of the transition
+	 * @return a list containing all valid states. This one can be empty if no state
+	 *         is found
+	 */
+	public List<State> findNextStatesList(char letter) {
+		List<State> states = new ArrayList<>();
+		for (Transition t : transitions) {
+			if (t.getLetter() == letter) {
+				states.add(t.getDestination());
+			}
+		}
+		return states;
+	}
+
+	/**
+	 * Tries to add a specified transition to the state's list. This will not happen
+	 * if the transtion already exists.
+	 * 
+	 * @param transition the transition to add
+	 * @return if transistion is added to the list or not
+	 */
+	public boolean addTransition(Transition transition) {
+		// check if any transition like this exists, and return false if it is the case
+		for (Transition t : transitions) {
+			if (transition.equals(t)) {
+				return false;
+			}
+		}
+		// we can add the transition
+		return transitions.add(transition); // will always return true
+	}
+
+	/**
 	 * Tries to add a new transition towards a state. This will not happen if the
 	 * transtion already exists.
 	 * 
@@ -106,14 +160,7 @@ public class State {
 	 */
 	public boolean addTransition(char letter, State state) {
 		Transition transition = new Transition(letter, state);
-		// check if any transition like this exists, and return false if it is the case
-		for (Transition t : transitions) {
-			if (transition.equals(t)) {
-				return false;
-			}
-		}
-		//we can add the transition
-		return transitions.add(transition); //will always return true
+		return addTransition(transition);
 	}
 
 	@Override

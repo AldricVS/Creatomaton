@@ -78,4 +78,16 @@ public class CreateAutomatonTest {
 			}
 		}
 	}
+	
+	@Test 
+	public void checkTransitions() {
+		//check if 0 --> 1 with letter a
+		State s0 = automaton.getStartingStates().get(0);
+		State s1 = s0.findNextState('a');
+		assertEquals(1, s1.getId());
+		
+		//and if 1 --> 1 with letter a
+		State s1Bis = s1.findNextState('a');
+		assertEquals(1, s1Bis.getId());
+	}
 }
