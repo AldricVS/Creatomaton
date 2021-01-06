@@ -5,9 +5,9 @@ import org.junit.runners.Suite;
 
 /**
  * Global test suite of unit tests.
- * Includes 1q tests cases :
+ * Includes 1 tests cases :
  * <ul>
- * 		<li></li>
+ * 		<li>One for testing the creation of an automaton</li>
  * </ul>
  * @author Aldric Vitali Silvestre
  *
