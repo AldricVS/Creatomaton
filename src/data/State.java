@@ -47,21 +47,19 @@ public class State {
 		this.isFinal = isFinal;
 	}
 
+	public State(int id, String name) {
+		this(id, name, false);
+	}
+	
 	public State(int id, boolean isFinal) {
 		super();
+		this.id = id;
 		// this.isInitial = isInitial;
 		this.isFinal = isFinal;
 	}
-
-	public State(int id, String name) {
-		super();
-		this.id = id;
-		this.name = name;
-	}
-
+	
 	public State(int id) {
-		super();
-		this.id = id;
+		this(id, false);
 	}
 
 	public int getId() {
