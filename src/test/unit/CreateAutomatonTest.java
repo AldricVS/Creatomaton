@@ -3,8 +3,10 @@ package test.unit;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.junit.BeforeClass;
@@ -111,7 +113,7 @@ public class CreateAutomatonTest {
 		
 		//we search through our list of transition for any possible transition to add
 		//then we do it again until we arrived at a final state
-		while (!testAlphabet.isBlank()) {
+		while (!testAlphabet.isEmpty()) {
 			//first, get the next letter to search and reduced our word
 			char nextLetter = testAlphabet.charAt(0);
 			testAlphabet = testAlphabet.substring(1);
@@ -154,4 +156,52 @@ public class CreateAutomatonTest {
 		assertTrue(hasFinish);
 	}
 	
+	
+	@Test
+	public void isDertemined() {
+		State addingState;
+		Transition addingTransition;
+		
+		List<State> listState = new ArrayList<State>();
+		listState.addAll(automaton.getStartingStates());
+		
+		List<Transition> listTransitions = new ArrayList<Transition>();
+		
+		String alphabet = automaton.getAlphabet();
+		Automaton determinedAutomaton = new Automaton(alphabet);
+		
+		//for each of the alphabet letter
+		if (!listState.isEmpty()) {
+			//we add all transition from all the state we are searching
+			for (Iterator<State> it = listState.iterator(); it.hasNext(); ) {
+				addingState = it.next();
+				listTransitions.addAll(addingState.getTransitions());
+			}
+			listState.clear();
+			
+			//we now have all transition to go through
+			for (char letter : alphabet.toCharArray()) {	
+				//we search all transition, and add as a new state
+				for (Iterator<Transition> it = listTransitions.iterator(); it.hasNext(); ) {
+					addingTransition = it.next();
+					if (addingTransition.getLetter() == letter) {
+						listState.add(addingTransition.getDestination());						
+					}
+				}
+				//we have gone through all transition
+				//check that we have found a destination
+				if (!listState.isEmpty()) {
+					//we can create our new state
+						//create the State
+					//check that it doesn't already exist
+						//create a new state in determinedAutomaton
+					//else
+						//add a transition
+				}
+				listState.clear();
+			}
+			listTransitions.clear();
+		}
+		
+	}
 }
