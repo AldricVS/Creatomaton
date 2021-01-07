@@ -22,10 +22,6 @@ public class State {
 	 */
 	private String name;
 
-	// private boolean isInitial;
-
-	private boolean isFinal;
-
 	/**
 	 * All paths from this state to others with specific letters
 	 */
@@ -39,27 +35,15 @@ public class State {
 	 * @param isInitial
 	 * @param isFinal
 	 */
-	public State(int id, String name, boolean isFinal) {
+	public State(int id, String name) {
 		super();
 		this.id = id;
 		this.name = name;
-		// this.isInitial = isInitial;
-		this.isFinal = isFinal;
-	}
-
-	public State(int id, String name) {
-		this(id, name, false);
-	}
-	
-	public State(int id, boolean isFinal) {
-		super();
-		this.id = id;
-		// this.isInitial = isInitial;
-		this.isFinal = isFinal;
 	}
 	
 	public State(int id) {
-		this(id, false);
+		super();
+		this.id = id;
 	}
 
 	public int getId() {
@@ -76,14 +60,6 @@ public class State {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public boolean isFinal() {
-		return isFinal;
-	}
-
-	public void setFinal(boolean isFinal) {
-		this.isFinal = isFinal;
 	}
 
 	public List<Transition> getTransitions() {
@@ -159,6 +135,15 @@ public class State {
 	public boolean addTransition(char letter, State state) {
 		Transition transition = new Transition(letter, state);
 		return addTransition(transition);
+	}
+	
+	/**
+	 * Tries to remove a specific transition from the list.
+	 * @param transition the transition to remove
+	 * @return if the transition was in the list
+	 */
+	public boolean removeTransition(Transition transition) {
+		return transitions.remove(transition);
 	}
 
 	@Override
