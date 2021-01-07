@@ -42,6 +42,18 @@ public class Automaton {
 		this.alphabet = alphabet;
 	}
 	
+	public int getNumberOfInitialStates() {
+		return initialStates.size();
+	}
+	
+	public int getNumberOfFinalStates() {
+		return finalStates.size();
+	}
+	
+	public int getNumberOfTotalStates() {
+		return states.size();
+	}
+	
 	/*=======ADD & REMOVE=======*/
 	
 	/**

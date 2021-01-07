@@ -54,6 +54,14 @@ public class CreateAutomatonTest {
 	}
 	
 	@Test
+	public void assertBasicData() {
+		//normally, we have only 1 initial state, 1 final state and 3 states in total
+		assertEquals(1, automaton.getNumberOfInitialStates());
+		assertEquals(1, automaton.getNumberOfFinalStates());
+		assertEquals(3, automaton.getNumberOfTotalStates());
+	}
+	
+	@Test
 	public void testStartingState() {
 		//check if starting state of automaton is state0
 		//and if the following state is state 1
