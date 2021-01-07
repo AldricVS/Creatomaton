@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 
 import org.junit.BeforeClass;
@@ -175,11 +176,13 @@ public class CreateAutomatonTest {
 		
 		List<State> listState = new ArrayList<State>();
 		listState.addAll(automaton.getInitialStates());
+		List<State> listNewState = new ArrayList<State>();
 		
 		List<Transition> listTransitions = new ArrayList<Transition>();
 		
 		String alphabet = automaton.getAlphabet();
 		Automaton determinedAutomaton = new Automaton(alphabet);
+		int id = 0;
 		
 		//for each of the alphabet letter
 		if (!listState.isEmpty()) {
@@ -191,28 +194,64 @@ public class CreateAutomatonTest {
 			listState.clear();
 			
 			//we now have all transition to go through
-			for (char letter : alphabet.toCharArray()) {	
+			for (char letter : alphabet.toCharArray()) {
+				
 				//we search all transition, and add as a new state
 				for (Iterator<Transition> it = listTransitions.iterator(); it.hasNext(); ) {
 					addingTransition = it.next();
 					if (addingTransition.getLetter() == letter) {
-						listState.add(addingTransition.getDestination());						
+						listNewState.add(addingTransition.getDestination());
 					}
 				}
+				
 				//we have gone through all transition
 				//check that we have found a destination
-				if (!listState.isEmpty()) {
+				if (!listNewState.isEmpty()) {
+					
+					//get a appropriate name for our new state
+					String name = "";
+					for (Iterator<State> it = listNewState.iterator(); it.hasNext(); ) {
+						addingState = it.next();
+						name = name + ";" + addingState.getId();
+						//TODO erreur avec par exemple 2;0 & 0;2
+					}
+					
 					//we can create our new state
-						//create the State
+					addingState = new State(id, name);
+					id++;
+					
 					//check that it doesn't already exist
+					//we will get the Id we need after otherwise
+					int nameId = -1;
+					for (Iterator<Entry<Integer, State>> it = determinedAutomaton.getAllStates().entrySet().iterator(); it.hasNext(); ) {
+						//get the key/value set
+						Entry<Integer, State> entry = it.next();
+						String nameCheck = entry.getValue().getName();
+						//compare with all name
+						if (name.equals(nameCheck)) {
+							nameId = entry.getKey();
+						}
+					}
+					
+					if (nameId < 0) {
 						//create a new state in determinedAutomaton
-					//else
+						determinedAutomaton.addState(addingState, false, false);
+						determinedAutomaton.addTransition(s, addingState, letter);
+						listState.add(addingState);
+					}
+					else {
 						//add a transition
+						determinedAutomaton.addTransition(s, determinedAutomaton.getAllStates().get(nameId), letter);
+					}
+					
+					listNewState.clear();
 				}
-				listState.clear();
+				listTransitions.clear();
 			}
-			listTransitions.clear();
+			//
 		}
+		
+		//which test TODO to assure that our automaton is determined
 		
 	}
 }
