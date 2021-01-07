@@ -40,21 +40,32 @@ public class CreateAutomatonTest {
 		automaton = new Automaton("abc");
 		state0 = new State(0);
 		state1 = new State(1);
-		state2 = new State(2, true); //state2 is final
+		state2 = new State(2); //state2 is final
 		
 		//automate -> a (a*) b (c*)
-		state0.addTransition('a', state1);
-		state1.addTransition('b', state2);
-		state1.addTransition('a', state1);
-		state2.addTransition('c', state2);
-		automaton.addStartingState(state0);
+		automaton.addState(state0, true, false);
+		automaton.addState(state1, false, false);
+		automaton.addState(state2, false, true);
+		
+		automaton.addTransition(state0, state1, 'a');
+		automaton.addTransition(state1, state1, 'a');
+		automaton.addTransition(state1, state2, 'b');
+		automaton.addTransition(state2, state2, 'c');
+	}
+	
+	@Test
+	public void assertBasicData() {
+		//normally, we have only 1 initial state, 1 final state and 3 states in total
+		assertEquals(1, automaton.getNumberOfInitialStates());
+		assertEquals(1, automaton.getNumberOfFinalStates());
+		assertEquals(3, automaton.getNumberOfTotalStates());
 	}
 	
 	@Test
 	public void testStartingState() {
 		//check if starting state of automaton is state0
 		//and if the following state is state 1
-		State normallyState0 = automaton.getStartingStates().get(0);
+		State normallyState0 = automaton.getInitialStates().get(0);
 		assertEquals(0, normallyState0.getId());
 		
 		Transition transition = normallyState0.getTransitions().get(0);
@@ -85,7 +96,7 @@ public class CreateAutomatonTest {
 	@Test 
 	public void checkTransitions() {
 		//check if 0 --> 1 with letter a
-		State s0 = automaton.getStartingStates().get(0);
+		State s0 = automaton.getInitialStates().get(0);
 		State s1 = s0.findNextState('a');
 		assertEquals(1, s1.getId());
 		
@@ -100,7 +111,7 @@ public class CreateAutomatonTest {
 		boolean hasFinish = false;
 		
 		//our automaton recognize any alphabet a (a*) b (c*)
-		State startingState = automaton.getStartingStates().get(0);
+		State startingState = automaton.getInitialStates().get(0);
 		State addingState;
 		Transition addingTransition;
 		
@@ -111,7 +122,7 @@ public class CreateAutomatonTest {
 		
 		//we search through our list of transition for any possible transition to add
 		//then we do it again until we arrived at a final state
-		while (!testAlphabet.isBlank()) {
+		while (!testAlphabet.trim().isEmpty()) {
 			//first, get the next letter to search and reduced our word
 			char nextLetter = testAlphabet.charAt(0);
 			testAlphabet = testAlphabet.substring(1);
@@ -146,7 +157,7 @@ public class CreateAutomatonTest {
 		//if we arrived here, then our listState got all final state
 		for (Iterator<State> it = listState.iterator(); it.hasNext(); ) {
 			State finalState = it.next();
-			if (finalState.isFinal()) {
+			if (automaton.isStateFinal(finalState)) {
 				hasFinish = true;
 			}
 		}
