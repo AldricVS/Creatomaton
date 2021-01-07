@@ -37,6 +37,10 @@ public class Automaton {
 	public List<State> getFinalStates() {
 		return finalStates;
 	}
+	
+	public Map<Integer, State> getAllStates() {
+		return states;
+	}
 
 	public void setAlphabet(String alphabet) {
 		this.alphabet = alphabet;
@@ -139,6 +143,29 @@ public class Automaton {
 	 */
 	public boolean addEpsilonTransition(State startingState, State destinationState) {
 		return startingState.addTransition(Character.MIN_VALUE, destinationState);
+	}
+	
+	/*======= CLEAR =======*/
+	
+	/**
+	 * Remove all initial states in the Automaton
+	 */
+	public void clearInitialStates() {
+		initialStates.clear();
+	}
+	
+	/**
+	 * Remove all final states in the Automaton
+	 */
+	public void clearFinalStates() {
+		finalStates.clear();
+	}
+	
+	/**
+	 * Remove all states in the Automaton
+	 */
+	public void clearAllStates() {
+		states.clear();
 	}
 	
 	/*=======VERIFICATIONS=======*/
