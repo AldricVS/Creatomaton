@@ -197,13 +197,13 @@ public class CreateAutomatonTest {
 			
 			//get the state from which we go from
 			int stateStartingId = -1;
-			for (Iterator<Entry<Integer, State>> it = determinedAutomaton.getAllStates().entrySet().iterator(); it.hasNext(); ) {
+			for (Iterator<State> it = determinedAutomaton.getAllStates().iterator(); it.hasNext(); ) {
 				//get the key/value set
-				Entry<Integer, State> entry = it.next();
-				String nameCheck = entry.getValue().getName();
+				addingState = it.next();
+				String nameCheck = addingState.getName();
 				//compare with all name
 				if (nameDeparture.equals(nameCheck)) {
-					stateStartingId = entry.getKey();
+					stateStartingId = addingState.getId();
 				}
 			}
 			
@@ -250,13 +250,13 @@ public class CreateAutomatonTest {
 					//check that it doesn't already exist
 					//we will get the Id we need after otherwise
 					int nameId = -1;
-					for (Iterator<Entry<Integer, State>> it = determinedAutomaton.getAllStates().entrySet().iterator(); it.hasNext(); ) {
+					for (Iterator<State> it = determinedAutomaton.getAllStates().iterator(); it.hasNext(); ) {
 						//get the key/value set
-						Entry<Integer, State> entry = it.next();
-						String nameCheck = entry.getValue().getName();
+						State entry = it.next();
+						String nameCheck = entry.getName();
 						//compare with all name
 						if (nameDestination.equals(nameCheck)) {
-							nameId = entry.getKey();
+							nameId = entry.getId();
 						}
 					}
 					

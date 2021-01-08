@@ -29,6 +29,14 @@ public class Automaton {
 	public String getAlphabet() {
 		return alphabet;
 	}
+	
+	public State getStateById(int stateId) {
+		return states.get(stateId);
+	}
+	
+	public List<State> getAllStates() {
+		return new ArrayList<State>(states.values());
+	}
 
 	public List<State> getInitialStates() {
 		return initialStates;
@@ -37,11 +45,11 @@ public class Automaton {
 	public List<State> getFinalStates() {
 		return finalStates;
 	}
-	
+	/*
 	public Map<Integer, State> getAllStates() {
 		return states;
 	}
-	
+	*/
 	/**
 	 * @param stateId the Id of desired state
 	 * @return State the state at the given Id, null if it doesn't exist
@@ -65,6 +73,28 @@ public class Automaton {
 	
 	public int getNumberOfTotalStates() {
 		return states.size();
+	}
+	
+	public void setStateFinal(State state, boolean isFinal) {
+		if(isFinal) {
+			//check if state not already final
+			if(!finalStates.contains(state)) {
+				finalStates.add(state);
+			}
+		}else {
+			finalStates.remove(state);
+		}
+	}
+	
+	public void setStateInitial(State state, boolean isInitial) {
+		if(isInitial) {
+			//check if state not already final
+			if(!initialStates.contains(state)) {
+				initialStates.add(state);
+			}
+		}else {
+			initialStates.remove(state);
+		}
 	}
 	
 	/*=======ADD & REMOVE=======*/
