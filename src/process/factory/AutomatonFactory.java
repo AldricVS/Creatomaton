@@ -32,11 +32,14 @@ public class AutomatonFactory {
 		 * we need to change that. We will use the identical states ids in order to do that
 		 */
 		for(State state : automatonResult.getAllStates()) {
+			//find the "associated" state in the original automaton
+			State originalState = automatonToCopy.getStateById(state.getId());
 			//change the destination of each transition of this state
-			for(Transition transition : state.getTransitions()) {
+			for(Transition transition : originalState.getTransitions()) {
 				int stateToCopyId = transition.getDestination().getId();
 				State newDestination = automatonResult.getStateById(stateToCopyId);
-				transition.setDestination(newDestination);
+				Transition newTransition = new Transition(transition.getLetter(), newDestination);
+				state.addTransition(newTransition);
 			}
 		}
 		

@@ -14,7 +14,8 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	LetterAutomatonTest.class
+	LetterAutomatonTest.class,
+	ConcatenationAutomatonTest.class
 	})
 public class ThompsonAutomatonTestSuite {
 	
