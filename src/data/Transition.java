@@ -8,7 +8,7 @@ package data;
  * 
  * @author Aldric Vitali Silvestre <aldric.vitali@outlook.fr>
  */
-public class Transition {
+public class Transition{
 	/**
 	 * If equals to '\0000', the transition is an Epsilon-transition
 	 */
