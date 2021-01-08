@@ -162,4 +162,38 @@ public class ThompsonAutomatonFactory {
 		
 		return automaton;
 	}
+	
+	/**
+	 * Create the repetition of a Thompson's automaton (accept "A*").
+	 * This creates a brand new automaton which doesn't have any connections with the original.
+	 * <p>
+	 * We suppose that this automaton have only 1 inital state and one final state
+	 * (normalized), else, unexpected behavior will occur.
+	 * 
+	 * @param automaton the automaton
+	 * @return the concatenation between both automatons
+	 */
+	public static Automaton createStarAutomaton(Automaton automaton) {
+		Automaton a = AutomatonFactory.createCopy(automaton);
+		
+		//get initial and final state, and specify that they are not final anymore
+		State originalInitialState = a.getInitialStates().get(0);
+		State originalFinalState = a.getFinalStates().get(0);
+		a.setStateInitial(originalInitialState, false);
+		a.setStateFinal(originalFinalState, false);
+		
+		//add the real initial and final states
+		State initialState = new State(0);
+		State finalState = new State(0);
+		a.addState(initialState, true, false);
+		a.addState(finalState, false, true);
+		
+		//add transitions between states
+		a.addEpsilonTransition(initialState, finalState);
+		a.addEpsilonTransition(initialState, originalInitialState);
+		a.addEpsilonTransition(originalFinalState, originalInitialState);
+		a.addEpsilonTransition(originalFinalState, finalState);
+		
+		return a;
+	}
 }
