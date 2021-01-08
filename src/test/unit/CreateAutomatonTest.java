@@ -187,11 +187,38 @@ public class CreateAutomatonTest {
 		//for each of the alphabet letter
 		if (!listState.isEmpty()) {
 			//we add all transition from all the state we are searching
+			String nameDeparture = "";
 			for (Iterator<State> it = listState.iterator(); it.hasNext(); ) {
 				addingState = it.next();
+				nameDeparture = nameDeparture + ";" + addingState.getId();
 				listTransitions.addAll(addingState.getTransitions());
 			}
 			listState.clear();
+			
+			//get the state from which we go from
+			int stateStartingId = -1;
+			for (Iterator<Entry<Integer, State>> it = determinedAutomaton.getAllStates().entrySet().iterator(); it.hasNext(); ) {
+				//get the key/value set
+				Entry<Integer, State> entry = it.next();
+				String nameCheck = entry.getValue().getName();
+				//compare with all name
+				if (nameDeparture.equals(nameCheck)) {
+					stateStartingId = entry.getKey();
+				}
+			}
+			
+			State stateDeparture;
+			if (stateStartingId < 0) {
+				//create a new state in determinedAutomaton
+				stateDeparture = new State(id, nameDeparture);
+				id++;
+				determinedAutomaton.addState(stateDeparture, false, false);
+			}
+			else {
+				//get the departure state
+				stateDeparture = determinedAutomaton.getStateFromId(stateStartingId);
+			}
+			
 			
 			//we now have all transition to go through
 			for (char letter : alphabet.toCharArray()) {
@@ -209,15 +236,15 @@ public class CreateAutomatonTest {
 				if (!listNewState.isEmpty()) {
 					
 					//get a appropriate name for our new state
-					String name = "";
+					String nameDestination = "";
 					for (Iterator<State> it = listNewState.iterator(); it.hasNext(); ) {
 						addingState = it.next();
-						name = name + ";" + addingState.getId();
+						nameDestination = nameDestination + ";" + addingState.getId();
 						//TODO erreur avec par exemple 2;0 & 0;2
 					}
 					
 					//we can create our new state
-					addingState = new State(id, name);
+					State newState = new State(id, nameDestination);
 					id++;
 					
 					//check that it doesn't already exist
@@ -228,20 +255,20 @@ public class CreateAutomatonTest {
 						Entry<Integer, State> entry = it.next();
 						String nameCheck = entry.getValue().getName();
 						//compare with all name
-						if (name.equals(nameCheck)) {
+						if (nameDestination.equals(nameCheck)) {
 							nameId = entry.getKey();
 						}
 					}
 					
 					if (nameId < 0) {
 						//create a new state in determinedAutomaton
-						determinedAutomaton.addState(addingState, false, false);
-						determinedAutomaton.addTransition(s, addingState, letter);
-						listState.add(addingState);
+						determinedAutomaton.addState(newState, false, false);
+						determinedAutomaton.addTransition(stateDeparture, newState, letter);
+						listState.add(newState);
 					}
 					else {
 						//add a transition
-						determinedAutomaton.addTransition(s, determinedAutomaton.getAllStates().get(nameId), letter);
+						determinedAutomaton.addTransition(stateDeparture, determinedAutomaton.getAllStates().get(nameId), letter);
 					}
 					
 					listNewState.clear();

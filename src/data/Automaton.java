@@ -41,7 +41,16 @@ public class Automaton {
 	public Map<Integer, State> getAllStates() {
 		return states;
 	}
+	
+	/**
+	 * @param stateId the Id of desired state
+	 * @return State the state at the given Id, null if it doesn't exist
+	 */
+	public State getStateFromId(int stateId) {
+		return states.get(stateId);
+	}
 
+	
 	public void setAlphabet(String alphabet) {
 		this.alphabet = alphabet;
 	}
@@ -91,7 +100,7 @@ public class Automaton {
 	/**
 	 * Add a state that is not initial nor final to the current list of states of the automaton
 	 * @param state the state to add to the automaton
-	 * @return if the state was succefully added
+	 * @return true if the state was succefully added
 	 */
 	public boolean addState(State state) {
 		return addState(state, false, false);
