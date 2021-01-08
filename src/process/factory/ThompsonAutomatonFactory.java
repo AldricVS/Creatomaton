@@ -149,7 +149,7 @@ public class ThompsonAutomatonFactory {
 		}
 		//add the final state
 		State finalState = new State(0); 
-		automaton.addState(finalState, false, false); //a right id will be set automatically
+		automaton.addState(finalState, false, true); //a right id will be set automatically
 		
 		/*Link all states in the automaton*/
 		//link initialState and the initial states of sub automatons
