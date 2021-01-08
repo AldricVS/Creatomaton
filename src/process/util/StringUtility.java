@@ -33,7 +33,13 @@ public class StringUtility {
 		for(char c : charArray) {
 			chararacters.add(c);
 		}
-		String uniqueChars = chararacters.toString();
+		
+		//put all chars in a string
+		StringBuilder sb = new StringBuilder();
+		for(char c : chararacters) {
+			sb.append(c);
+		}
+		String uniqueChars = sb.toString();
 		
 		//put them in the right order
 		char c[] = uniqueChars.toCharArray();
