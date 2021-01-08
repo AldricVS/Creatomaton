@@ -22,30 +22,16 @@ import process.factory.ThompsonAutomatonFactory;
  */
 public class UnionAutomatonTest {
 	
+	private static Automaton letterAutomaton1;
+	private static Automaton letterAutomaton2;
 	private static Automaton automaton;
 	
 	@BeforeClass
 	public static void createLetterAutomaton() {
-		automaton = ThompsonAutomatonFactory.createLetterAutomaton('a');
+		letterAutomaton1 = ThompsonAutomatonFactory.createLetterAutomaton('a');
+		letterAutomaton2 = ThompsonAutomatonFactory.createLetterAutomaton('b');
+		//TODO TESTS !!!!! 
 	}
 	
-	@Test
-	public void testWholeAutomaton() {
-		/* We must have only one initial state and this one must have one transition with letter 'a'
-		 * Moreover, the transition must go to the final state*/
-		assertEquals(1, automaton.getNumberOfInitialStates());
-		
-		List<Transition> transitions = automaton.getInitialStates().get(0).getTransitions();
-		assertEquals(1, transitions.size());
-		
-		Transition aTransition = transitions.get(0);
-		assertEquals('a', aTransition.getLetter());
-		
-		assertEquals(automaton.getFinalStates().get(0), aTransition.getDestination());
-	}
 	
-	@Test
-	public void acceptAutomaton() {
-		//TODO : Ajouter des tests d'acceptation une fois que les algos seront implémentés 
-	}
 }
