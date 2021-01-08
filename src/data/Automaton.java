@@ -29,6 +29,10 @@ public class Automaton {
 	public String getAlphabet() {
 		return alphabet;
 	}
+	
+	public State getStateById(int stateId) {
+		return states.get(stateId);
+	}
 
 	public List<State> getInitialStates() {
 		return initialStates;
