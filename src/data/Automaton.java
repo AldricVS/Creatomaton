@@ -46,11 +46,7 @@ public class Automaton {
 	public List<State> getFinalStates() {
 		return finalStates;
 	}
-	/*
-	public Map<Integer, State> getAllStates() {
-		return states;
-	}
-	*/
+	
 	/**
 	 * @param stateId the Id of desired state
 	 * @return State the state at the given Id, null if it doesn't exist
@@ -212,6 +208,8 @@ public class Automaton {
 	 * Remove all states in the Automaton
 	 */
 	public void clearAllStates() {
+		clearInitialStates();
+		clearFinalStates();
 		states.clear();
 	}
 	
