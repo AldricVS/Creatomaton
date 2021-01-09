@@ -36,7 +36,7 @@ public class ConcatenationAutomatonTest {
 	
 	@Test
 	public void testNumberOfStates() {
-		//we must have 1 initial state, 1 final, and 
+		//we must have 1 initial state, 1 final, and 3 in total
 		assertEquals(1, concatAutomaton.getNumberOfInitialStates());
 		assertEquals(1, concatAutomaton.getNumberOfFinalStates());
 		assertEquals(3, concatAutomaton.getNumberOfTotalStates());

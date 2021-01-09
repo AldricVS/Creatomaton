@@ -1,6 +1,7 @@
 package data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,22 +101,25 @@ public class Automaton {
 	/*=======ADD & REMOVE=======*/
 	
 	/**
-	 * Add a state to the current list of states of the automaton
+	 * Add a state to the current list of states of the automaton. If the id of the state is already used, a new one will be assigned to it
 	 * @param state the state to add to the automaton
 	 * @param isInitial if the state is an initial state
 	 * @param isFinal if the state is a final state
 	 * @return if the state was succefully added
 	 */
 	public boolean addState(State state, boolean isInitial, boolean isFinal) {
-		/*
-		 * We don't want to insert a null state.
-		 * Moreover, a state must have a unique id, else, we don't insert it
-		 */
-		if(state == null || states.get(state.getId()) != null) {
+		
+		//We don't want to insert a null state.
+		if(state == null) {
 			return false;
 		}
 		
-		//add the state in the hashMap, and in other lists depending on the 
+		//Moreover, a state must have a unique id, else, we have to set to a unique one
+		if(states.containsKey(state.getId())) {
+			state.setId(getMaxIdValue() + 1);
+		}
+		
+		//add the state in the hashMap, and in other lists if needeed
 		states.put(state.getId(), state);
 		//if state is initial and/or final, add it to the corresponding list
 		if(isFinal) {
@@ -125,6 +129,10 @@ public class Automaton {
 			initialStates.add(state);
 		}
 		return true;
+	}
+	
+	public int getMaxIdValue() {
+		return Collections.max(states.keySet());
 	}
 	
 	/**
