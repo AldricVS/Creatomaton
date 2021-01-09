@@ -3,8 +3,12 @@ package test.unit;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 
 import org.junit.BeforeClass;
@@ -13,6 +17,7 @@ import org.junit.Test;
 import data.Automaton;
 import data.State;
 import data.Transition;
+import process.AutomatonManager;
 
 /**
  * Muliple tests that check if an automaton is correctly created.<p>
@@ -107,62 +112,20 @@ public class CreateAutomatonTest {
 	
 	@Test
 	public void checkAutomaton() {
-		String testAlphabet = "ab";
-		boolean hasFinish = false;
+		boolean test = false;
+		String word = "ab";
 		
-		//our automaton recognize any alphabet a (a*) b (c*)
-		State startingState = automaton.getInitialStates().get(0);
-		State addingState;
-		Transition addingTransition;
+		AutomatonManager AutomatonManager = new AutomatonManager();
+		test = AutomatonManager.validateAutomaton(word, automaton);
 		
-		List<State> listState = new ArrayList<State>();
-		listState.add(startingState);
-		
-		List<Transition> listTransitions = new ArrayList<Transition>();
-		
-		//we search through our list of transition for any possible transition to add
-		//then we do it again until we arrived at a final state
-		while (!testAlphabet.trim().isEmpty()) {
-			//first, get the next letter to search and reduced our word
-			char nextLetter = testAlphabet.charAt(0);
-			testAlphabet = testAlphabet.substring(1);
-			
-			//we have some initial transition to go through
-			if (!listState.isEmpty()) {
-				
-				//we add all transition from all the state we are searching
-				for (Iterator<State> it = listState.iterator(); it.hasNext(); ) {
-					addingState = it.next();
-					listTransitions.addAll(addingState.getTransitions());
-				}
-				listState.clear();
-				
-				//we added all transition, add all next state that we are looking for
-				for (Iterator<Transition> it = listTransitions.iterator(); it.hasNext(); ) {
-					addingTransition = it.next();
-					if ((addingTransition.isEpsilon()) ||
-						(addingTransition.getLetter() == nextLetter)) {
-						//little check that the destination isn't already here
-						State nextState = addingTransition.getDestination();
-						if (!listState.contains(nextState)) {
-							listState.add(nextState);
-						}
-					}
-					//else, we dont have the right letter for the transition
-				}
-				listTransitions.clear();
-			}
-			//if its empty, then we can stop our research
-		}
-		//if we arrived here, then our listState got all final state
-		for (Iterator<State> it = listState.iterator(); it.hasNext(); ) {
-			State finalState = it.next();
-			if (automaton.isStateFinal(finalState)) {
-				hasFinish = true;
-			}
-		}
-		
-		assertTrue(hasFinish);
+		assertTrue(test);
 	}
 	
+	
+	@Test
+	public void isDertemined() {
+		
+		//which test TODO to assure that our automaton is determined
+		
+	}
 }

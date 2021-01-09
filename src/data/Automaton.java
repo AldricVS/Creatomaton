@@ -46,7 +46,16 @@ public class Automaton {
 	public List<State> getFinalStates() {
 		return finalStates;
 	}
+	
+	/**
+	 * @param stateId the Id of desired state
+	 * @return State the state at the given Id, null if it doesn't exist
+	 */
+	public State getStateFromId(int stateId) {
+		return states.get(stateId);
+	}
 
+	
 	public void setAlphabet(String alphabet) {
 		this.alphabet = alphabet;
 	}
@@ -125,7 +134,7 @@ public class Automaton {
 	/**
 	 * Add a state that is not initial nor final to the current list of states of the automaton
 	 * @param state the state to add to the automaton
-	 * @return if the state was succefully added
+	 * @return true if the state was succefully added
 	 */
 	public boolean addState(State state) {
 		return addState(state, false, false);
@@ -177,6 +186,31 @@ public class Automaton {
 	 */
 	public boolean addEpsilonTransition(State startingState, State destinationState) {
 		return startingState.addTransition(Character.MIN_VALUE, destinationState);
+	}
+	
+	/*======= CLEAR =======*/
+	
+	/**
+	 * Remove all initial states in the Automaton
+	 */
+	public void clearInitialStates() {
+		initialStates.clear();
+	}
+	
+	/**
+	 * Remove all final states in the Automaton
+	 */
+	public void clearFinalStates() {
+		finalStates.clear();
+	}
+	
+	/**
+	 * Remove all states in the Automaton
+	 */
+	public void clearAllStates() {
+		clearInitialStates();
+		clearFinalStates();
+		states.clear();
 	}
 	
 	/*=======VERIFICATIONS=======*/
