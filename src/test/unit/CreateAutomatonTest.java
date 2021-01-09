@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -174,28 +175,54 @@ public class CreateAutomatonTest {
 		State addingState;
 		Transition addingTransition;
 		
+		//listState have all state of the first determined state
 		List<State> listState = new ArrayList<State>();
 		listState.addAll(automaton.getInitialStates());
-		List<State> listNewState = new ArrayList<State>();
 		
+		//listTransition will get all transition of listState
 		List<Transition> listTransitions = new ArrayList<Transition>();
 		
+		//listNewState will get all new State from the destination of listTransition
+		List<State> listNewState = new ArrayList<State>();
+		
+		//listDeterminedState is a list of all listState we need to go through
+		LinkedList<List<State>> listDeterminedStates = new LinkedList<List<State>>();
+		listDeterminedStates.add(listState);
+		
+		//get the alphabet and create the new automaton
 		String alphabet = automaton.getAlphabet();
 		Automaton determinedAutomaton = new Automaton(alphabet);
-		int id = 0;
 		
-		//for each of the alphabet letter
-		if (!listState.isEmpty()) {
-			//we add all transition from all the state we are searching
+		//id of the state and a boolean to determined if they are final
+		int id = 0;
+		boolean isFinal;
+		
+		//while we have new states to add
+		while (!listDeterminedStates.isEmpty()) {
+			//reset of isFinal
+			isFinal = false;
+			
+			//listState will take the first list of listDeterminedState
+			listState = listDeterminedStates.pop();
+			
+			//we add all transition from all the state we are coming from
 			String nameDeparture = "";
 			for (Iterator<State> it = listState.iterator(); it.hasNext(); ) {
 				addingState = it.next();
-				nameDeparture = nameDeparture + ";" + addingState.getId();
+				if (nameDeparture.isEmpty()) {
+					nameDeparture = String.valueOf(addingState.getId());
+				}
+				else {
+					nameDeparture = nameDeparture + ";" + addingState.getId();
+				}
 				listTransitions.addAll(addingState.getTransitions());
 			}
+			//we dont have any interest in our old list
+			//TODO maybe later, use this list to get the name of the starting state
 			listState.clear();
 			
-			//get the state from which we go from
+			//get the state's name from which we go from
+			//and search the state from the automaton's list
 			int stateStartingId = -1;
 			for (Iterator<State> it = determinedAutomaton.getAllStates().iterator(); it.hasNext(); ) {
 				//get the key/value set
@@ -207,12 +234,13 @@ public class CreateAutomatonTest {
 				}
 			}
 			
+			//verification if we find it
 			State stateDeparture;
 			if (stateStartingId < 0) {
 				//create a new state in determinedAutomaton
 				stateDeparture = new State(id, nameDeparture);
 				id++;
-				determinedAutomaton.addState(stateDeparture, false, false);
+				determinedAutomaton.addState(stateDeparture, true, false);
 			}
 			else {
 				//get the departure state
@@ -220,14 +248,18 @@ public class CreateAutomatonTest {
 			}
 			
 			
-			//we now have all transition to go through
+			//for each of the alphabet letter
 			for (char letter : alphabet.toCharArray()) {
-				
+
 				//we search all transition, and add as a new state
 				for (Iterator<Transition> it = listTransitions.iterator(); it.hasNext(); ) {
 					addingTransition = it.next();
-					if (addingTransition.getLetter() == letter) {
-						listNewState.add(addingTransition.getDestination());
+					if ((addingTransition.isEpsilon()) || (addingTransition.getLetter() == letter)) {
+						addingState = addingTransition.getDestination();
+						listNewState.add(addingState);
+						if (automaton.isStateFinal(addingState)) {
+							isFinal = true;
+						}
 					}
 				}
 				
@@ -239,43 +271,54 @@ public class CreateAutomatonTest {
 					String nameDestination = "";
 					for (Iterator<State> it = listNewState.iterator(); it.hasNext(); ) {
 						addingState = it.next();
-						nameDestination = nameDestination + ";" + addingState.getId();
+						if (nameDestination.isEmpty()) {
+							nameDestination = String.valueOf(addingState.getId());
+						}
+						else {
+							nameDestination = nameDestination + ";" + addingState.getId();
+						}
 						//TODO erreur avec par exemple 2;0 & 0;2
 					}
 					
-					//we can create our new state
-					State newState = new State(id, nameDestination);
-					id++;
 					
 					//check that it doesn't already exist
 					//we will get the Id we need after otherwise
 					int nameId = -1;
 					for (Iterator<State> it = determinedAutomaton.getAllStates().iterator(); it.hasNext(); ) {
 						//get the key/value set
-						State entry = it.next();
-						String nameCheck = entry.getName();
+						addingState = it.next();
+						String nameCheck = addingState.getName();
 						//compare with all name
 						if (nameDestination.equals(nameCheck)) {
-							nameId = entry.getId();
+							nameId = addingState.getId();
 						}
 					}
 					
+					//if an id hasn't been found, we can create a new State
+					//creating a new state mean that it will be added to listDeterminedState
 					if (nameId < 0) {
+						//we can create our new state
+						State newState = new State(id, nameDestination);
+						id++;
+						
 						//create a new state in determinedAutomaton
-						determinedAutomaton.addState(newState, false, false);
+						determinedAutomaton.addState(newState, false, isFinal);
 						determinedAutomaton.addTransition(stateDeparture, newState, letter);
-						listState.add(newState);
+						
+						//add the list of state to be search through
+						listDeterminedStates.add(listNewState);
+						listNewState = new ArrayList<State>();
 					}
 					else {
 						//add a transition
 						determinedAutomaton.addTransition(stateDeparture, determinedAutomaton.getAllStates().get(nameId), letter);
 					}
 					
+					//reset the list of added state
 					listNewState.clear();
 				}
-				listTransitions.clear();
 			}
-			//
+			listTransitions.clear();
 		}
 		
 		//which test TODO to assure that our automaton is determined
