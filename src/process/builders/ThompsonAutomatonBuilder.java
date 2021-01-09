@@ -1,8 +1,11 @@
 package process.builders;
 
+import java.text.ParseException;
+import java.util.EmptyStackException;
 import java.util.Stack;
 
 import data.Automaton;
+import process.factory.ThompsonAutomatonFactory;
 
 /**
  * Builder class that takes an expression (String) and creates an automaton with
@@ -54,22 +57,78 @@ public class ThompsonAutomatonBuilder {
 	 * that the expression is valid
 	 * 
 	 * @return the automaton that corresponds to the expression.
+	 * @throws ParseException if any problem during parsing the expression occurs
 	 */
-	public Automaton build() {
-		Stack<Automaton> stack = new Stack<>();
+	public Automaton build() throws ParseException{
+		Stack<Automaton> automatonStack = new Stack<>();
+		Stack<Character> operatorStack = new Stack<>(); 
 
-		for (int i = 0; i < expression.length(); i++) {
+		int i;
+		for (i = 0; i < expression.length(); i++) {
 			char currentChar = expression.charAt(i);
-			if (isSpecialCharacter(currentChar)) {
-
+			
+			if(currentChar == ' ' || currentChar == '(') {
+				continue;
+			}
+			
+			if(isOperator(currentChar)) {
+				operatorStack.push(currentChar);
+			}else if(currentChar == ')') {
+				// Get the needed operator and work depending on it
+				char operator;
+				try {
+					operator = operatorStack.pop();
+				}catch (EmptyStackException e) {
+					// By default, we want to make a concatenation
+					operator = Character.MIN_VALUE;
+				}
+				
+				try {
+					switch (operator) {
+					case '*':
+						// Get only 1 automaton from the stack and apply the star automaton
+						Automaton pop = automatonStack.pop();
+						Automaton starAutomaton = ThompsonAutomatonFactory.createStarAutomaton(pop);
+						automatonStack.push(starAutomaton);
+						break;
+					case '+':
+						//we have the second automaton before the first one because of the stack insertion order
+						Automaton unionRight = automatonStack.pop();
+						Automaton unionLeft = automatonStack.pop();
+						Automaton unionAutomaton = ThompsonAutomatonFactory.createUnionAutomaton(unionLeft, unionRight);
+						automatonStack.push(unionAutomaton);
+						break;
+					case '.':
+					case Character.MIN_VALUE:
+						// We have either operator '.' or not any operator, we will do a concatenation
+						Automaton concatRight = automatonStack.pop();
+						Automaton concatLeft = automatonStack.pop();
+						Automaton concatAutomaton = ThompsonAutomatonFactory.createConcatenationAutomaton(concatLeft, concatRight);
+						automatonStack.push(concatAutomaton);
+						break;
+					default:
+						throw new ParseException("Unrecognized operator in stack", i);	
+					}
+				}catch (EmptyStackException e) {
+					// Here, we don't have enough automatons to use with the operator
+					throw new ParseException("Could not get enough automatons to work with operator " + operator, i);
+				}
+			}else {
+				//we have a normal character, create the letter automaton and add it to the stack
+				Automaton letterAutomaton = ThompsonAutomatonFactory.createLetterAutomaton(currentChar);
+				automatonStack.push(letterAutomaton);
 			}
 		}
 		
-		return null;
+		// Normally, we have only one automaton remaining in the stack
+		if(automatonStack.size() != 1) {
+			throw new ParseException("Too many automatons left in the stack, operation probably not finished.", i);
+		}else {
+			return automatonStack.pop();
+		}
 	}
-
-	private boolean isSpecialCharacter(char character) {
-		// we have 5 characters that cannot be used in those expressions
-		return character == '(' || character == ')' || character == '+' || character == '.' || character == '*';
+	
+	private boolean isOperator(char character) {
+		return character == '+' || character == '.' || character == '*';
 	}
 }
