@@ -16,7 +16,9 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
 	LetterAutomatonTest.class,
 	ConcatenationAutomatonTest.class,
-	UnionAutomatonTest.class
+	UnionAutomatonTest.class,
+	StarAutomatonTest.class,
+	ParseAutomatonTest.class
 	})
 public class ThompsonAutomatonTestSuite {
 	
