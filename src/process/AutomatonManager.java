@@ -64,6 +64,25 @@ public class AutomatonManager {
 		return nameDestination;
 	}
 	
+	/**
+	 * Search in a List of States to found the Id of a State with the given name
+	 * @param listStates the list of State to search in
+	 * @param name the name of the state we are looking for
+	 * @return the stateId found in listStates, -1 if not found
+	 */
+	public int getIdStateFromNameList(List<State> listStates, String name) {
+		State nextState;
+		for (Iterator<State> it = listStates.iterator(); it.hasNext(); ) {
+			nextState = it.next();
+			String nameCheck = nextState.getName();
+			//compare with name
+			if (name.equals(nameCheck)) {
+				return nextState.getId();
+			}
+		}
+		return -1;
+	}
+	
 	public List<Transition> getAllTransitionFromListStates(List<State> listStates) {
 		State nextState;
 		List<Transition> listTransition = new ArrayList<Transition>();
@@ -117,13 +136,8 @@ public class AutomatonManager {
 	}
 	
 	public boolean validateAutomaton (String word, Automaton automaton) {
-		boolean hasFinish = false;
-		State addingState;
-		
-		State startingState = automaton.getInitialStates().get(0);
-		
 		List<State> listState = new ArrayList<State>();
-		listState.add(startingState);
+		listState.addAll(automaton.getInitialStates());
 		
 		List<Transition> listTransitions = new ArrayList<Transition>();
 		
@@ -138,37 +152,30 @@ public class AutomatonManager {
 			if (!listState.isEmpty()) {
 				
 				//we add all transition from all the state we are searching
-				for (Iterator<State> it = listState.iterator(); it.hasNext(); ) {
-					addingState = it.next();
-					listTransitions.addAll(addingState.getTransitions());
-				}
+				listTransitions = getAllTransitionFromListStates(listState);
 				listState.clear();
 				
 				//we added all transition, add all next state that we are looking for
 				listState = getValidDestinationFromTransition(listTransitions, nextLetter);
-				
 				listTransitions.clear();
 			}
 			//if its empty, then we can stop our research
 			else {
-				word = "";
+				return false;
 			}
 		}
 		//if we arrived here, then our listState got all final state
 		for (Iterator<State> it = listState.iterator(); it.hasNext(); ) {
 			State finalState = it.next();
 			if (automaton.isStateFinal(finalState)) {
-				hasFinish = true;
+				return true;
 			}
 		}
 		
-		return hasFinish;
+		return false;
 	}
 	
 	public Automaton determinedAutomaton(Automaton automaton) {
-		State addingState;
-		Transition addingTransition;
-		
 		//listState have all state of the first determined state
 		List<State> listState = new ArrayList<State>();
 		listState.addAll(automaton.getInitialStates());
@@ -211,16 +218,7 @@ public class AutomatonManager {
 			
 			//get the state's name from which we go from
 			//and search the state from the automaton's list
-			int stateStartingId = -1;
-			for (Iterator<State> it = determinedAutomaton.getAllStates().iterator(); it.hasNext(); ) {
-				//get the key/value set
-				addingState = it.next();
-				String nameCheck = addingState.getName();
-				//compare with all name
-				if (nameDeparture.equals(nameCheck)) {
-					stateStartingId = addingState.getId();
-				}
-			}
+			int stateStartingId = getIdStateFromNameList(determinedAutomaton.getAllStates(), nameDeparture);
 			
 			//verification if we find it
 			State stateDeparture;
@@ -255,16 +253,7 @@ public class AutomatonManager {
 					
 					//check that it doesn't already exist
 					//we will get the Id we need after otherwise
-					int nameId = -1;
-					for (Iterator<State> it = determinedAutomaton.getAllStates().iterator(); it.hasNext(); ) {
-						//get the key/value set
-						addingState = it.next();
-						String nameCheck = addingState.getName();
-						//compare with all name
-						if (nameDestination.equals(nameCheck)) {
-							nameId = addingState.getId();
-						}
-					}
+					int nameId = getIdStateFromNameList(determinedAutomaton.getAllStates(), nameDestination);
 					
 					//if an id hasn't been found, we can create a new State
 					//creating a new state mean that it will be added to listDeterminedState
