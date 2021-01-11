@@ -13,17 +13,112 @@ import data.State;
 import data.Transition;
 
 /**
- * Main class to manage Automaton
- * Can validate and determined an Automaton
+ * <p>Main class to manage Automaton</p>
+ * <p>Can validate and determined an Automaton</p>
  * @author Maxence
  */
 public class AutomatonManager {
 	
+	private AutomatonManager() {};
+	
+	private static AutomatonManager instance;
+	/**
+	 * @return the static instance of AutomatonManager
+	 */
+	public static AutomatonManager getInstance() {
+		return instance;
+	}
+	
+	/**
+	 * <p>Method to compare if an element of a State List is in another list.</p>
+	 * <p>Useful when comparing with Initial or Final List of State.</p>
+	 * @param listStates the first list to compare with
+	 * @param listStates2 the second list to compare to
+	 * @return true if any element of the second list is in the first one.
+	 */
+	public boolean hasCommonStates(List<State> listStates, List<State> listStates2) {
+		State nextState;
+		for (Iterator<State> it = listStates2.iterator(); it.hasNext(); ) {
+			nextState = it.next();
+			if (listStates.contains(nextState)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public String constructNameOfFusionStates(List<State> listStates) {
+		//get a appropriate name for our new state
+		State nextState;
+		String nameDestination = "";
+		for (Iterator<State> it = listStates.iterator(); it.hasNext(); ) {
+			nextState = it.next();
+			if (nameDestination.isEmpty()) {
+				nameDestination = String.valueOf(nextState.getId());
+			}
+			else {
+				nameDestination = nameDestination + ";" + nextState.getId();
+			}
+			//TODO erreur avec par exemple 2;0 & 0;2
+		}
+		return nameDestination;
+	}
+	
+	public List<Transition> getAllTransitionFromListStates(List<State> listStates) {
+		State nextState;
+		List<Transition> listTransition = new ArrayList<Transition>();
+		for (Iterator<State> it = listStates.iterator(); it.hasNext(); ) {
+			nextState = it.next();
+			listTransition.addAll(nextState.getTransitions());
+		}
+		return listTransition;
+	}
+	
+	/**
+	 * Method returning the list of Destination from a list of Transition
+	 * @param listTransitions List of all transition
+	 * @return an ArrayList of all Destination
+	 */
+	public List<State> getAllDestinationFromTransition(List<Transition> listTransitions) {
+		List<State> listState = new ArrayList<State>();
+		Transition nextTransition;
+		for (Iterator<Transition> it = listTransitions.iterator(); it.hasNext(); ) {
+			nextTransition = it.next();
+			State nextState = nextTransition.getDestination();
+			if (!listState.contains(nextState)) {
+				listState.add(nextState);
+			}
+		}
+		return listState;
+	}
+	
+	/**
+	 * Method returning the list of Destination with the correct char from a list of Transition, including epsilon
+	 * @param listTransitions List of all transition
+	 * @param letter the lettre used in the transition
+	 * @return an ArrayList of all valid Destination
+	 */
+	public List<State> getValidDestinationFromTransition(List<Transition> listTransitions, char letter) {
+		List<State> listState = new ArrayList<State>();
+		Transition nextTransition;
+		for (Iterator<Transition> it = listTransitions.iterator(); it.hasNext(); ) {
+			nextTransition = it.next();
+			if ((nextTransition.isEpsilon()) ||
+				(nextTransition.getLetter() == letter)) {
+				//little check that the destination isn't already here
+				State nextState = nextTransition.getDestination();
+				if (!listState.contains(nextState)) {
+					listState.add(nextState);
+				}
+			}
+			//else, we dont have the right letter for the transition
+		}
+		return listState;
+	}
 	
 	public boolean validateAutomaton (String word, Automaton automaton) {
 		boolean hasFinish = false;
 		State addingState;
-		Transition addingTransition;
 		
 		State startingState = automaton.getInitialStates().get(0);
 		
@@ -50,18 +145,8 @@ public class AutomatonManager {
 				listState.clear();
 				
 				//we added all transition, add all next state that we are looking for
-				for (Iterator<Transition> it = listTransitions.iterator(); it.hasNext(); ) {
-					addingTransition = it.next();
-					if ((addingTransition.isEpsilon()) ||
-						(addingTransition.getLetter() == nextLetter)) {
-						//little check that the destination isn't already here
-						State nextState = addingTransition.getDestination();
-						if (!listState.contains(nextState)) {
-							listState.add(nextState);
-						}
-					}
-					//else, we dont have the right letter for the transition
-				}
+				listState = getValidDestinationFromTransition(listTransitions, nextLetter);
+				
 				listTransitions.clear();
 			}
 			//if its empty, then we can stop our research
@@ -115,17 +200,11 @@ public class AutomatonManager {
 			listState = listDeterminedStates.pop();
 			
 			//we add all transition from all the state we are coming from
+			listTransitions = getAllTransitionFromListStates(listState);
+			
 			String nameDeparture = "";
-			for (Iterator<State> it = listState.iterator(); it.hasNext(); ) {
-				addingState = it.next();
-				if (nameDeparture.isEmpty()) {
-					nameDeparture = String.valueOf(addingState.getId());
-				}
-				else {
-					nameDeparture = nameDeparture + ";" + addingState.getId();
-				}
-				listTransitions.addAll(addingState.getTransitions());
-			}
+			nameDeparture = constructNameOfFusionStates(listState);
+			
 			//we dont have any interest in our old list
 			//TODO maybe later, use this list to get the name of the starting state
 			listState.clear();
@@ -160,16 +239,9 @@ public class AutomatonManager {
 			//for each of the alphabet letter
 			for (char letter : alphabet.toCharArray()) {
 
-				//we search all transition, and add as a new state
-				for (Iterator<Transition> it = listTransitions.iterator(); it.hasNext(); ) {
-					addingTransition = it.next();
-					if ((addingTransition.isEpsilon()) || (addingTransition.getLetter() == letter)) {
-						addingState = addingTransition.getDestination();
-						listNewState.add(addingState);
-						if (automaton.isStateFinal(addingState)) {
-							isFinal = true;
-						}
-					}
+				listNewState = getValidDestinationFromTransition(listTransitions, letter);
+				if (hasCommonStates(listNewState, automaton.getFinalStates())) {
+					isFinal = true;
 				}
 				
 				//we have gone through all transition
@@ -178,16 +250,7 @@ public class AutomatonManager {
 					
 					//get a appropriate name for our new state
 					String nameDestination = "";
-					for (Iterator<State> it = listNewState.iterator(); it.hasNext(); ) {
-						addingState = it.next();
-						if (nameDestination.isEmpty()) {
-							nameDestination = String.valueOf(addingState.getId());
-						}
-						else {
-							nameDestination = nameDestination + ";" + addingState.getId();
-						}
-						//TODO erreur avec par exemple 2;0 & 0;2
-					}
+					nameDestination = constructNameOfFusionStates(listNewState);
 					
 					
 					//check that it doesn't already exist

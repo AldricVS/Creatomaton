@@ -115,8 +115,8 @@ public class CreateAutomatonTest {
 		boolean test = false;
 		String word = "ab";
 		
-		AutomatonManager AutomatonManager = new AutomatonManager();
-		test = AutomatonManager.validateAutomaton(word, automaton);
+		AutomatonManager automatonManager = AutomatonManager.getInstance();
+		test = automatonManager.validateAutomaton(word, automaton);
 		
 		assertTrue(test);
 	}
