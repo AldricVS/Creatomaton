@@ -21,7 +21,7 @@ public class AutomatonManager {
 	
 	private AutomatonManager() {};
 	
-	private static AutomatonManager instance;
+	private static AutomatonManager instance = new AutomatonManager();
 	/**
 	 * @return the static instance of AutomatonManager
 	 */
@@ -272,7 +272,7 @@ public class AutomatonManager {
 					}
 					else {
 						//add a transition
-						determinedAutomaton.addTransition(stateDeparture, determinedAutomaton.getAllStates().get(nameId), letter);
+						determinedAutomaton.addTransition(stateDeparture, determinedAutomaton.getStateById(nameId), letter);
 					}
 					
 					//reset the list of added state
