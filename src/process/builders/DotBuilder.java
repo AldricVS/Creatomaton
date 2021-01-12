@@ -1,5 +1,10 @@
 package process.builders;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import data.Automaton;
@@ -18,6 +23,25 @@ public class DotBuilder {
 	 * The automaton to parse.
 	 */
 	private Automaton automaton;
+	
+	private boolean isInLandscapeMode = true;
+	
+	/**
+	 * Check if the resulting graph will be displayed from left to right or top to bottom.
+	 * By default, this value is set to {@code true}.
+	 */
+	public boolean isInLandscapeMode() {
+		return isInLandscapeMode;
+	}
+
+	/**
+	 * Set if the resulting graph will be displayed from left to right or top to bottom.
+	 * By default, this value is set to {@code true}.
+	 * @param isInLandscapeMode
+	 */
+	public void setInLandscapeMode(boolean isInLandscapeMode) {
+		this.isInLandscapeMode = isInLandscapeMode;
+	}
 
 	public DotBuilder(Automaton automaton) {
 		this.automaton = automaton;
@@ -39,20 +63,63 @@ public class DotBuilder {
 	 * @return a String containing all informations
 	 */
 	public String buildDotString() {
-		StringBuilder stringBuilder = new StringBuilder("digraph G {rankdir=\"LR\";" + System.lineSeparator()); // Line separator is
-																									// different on
-																									// windows and unix
-		// We want to go through all states
+		// Line separator is  different on windows and unix
+		StringBuilder stringBuilder = new StringBuilder(); 
+		if(isInLandscapeMode) {
+			stringBuilder.append("digraph G {rankdir=\"LR\";" + System.lineSeparator());
+		}else {
+			stringBuilder.append("digraph G {" + System.lineSeparator());
+		}
+		
+		//We want to go through all states
 		List<State> states = automaton.getAllStates();
 		for (State state : states) {
 			String stateData = extractDataFromState(state);
 			stringBuilder.append(stateData + System.lineSeparator());
 		}
-		
-		//don't forget the ending curly brace '}'
+
+		// don't forget the ending curly brace '}'
 		stringBuilder.append('}');
-		
+
 		return stringBuilder.toString();
+	}
+	
+	/**
+	 * Exports the automaton to a specified file (that will be created if not exists) in the ".dot" format
+	 * @param file the file where to export automaton
+	 */
+	public void buildDotFile(File file) {
+		//in case file didn't exist
+		FileWriter fileWriter;
+		try {
+			file.createNewFile();
+			fileWriter = new FileWriter(file);
+		}catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		try (BufferedWriter bw = new BufferedWriter(fileWriter)){
+			if(isInLandscapeMode) {
+				bw.write("digraph G {rankdir=\"LR\";");
+			}else {
+				bw.write("digraph G {");
+			}
+			bw.newLine();
+			
+			//We want to go through all states
+			List<State> states = automaton.getAllStates();
+			for (State state : states) {
+				String stateData = extractDataFromState(state);
+				bw.write(stateData);
+				bw.newLine();
+			}
+			
+			// don't forget the ending curly brace '}'
+			bw.write('}');
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private String extractDataFromState(State state) {
