@@ -39,7 +39,7 @@ public class DotBuilder {
 	 * @return a String containing all informations
 	 */
 	public String buildDotString() {
-		StringBuilder stringBuilder = new StringBuilder("diagraph G {" + System.lineSeparator()); // Line separator is
+		StringBuilder stringBuilder = new StringBuilder("digraph G {" + System.lineSeparator()); // Line separator is
 																									// different on
 																									// windows and unix
 		// We want to go through all states
