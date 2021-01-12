@@ -49,32 +49,6 @@ public class ThompsonAutomatonFactory {
 		Automaton a1 = AutomatonFactory.createCopy(automaton1);
 		Automaton a2 = AutomatonFactory.createCopy(automaton2);
 		String alphabet = StringUtility.alphabetOf2Strings(a1.getAlphabet(), a2.getAlphabet());
-//		Automaton automaton = new Automaton(alphabet);
-//
-//		/*
-//		 * - Initial state is the automaton1's initial state - Final state is the
-//		 * automatons2's final state - the automaton1's final state and the automaton2's
-//		 * initial state are merged
-//		 */
-//		int cpt = 1;
-//
-//		State initialState = a1.getInitialStates().get(0);
-//		State finalState = a2.getInitialStates().get(0);
-//		// automaton.addState(initialState, true, false);
-//		// automaton.addState(finalState, false, true);
-//
-//		// we must merge two states, keep them in mind for later
-//		State F1 = a1.getFinalStates().get(0);
-//		State I2 = a2.getInitialStates().get(0);
-//
-//		// add all remaining states (with id from 1 to n-1)
-//		for (State state : a1.getAllStates()) {
-//			if (state != initialState && state != finalState && state != F1 && state != I2) {
-//				//change his id before
-//				state.setId(cpt);
-//				cpt++;
-//			}
-//		}
 		
 		a1.setAlphabet(alphabet);
 		
@@ -88,7 +62,7 @@ public class ThompsonAutomatonFactory {
 		
 		//add all states from a2 to a1 (except for I2)
 		//we have to change their state id in order to have unique ids in automaton
-		int currentId = a1.getNumberOfTotalStates() + 1;
+		int currentId = a1.getNumberOfTotalStates();
 		for(State state : a2.getAllStates()) {
 			if(state != i2) {
 				state.setId(currentId);
