@@ -128,4 +128,23 @@ public class CreateAutomatonTest {
 		//which test TODO to assure that our automaton is determined
 		
 	}
+	
+	@Test
+	public void constructStateName() {
+		String stateName = "";
+		
+		//test that the name is correctly generated
+		stateName = AutomatonManager.getInstance().constructNameOfDeterminedStates(automaton.getAllStates());
+		assertEquals("0;1;2", stateName);
+		
+		//test that the list is sorted, so that the order of adding dont matter
+		List<State> listState = new ArrayList<State>();
+		listState.add(state2);
+		listState.add(state0);
+		listState.add(state1);
+		listState.add(state0);
+		listState.add(state2);
+		stateName = AutomatonManager.getInstance().constructNameOfDeterminedStates(listState);
+		assertEquals("0;0;1;2;2", stateName);
+	}
 }

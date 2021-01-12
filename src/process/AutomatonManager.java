@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 
 import data.Automaton;
 import data.State;
@@ -47,20 +48,36 @@ public class AutomatonManager {
 		return false;
 	}
 	
-	public String constructNameOfFusionStates(List<State> listStates) {
+	/**
+	 * Create a appropriate name for all determined State
+	 * @param listStates a list of States
+	 * @return the name of a state, as a determined new state
+	 */
+	public String constructNameOfDeterminedStates(List<State> listStates) {
 		//get a appropriate name for our new state
 		State nextState;
+		List<Integer> listStateId = new Stack<Integer>();
 		String nameDestination = "";
 		for (Iterator<State> it = listStates.iterator(); it.hasNext(); ) {
 			nextState = it.next();
+			listStateId.add(nextState.getId());
+		}
+		
+		//sort the id
+		listStateId.sort(null);
+		
+		int id;
+		//construct the name
+		for (Iterator<Integer> it = listStateId.iterator(); it.hasNext(); ) {
+			id = it.next();
 			if (nameDestination.isEmpty()) {
-				nameDestination = String.valueOf(nextState.getId());
+				nameDestination = String.valueOf(id);
 			}
 			else {
-				nameDestination = nameDestination + ";" + nextState.getId();
+				nameDestination = nameDestination + ";" + id;
 			}
-			//TODO erreur avec par exemple 2;0 & 0;2
 		}
+		
 		return nameDestination;
 	}
 	
@@ -210,10 +227,9 @@ public class AutomatonManager {
 			listTransitions = getAllTransitionFromListStates(listState);
 			
 			String nameDeparture = "";
-			nameDeparture = constructNameOfFusionStates(listState);
+			nameDeparture = constructNameOfDeterminedStates(listState);
 			
 			//we dont have any interest in our old list
-			//TODO maybe later, use this list to get the name of the starting state
 			listState.clear();
 			
 			//get the state's name from which we go from
@@ -248,7 +264,7 @@ public class AutomatonManager {
 					
 					//get a appropriate name for our new state
 					String nameDestination = "";
-					nameDestination = constructNameOfFusionStates(listNewState);
+					nameDestination = constructNameOfDeterminedStates(listNewState);
 					
 					
 					//check that it doesn't already exist
