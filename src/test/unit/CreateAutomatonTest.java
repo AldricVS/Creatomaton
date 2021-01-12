@@ -18,6 +18,7 @@ import data.Automaton;
 import data.State;
 import data.Transition;
 import process.AutomatonManager;
+import process.util.StateListUtility;
 
 /**
  * Muliple tests that check if an automaton is correctly created.<p>
@@ -115,8 +116,8 @@ public class CreateAutomatonTest {
 		boolean test = false;
 		String word = "ab";
 		
-		AutomatonManager automatonManager = AutomatonManager.getInstance();
-		test = automatonManager.validateAutomaton(word, automaton);
+		AutomatonManager automatonManager = new AutomatonManager(automaton);
+		test = automatonManager.validateAutomaton(word);
 		
 		assertTrue(test);
 	}
@@ -134,7 +135,7 @@ public class CreateAutomatonTest {
 		String stateName = "";
 		
 		//test that the name is correctly generated
-		stateName = AutomatonManager.getInstance().constructNameOfDeterminedStates(automaton.getAllStates());
+		stateName = StateListUtility.constructNameOfDeterminedStates(automaton.getAllStates());
 		assertEquals("0;1;2", stateName);
 		
 		//test that the list is sorted, so that the order of adding dont matter
@@ -144,7 +145,7 @@ public class CreateAutomatonTest {
 		listState.add(state1);
 		listState.add(state0);
 		listState.add(state2);
-		stateName = AutomatonManager.getInstance().constructNameOfDeterminedStates(listState);
+		stateName = StateListUtility.constructNameOfDeterminedStates(listState);
 		assertEquals("0;0;1;2;2", stateName);
 	}
 }
