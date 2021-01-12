@@ -7,28 +7,154 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 
 import data.Automaton;
 import data.State;
 import data.Transition;
 
 /**
- * Main class to manage Automaton
- * Can validate and determined an Automaton
+ * <p>Main class to manage Automaton</p>
+ * <p>Can validate and determined an Automaton</p>
  * @author Maxence
  */
 public class AutomatonManager {
 	
+	private AutomatonManager() {};
+	
+	private static AutomatonManager instance = new AutomatonManager();
+	/**
+	 * @return the static instance of AutomatonManager
+	 */
+	public static AutomatonManager getInstance() {
+		return instance;
+	}
+	
+	/**
+	 * <p>Method to compare if an element of a State List is in another list.</p>
+	 * <p>Useful when comparing with Initial or Final List of State.</p>
+	 * @param listStates the first list to compare with
+	 * @param listStates2 the second list to compare to
+	 * @return true if any element of the second list is in the first one.
+	 */
+	public boolean hasCommonStates(List<State> listStates, List<State> listStates2) {
+		State nextState;
+		for (Iterator<State> it = listStates2.iterator(); it.hasNext(); ) {
+			nextState = it.next();
+			if (listStates.contains(nextState)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Create a appropriate name for all determined State
+	 * @param listStates a list of States
+	 * @return the name of a state, as a determined new state
+	 */
+	public String constructNameOfDeterminedStates(List<State> listStates) {
+		//get a appropriate name for our new state
+		State nextState;
+		List<Integer> listStateId = new Stack<Integer>();
+		String nameDestination = "";
+		for (Iterator<State> it = listStates.iterator(); it.hasNext(); ) {
+			nextState = it.next();
+			listStateId.add(nextState.getId());
+		}
+		
+		//sort the id
+		listStateId.sort(null);
+		
+		int id;
+		//construct the name
+		for (Iterator<Integer> it = listStateId.iterator(); it.hasNext(); ) {
+			id = it.next();
+			if (nameDestination.isEmpty()) {
+				nameDestination = String.valueOf(id);
+			}
+			else {
+				nameDestination = nameDestination + ";" + id;
+			}
+		}
+		
+		return nameDestination;
+	}
+	
+	/**
+	 * Search in a List of States to found the Id of a State with the given name
+	 * @param listStates the list of State to search in
+	 * @param name the name of the state we are looking for
+	 * @return the stateId found in listStates, -1 if not found
+	 */
+	public int getIdStateFromNameList(List<State> listStates, String name) {
+		State nextState;
+		for (Iterator<State> it = listStates.iterator(); it.hasNext(); ) {
+			nextState = it.next();
+			String nameCheck = nextState.getName();
+			//compare with name
+			if (name.equals(nameCheck)) {
+				return nextState.getId();
+			}
+		}
+		return -1;
+	}
+	
+	public List<Transition> getAllTransitionFromListStates(List<State> listStates) {
+		State nextState;
+		List<Transition> listTransition = new ArrayList<Transition>();
+		for (Iterator<State> it = listStates.iterator(); it.hasNext(); ) {
+			nextState = it.next();
+			listTransition.addAll(nextState.getTransitions());
+		}
+		return listTransition;
+	}
+	
+	/**
+	 * Method returning the list of Destination from a list of Transition
+	 * @param listTransitions List of all transition
+	 * @return an ArrayList of all Destination
+	 */
+	public List<State> getAllDestinationFromTransition(List<Transition> listTransitions) {
+		List<State> listState = new ArrayList<State>();
+		Transition nextTransition;
+		for (Iterator<Transition> it = listTransitions.iterator(); it.hasNext(); ) {
+			nextTransition = it.next();
+			State nextState = nextTransition.getDestination();
+			if (!listState.contains(nextState)) {
+				listState.add(nextState);
+			}
+		}
+		return listState;
+	}
+	
+	/**
+	 * Method returning the list of Destination with the correct char from a list of Transition, including epsilon
+	 * @param listTransitions List of all transition
+	 * @param letter the lettre used in the transition
+	 * @return an ArrayList of all valid Destination
+	 */
+	public List<State> getValidDestinationFromTransition(List<Transition> listTransitions, char letter) {
+		List<State> listState = new ArrayList<State>();
+		Transition nextTransition;
+		for (Iterator<Transition> it = listTransitions.iterator(); it.hasNext(); ) {
+			nextTransition = it.next();
+			if ((nextTransition.isEpsilon()) ||
+				(nextTransition.getLetter() == letter)) {
+				//little check that the destination isn't already here
+				State nextState = nextTransition.getDestination();
+				if (!listState.contains(nextState)) {
+					listState.add(nextState);
+				}
+			}
+			//else, we dont have the right letter for the transition
+		}
+		return listState;
+	}
 	
 	public boolean validateAutomaton (String word, Automaton automaton) {
-		boolean hasFinish = false;
-		State addingState;
-		Transition addingTransition;
-		
-		State startingState = automaton.getInitialStates().get(0);
-		
 		List<State> listState = new ArrayList<State>();
-		listState.add(startingState);
+		listState.addAll(automaton.getInitialStates());
 		
 		List<Transition> listTransitions = new ArrayList<Transition>();
 		
@@ -43,47 +169,30 @@ public class AutomatonManager {
 			if (!listState.isEmpty()) {
 				
 				//we add all transition from all the state we are searching
-				for (Iterator<State> it = listState.iterator(); it.hasNext(); ) {
-					addingState = it.next();
-					listTransitions.addAll(addingState.getTransitions());
-				}
+				listTransitions = getAllTransitionFromListStates(listState);
 				listState.clear();
 				
 				//we added all transition, add all next state that we are looking for
-				for (Iterator<Transition> it = listTransitions.iterator(); it.hasNext(); ) {
-					addingTransition = it.next();
-					if ((addingTransition.isEpsilon()) ||
-						(addingTransition.getLetter() == nextLetter)) {
-						//little check that the destination isn't already here
-						State nextState = addingTransition.getDestination();
-						if (!listState.contains(nextState)) {
-							listState.add(nextState);
-						}
-					}
-					//else, we dont have the right letter for the transition
-				}
+				listState = getValidDestinationFromTransition(listTransitions, nextLetter);
 				listTransitions.clear();
 			}
 			//if its empty, then we can stop our research
 			else {
-				word = "";
+				return false;
 			}
 		}
 		//if we arrived here, then our listState got all final state
 		for (Iterator<State> it = listState.iterator(); it.hasNext(); ) {
 			State finalState = it.next();
 			if (automaton.isStateFinal(finalState)) {
-				hasFinish = true;
+				return true;
 			}
 		}
 		
-		return hasFinish;
+		return false;
 	}
 	
 	public Automaton determinedAutomaton(Automaton automaton) {
-		State addingState;
-		Transition addingTransition;
-		
 		//listState have all state of the first determined state
 		List<State> listState = new ArrayList<State>();
 		listState.addAll(automaton.getInitialStates());
@@ -115,33 +224,17 @@ public class AutomatonManager {
 			listState = listDeterminedStates.pop();
 			
 			//we add all transition from all the state we are coming from
+			listTransitions = getAllTransitionFromListStates(listState);
+			
 			String nameDeparture = "";
-			for (Iterator<State> it = listState.iterator(); it.hasNext(); ) {
-				addingState = it.next();
-				if (nameDeparture.isEmpty()) {
-					nameDeparture = String.valueOf(addingState.getId());
-				}
-				else {
-					nameDeparture = nameDeparture + ";" + addingState.getId();
-				}
-				listTransitions.addAll(addingState.getTransitions());
-			}
+			nameDeparture = constructNameOfDeterminedStates(listState);
+			
 			//we dont have any interest in our old list
-			//TODO maybe later, use this list to get the name of the starting state
 			listState.clear();
 			
 			//get the state's name from which we go from
 			//and search the state from the automaton's list
-			int stateStartingId = -1;
-			for (Iterator<State> it = determinedAutomaton.getAllStates().iterator(); it.hasNext(); ) {
-				//get the key/value set
-				addingState = it.next();
-				String nameCheck = addingState.getName();
-				//compare with all name
-				if (nameDeparture.equals(nameCheck)) {
-					stateStartingId = addingState.getId();
-				}
-			}
+			int stateStartingId = getIdStateFromNameList(determinedAutomaton.getAllStates(), nameDeparture);
 			
 			//verification if we find it
 			State stateDeparture;
@@ -160,16 +253,9 @@ public class AutomatonManager {
 			//for each of the alphabet letter
 			for (char letter : alphabet.toCharArray()) {
 
-				//we search all transition, and add as a new state
-				for (Iterator<Transition> it = listTransitions.iterator(); it.hasNext(); ) {
-					addingTransition = it.next();
-					if ((addingTransition.isEpsilon()) || (addingTransition.getLetter() == letter)) {
-						addingState = addingTransition.getDestination();
-						listNewState.add(addingState);
-						if (automaton.isStateFinal(addingState)) {
-							isFinal = true;
-						}
-					}
+				listNewState = getValidDestinationFromTransition(listTransitions, letter);
+				if (hasCommonStates(listNewState, automaton.getFinalStates())) {
+					isFinal = true;
 				}
 				
 				//we have gone through all transition
@@ -178,30 +264,12 @@ public class AutomatonManager {
 					
 					//get a appropriate name for our new state
 					String nameDestination = "";
-					for (Iterator<State> it = listNewState.iterator(); it.hasNext(); ) {
-						addingState = it.next();
-						if (nameDestination.isEmpty()) {
-							nameDestination = String.valueOf(addingState.getId());
-						}
-						else {
-							nameDestination = nameDestination + ";" + addingState.getId();
-						}
-						//TODO erreur avec par exemple 2;0 & 0;2
-					}
+					nameDestination = constructNameOfDeterminedStates(listNewState);
 					
 					
 					//check that it doesn't already exist
 					//we will get the Id we need after otherwise
-					int nameId = -1;
-					for (Iterator<State> it = determinedAutomaton.getAllStates().iterator(); it.hasNext(); ) {
-						//get the key/value set
-						addingState = it.next();
-						String nameCheck = addingState.getName();
-						//compare with all name
-						if (nameDestination.equals(nameCheck)) {
-							nameId = addingState.getId();
-						}
-					}
+					int nameId = getIdStateFromNameList(determinedAutomaton.getAllStates(), nameDestination);
 					
 					//if an id hasn't been found, we can create a new State
 					//creating a new state mean that it will be added to listDeterminedState
@@ -220,7 +288,7 @@ public class AutomatonManager {
 					}
 					else {
 						//add a transition
-						determinedAutomaton.addTransition(stateDeparture, determinedAutomaton.getAllStates().get(nameId), letter);
+						determinedAutomaton.addTransition(stateDeparture, determinedAutomaton.getStateById(nameId), letter);
 					}
 					
 					//reset the list of added state
