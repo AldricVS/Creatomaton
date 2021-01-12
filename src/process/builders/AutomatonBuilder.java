@@ -4,12 +4,14 @@
 package process.builders;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import data.Automaton;
 import data.State;
 import data.Transition;
+import process.factory.AutomatonFactory;
 import process.util.StateListUtility;
 import process.util.TransitionListUtility;
 
@@ -21,6 +23,42 @@ public class AutomatonBuilder {
 	private Automaton automaton;
 	public AutomatonBuilder(Automaton automaton) {
 		this.automaton = automaton;
+	}
+	
+	public Automaton buildMiroirAutomaton() {
+		//some variable
+		List<State> listState;
+		State state;
+		
+		//our new automaton
+		Automaton miroirAutomaton;
+		miroirAutomaton = AutomatonFactory.createCopy(automaton);
+		
+		//get the list of Initial State and delete it
+		listState = new ArrayList<State>(miroirAutomaton.getInitialStates());
+		miroirAutomaton.clearInitialStates();
+		
+		//for any final state, add it as an initial state
+		for (Iterator<State> it = miroirAutomaton.getFinalStates().iterator(); it.hasNext(); ) {
+			state = it.next();
+			miroirAutomaton.addState(state, true, false);
+		}
+		
+		//clear old final state, as all new are in listState
+		miroirAutomaton.clearFinalStates();
+		for (Iterator<State> it = listState.iterator(); it.hasNext(); ) {
+			state = it.next();
+			//if a state is initial and final, re-add it as that
+			if (miroirAutomaton.getInitialStates().contains(state)) {
+				miroirAutomaton.removeState(state);
+				miroirAutomaton.addState(state, true, true);
+			}
+			else {
+				miroirAutomaton.addState(state, false, true);
+			}
+		}
+		
+		return miroirAutomaton;
 	}
 	
 	public Automaton buildDeterminedAutomaton() {
