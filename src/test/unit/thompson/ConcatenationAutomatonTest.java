@@ -14,7 +14,7 @@ import data.Automaton;
 import data.State;
 import data.Transition;
 import process.factory.ThompsonAutomatonFactory;
-
+// je suis passé par la 
 /**
  * Tests to check a "concatenation Thompson" automaton.
  * we test the automaton that accepts "ab"
