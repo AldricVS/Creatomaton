@@ -15,6 +15,10 @@ import process.factory.ThompsonAutomatonFactory;
  */
 public class ThompsonAutomatonBuilder {
 	private String expression;
+	
+	private static final char CONCATENATION_CHARACTER = '.';
+	private static final char UNION_CHARACTER = '+';
+	private static final char REPETITION_CHARACTER = '*';
 
 	/**
 	 * Create an instance of the builder, that will do a fast check on the
@@ -63,50 +67,48 @@ public class ThompsonAutomatonBuilder {
 		Stack<Automaton> automatonStack = new Stack<>();
 		Stack<Character> operatorStack = new Stack<>();
 
-		// ParenthesisWheight will permit to keep trace on all operation that we have to
-		// do and to avoid to miss any concatenation
-		int parentheisWeight = 0;
-
 		int i;
 		for (i = 0; i < expression.length(); i++) {
-			char currentChar = expression.charAt(i);
+			char currentChar = expression.charAt(i);;
 
 			if (currentChar == ' ') {
 				continue;
 			}else if(currentChar == '(') {
-				parentheisWeight++;
+				// Check the previous char, if we have a character or a closing parenthesis,
+				// we know that there is an implicit '.'
+				if(i != 0) {
+					char previousCharacter = expression.charAt(i - 1);
+					if(!isOperator(previousCharacter) && previousCharacter != ' ' && previousCharacter != '(') {
+						operatorStack.push(CONCATENATION_CHARACTER);
+					}
+				}
 				continue;
 			}
 
 			if (isOperator(currentChar)) {
 				operatorStack.push(currentChar);
 			} else if (currentChar == ')') {
-				parentheisWeight--;
+				
 				// Get the needed operator and work depending on it
 				char operator;
 				try {
-					//don't pop if parenthesis weight too high
-					if(operatorStack.peek() == '*' || operatorStack.size() > parentheisWeight) {
-						operator = operatorStack.pop();
-					}else {
-						// we have others concatenations to do before
-						operator = '.';
-					}
+					operator = operatorStack.pop();
+
 					
 				} catch (EmptyStackException e) {
 					// By default, we want to make a concatenation
-					operator = Character.MIN_VALUE;
+					operator = CONCATENATION_CHARACTER;
 				}
 
 				try {
 					switch (operator) {
-					case '*':
+					case REPETITION_CHARACTER:
 						// Get only 1 automaton from the stack and apply the star automaton
 						Automaton pop = automatonStack.pop();
 						Automaton starAutomaton = ThompsonAutomatonFactory.createStarAutomaton(pop);
 						automatonStack.push(starAutomaton);
 						break;
-					case '+':
+					case UNION_CHARACTER:
 						// we have the second automaton before the first one because of the stack
 						// insertion order
 						Automaton unionRight = automatonStack.pop();
@@ -114,7 +116,7 @@ public class ThompsonAutomatonBuilder {
 						Automaton unionAutomaton = ThompsonAutomatonFactory.createUnionAutomaton(unionLeft, unionRight);
 						automatonStack.push(unionAutomaton);
 						break;
-					case '.':
+					case CONCATENATION_CHARACTER:
 					case Character.MIN_VALUE:
 						// We have either operator '.' or not any operator, we will do a concatenation
 						Automaton concatRight = automatonStack.pop();
@@ -147,6 +149,6 @@ public class ThompsonAutomatonBuilder {
 	}
 
 	private boolean isOperator(char character) {
-		return character == '+' || character == '.' || character == '*';
+		return character == UNION_CHARACTER || character == CONCATENATION_CHARACTER || character == REPETITION_CHARACTER;
 	}
 }
