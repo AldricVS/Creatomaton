@@ -15,6 +15,10 @@ import process.factory.ThompsonAutomatonFactory;
  */
 public class ThompsonAutomatonBuilder {
 	private String expression;
+	
+	private static final char CONCATENATION_CHARACTER = '.';
+	private static final char UNION_CHARACTER = '+';
+	private static final char REPETITION_CHARACTER = '*';
 
 	/**
 	 * Create an instance of the builder, that will do a fast check on the
@@ -59,76 +63,92 @@ public class ThompsonAutomatonBuilder {
 	 * @return the automaton that corresponds to the expression.
 	 * @throws ParseException if any problem during parsing the expression occurs
 	 */
-	public Automaton build() throws ParseException{
+	public Automaton build() throws ParseException {
 		Stack<Automaton> automatonStack = new Stack<>();
-		Stack<Character> operatorStack = new Stack<>(); 
+		Stack<Character> operatorStack = new Stack<>();
 
 		int i;
 		for (i = 0; i < expression.length(); i++) {
-			char currentChar = expression.charAt(i);
-			
-			if(currentChar == ' ' || currentChar == '(') {
+			char currentChar = expression.charAt(i);;
+
+			if (currentChar == ' ') {
+				continue;
+			}else if(currentChar == '(') {
+				// Check the previous char, if we have a character or a closing parenthesis,
+				// we know that there is an implicit '.'
+				if(i != 0) {
+					char previousCharacter = expression.charAt(i - 1);
+					if(!isOperator(previousCharacter) && previousCharacter != ' ' && previousCharacter != '(') {
+						operatorStack.push(CONCATENATION_CHARACTER);
+					}
+				}
 				continue;
 			}
-			
-			if(isOperator(currentChar)) {
+
+			if (isOperator(currentChar)) {
 				operatorStack.push(currentChar);
-			}else if(currentChar == ')') {
+			} else if (currentChar == ')') {
+				
 				// Get the needed operator and work depending on it
 				char operator;
 				try {
 					operator = operatorStack.pop();
-				}catch (EmptyStackException e) {
+
+					
+				} catch (EmptyStackException e) {
 					// By default, we want to make a concatenation
-					operator = Character.MIN_VALUE;
+					operator = CONCATENATION_CHARACTER;
 				}
-				
+
 				try {
 					switch (operator) {
-					case '*':
+					case REPETITION_CHARACTER:
 						// Get only 1 automaton from the stack and apply the star automaton
 						Automaton pop = automatonStack.pop();
 						Automaton starAutomaton = ThompsonAutomatonFactory.createStarAutomaton(pop);
 						automatonStack.push(starAutomaton);
 						break;
-					case '+':
-						//we have the second automaton before the first one because of the stack insertion order
+					case UNION_CHARACTER:
+						// we have the second automaton before the first one because of the stack
+						// insertion order
 						Automaton unionRight = automatonStack.pop();
 						Automaton unionLeft = automatonStack.pop();
 						Automaton unionAutomaton = ThompsonAutomatonFactory.createUnionAutomaton(unionLeft, unionRight);
 						automatonStack.push(unionAutomaton);
 						break;
-					case '.':
+					case CONCATENATION_CHARACTER:
 					case Character.MIN_VALUE:
 						// We have either operator '.' or not any operator, we will do a concatenation
 						Automaton concatRight = automatonStack.pop();
 						Automaton concatLeft = automatonStack.pop();
-						Automaton concatAutomaton = ThompsonAutomatonFactory.createConcatenationAutomaton(concatLeft, concatRight);
+						Automaton concatAutomaton = ThompsonAutomatonFactory.createConcatenationAutomaton(concatLeft,
+								concatRight);
 						automatonStack.push(concatAutomaton);
 						break;
 					default:
-						throw new ParseException("Unrecognized operator in stack", i);	
+						throw new ParseException("Unrecognized operator in stack", i);
 					}
-				}catch (EmptyStackException e) {
+				} catch (EmptyStackException e) {
 					// Here, we don't have enough automatons to use with the operator
 					throw new ParseException("Could not get enough automatons to work with operator " + operator, i);
 				}
-			}else {
-				//we have a normal character, create the letter automaton and add it to the stack
+			} else {
+				// we have a normal character, create the letter automaton and add it to the
+				// stack
 				Automaton letterAutomaton = ThompsonAutomatonFactory.createLetterAutomaton(currentChar);
 				automatonStack.push(letterAutomaton);
 			}
 		}
-		
+
 		// Normally, we have only one automaton remaining in the stack
-		if(automatonStack.size() != 1) {
+		if (automatonStack.size() != 1) {
 			throw new ParseException("Too many automatons left in the stack, operation probably not finished.", i);
-		}else {
+		} else {
 			return automatonStack.pop();
 		}
 	}
-	
+
 	private boolean isOperator(char character) {
-		return character == '+' || character == '.' || character == '*';
+		return character == UNION_CHARACTER || character == CONCATENATION_CHARACTER || character == REPETITION_CHARACTER;
 	}
 }
