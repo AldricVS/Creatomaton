@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 
 import data.Automaton;
+import process.builders.AutomatonBuilder;
 import process.builders.DotBuilder;
 import process.builders.ThompsonAutomatonBuilder;
 
@@ -17,15 +18,18 @@ public class TestDot {
 	public static void main(String[] args) {
 		try {
 			Automaton automaton = new ThompsonAutomatonBuilder("(((a*)(b*))+(e(a+b)))").build();
+			AutomatonBuilder automatonBuilder = new AutomatonBuilder(automaton);
+			automaton = automatonBuilder.buildMiroirAutomaton();
 			DotBuilder builder = new DotBuilder(automaton);
+			builder.setInReverseMode(true);
 			// String res = builder.buildDotString();
-			File f = new File("C:\\Program Files (x86)\\Graphviz\\tmp\\test.dot");
+			File f = new File("C:\\Program Files (x86)\\Graphviz\\tmp\\test_1.dot");
 
 			builder.buildDotFile(f);
 
 			// exec directly graphviz
 			Process proc = Runtime.getRuntime().exec(
-					"dot -Tjpg -o " + PATH + "result.jpg\" " + PATH + "test.dot\"");
+					"dot -Tjpg -o " + PATH + "result_1.jpg\" " + PATH + "test_1.dot\"");
 
 			// wait until process is done
 			try {

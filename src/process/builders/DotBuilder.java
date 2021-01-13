@@ -10,6 +10,7 @@ import java.util.List;
 import data.Automaton;
 import data.State;
 import data.Transition;
+import process.util.ReversedList;
 
 /**
  * DotBuilder is a builder class that allows to create a ".dot" file, that can
@@ -25,6 +26,11 @@ public class DotBuilder {
 	private Automaton automaton;
 	
 	private boolean isInLandscapeMode = true;
+	/**
+	 * This value has to be changed to true in certain scenarios where Graphviz will struggle to draw nodes properly, 
+	 * like the moment where wehave a miror automaton.
+	 */
+	private boolean isInReverseMode = false;
 	
 	/**
 	 * Check if the resulting graph will be displayed from left to right or top to bottom.
@@ -42,6 +48,26 @@ public class DotBuilder {
 	public void setInLandscapeMode(boolean isInLandscapeMode) {
 		this.isInLandscapeMode = isInLandscapeMode;
 	}
+	
+	/**
+	 * Check if the resulting graph will be displayed in the state id order or not.
+	 * This value has to be changed to true in certain scenarios where Graphviz will struggle to draw nodes properly, 
+	 * like the moment where wehave a miror automaton.
+	 * By default, this value is set to {@code false}.
+	 */
+	public boolean isInReverseMode() {
+		return isInReverseMode;
+	}
+
+	/**
+	 * Set if the resulting graph will be displayed from left to right or top to bottom.
+	 * This value has to be changed to true in certain scenarios where Graphviz will struggle to draw nodes properly, 
+	 * like the moment where wehave a miror automaton.
+	 * By default, this value is set to {@code false}.
+	 */
+	public void setInReverseMode(boolean isInReverseMode) {
+		this.isInReverseMode = isInReverseMode;
+	}
 
 	public DotBuilder(Automaton automaton) {
 		this.automaton = automaton;
@@ -55,34 +81,34 @@ public class DotBuilder {
 		this.automaton = automaton;
 	}
 
-	/**
-	 * Create the String that could be contained in a ".dot" file. This method will
-	 * not run properly if it tries to parse a very, very big automaton (a String
-	 * have a space limit of 2 147 483 647 characters)
-	 * 
-	 * @return a String containing all informations
-	 */
-	public String buildDotString() {
-		// Line separator is  different on windows and unix
-		StringBuilder stringBuilder = new StringBuilder(); 
-		if(isInLandscapeMode) {
-			stringBuilder.append("digraph G {rankdir=\"LR\";" + System.lineSeparator());
-		}else {
-			stringBuilder.append("digraph G {" + System.lineSeparator());
-		}
-		
-		//We want to go through all states
-		List<State> states = automaton.getAllStates();
-		for (State state : states) {
-			String stateData = extractDataFromState(state);
-			stringBuilder.append(stateData + System.lineSeparator());
-		}
-
-		// don't forget the ending curly brace '}'
-		stringBuilder.append('}');
-
-		return stringBuilder.toString();
-	}
+//	/**
+//	 * Create the String that could be contained in a ".dot" file. This method will
+//	 * not run properly if it tries to parse a very, very big automaton (a String
+//	 * have a space limit of 2 147 483 647 characters)
+//	 * 
+//	 * @return a String containing all informations
+//	 */
+//	public String buildDotString() {
+//		// Line separator is  different on windows and unix
+//		StringBuilder stringBuilder = new StringBuilder(); 
+//		if(isInLandscapeMode) {
+//			stringBuilder.append("digraph G {rankdir=\"LR\";" + System.lineSeparator());
+//		}else {
+//			stringBuilder.append("digraph G {" + System.lineSeparator());
+//		}
+//		
+//		//We want to go through all states
+//		List<State> states = automaton.getAllStates();
+//		for (State state : states) {
+//			String stateData = extractDataFromState(state);
+//			stringBuilder.append(stateData + System.lineSeparator());
+//		}
+//
+//		// don't forget the ending curly brace '}'
+//		stringBuilder.append('}');
+//
+//		return stringBuilder.toString();
+//	}
 	
 	/**
 	 * Exports the automaton to a specified file (that will be created if not exists) in the ".dot" format
@@ -107,9 +133,18 @@ public class DotBuilder {
 			}
 			bw.newLine();
 			
-			//We want to go through all states
+			//We want to go through all states, 
 			List<State> states = automaton.getAllStates();
-			for (State state : states) {
+			Iterable<State> listToIterate;
+			
+			//The order of passage depends on what user choose 
+			if(isInReverseMode) {
+				listToIterate = ReversedList.revertList(states);
+			}else {
+				listToIterate = states;
+			}
+			
+			for (State state : listToIterate) {
 				String stateData = extractDataFromState(state);
 				bw.write(stateData);
 				bw.newLine();
