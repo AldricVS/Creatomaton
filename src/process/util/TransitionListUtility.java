@@ -44,6 +44,23 @@ public class TransitionListUtility {
 	}
 	
 	/**
+	 * Search the Departure of a Transition from a List of States, return null if not found
+	 * @param listStates a list of State to search in
+	 * @param transition the transition to look for the starting point
+	 * @return the starting state of a transition, null otherwise
+	 */
+	public static State getDepartureFromTransition(List<State> listStates, Transition transition) {
+		State state;
+		for (Iterator<State> it = listStates.iterator(); it.hasNext(); ) {
+			state = it.next();
+			if (state.getTransitions().contains(transition)) {
+				return state;
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Method returning the list of Destination with the correct char from a list of Transition, including epsilon
 	 * @param listTransitions List of all transition
 	 * @param letter the lettre used in the transition

@@ -16,6 +16,8 @@ import process.util.StateListUtility;
 import process.util.TransitionListUtility;
 
 /**
+ * <p>AutomatonBuilder is used to create new modified Automaton from an Automaton.</p>
+ * <p>Those will not be distinct copy, see {@link process.factory.AutomatonFactory#createCopy(Automaton) createCopy()} for that</p>
  * @author Maxence
  */
 public class AutomatonBuilder {
@@ -25,42 +27,68 @@ public class AutomatonBuilder {
 		this.automaton = automaton;
 	}
 	
+	/**
+	 * Build a new {@link data.Automaton Automaton} as a Mirror, meaning all Final States are Initial, and Initial are Final.
+	 * Transition also work in reverse, going from their starting point to their destination.
+	 * @return the new Mirror Automaton
+	 */
 	public Automaton buildMiroirAutomaton() {
 		//some variable
-		List<State> listState;
+		List<State> listState, listInitialState, listFinalState;
 		State state;
+		Transition transition;
 		
 		//our new automaton
 		Automaton miroirAutomaton;
+		
 		miroirAutomaton = AutomatonFactory.createCopy(automaton);
+		//miroirAutomaton = new Automaton(automaton.getAlphabet());
 		
-		//get the list of Initial State and delete it
-		listState = new ArrayList<State>(miroirAutomaton.getInitialStates());
-		miroirAutomaton.clearInitialStates();
+		//get the list of Initial States from Final States
+		listInitialState = new ArrayList<State>(miroirAutomaton.getFinalStates());
 		
-		//for any final state, add it as an initial state
-		for (Iterator<State> it = miroirAutomaton.getFinalStates().iterator(); it.hasNext(); ) {
-			state = it.next();
-			miroirAutomaton.addState(state, true, false);
+		//get the list of Final States from Initial States
+		listFinalState = new ArrayList<State>(miroirAutomaton.getInitialStates());
+		
+		//get the list of all States
+		listState = new ArrayList<State>(miroirAutomaton.getAllStates());
+		
+		//clear old list of states
+		miroirAutomaton.clearAllStates();
+		
+		//add all states
+		for (Iterator<State> its = listState.iterator(); its.hasNext(); ) {
+			state = its.next();
+			miroirAutomaton.addState(state, false, false);
+			
 		}
 		
-		//clear old final state, as all new are in listState
-		miroirAutomaton.clearFinalStates();
-		for (Iterator<State> it = listState.iterator(); it.hasNext(); ) {
+		for (Iterator<Transition> it = TransitionListUtility.getAllTransitionFromListStates(listState).iterator(); it.hasNext(); ) {
+			transition = it.next();
+			state = TransitionListUtility.getDepartureFromTransition(listState, transition);
+			state.removeTransition(transition);
+			miroirAutomaton.addTransition(transition.getDestination(), state, transition.getLetter());
+		}
+		
+		//set all initial states
+		for (Iterator<State> it = listInitialState.iterator(); it.hasNext(); ) {
 			state = it.next();
-			//if a state is initial and final, re-add it as that
-			if (miroirAutomaton.getInitialStates().contains(state)) {
-				miroirAutomaton.removeState(state);
-				miroirAutomaton.addState(state, true, true);
-			}
-			else {
-				miroirAutomaton.addState(state, false, true);
-			}
+			miroirAutomaton.setStateInitial(state, true);
+		}
+		
+		//set all final states
+		for (Iterator<State> it = listFinalState.iterator(); it.hasNext(); ) {
+			state = it.next();
+			miroirAutomaton.setStateFinal(state, true);
 		}
 		
 		return miroirAutomaton;
 	}
 	
+	/**
+	 * Build a new Automaton with all his States as determined.
+	 * @return the new Determined Automaton
+	 */
 	public Automaton buildDeterminedAutomaton() {
 		//listState have all state of the first determined state
 		List<State> listState = new ArrayList<State>();

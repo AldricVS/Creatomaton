@@ -61,7 +61,10 @@ public class State {
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
+	/**
+	 * @return All Transitions starting from this State
+	 */
 	public List<Transition> getTransitions() {
 		return transitions;
 	}
