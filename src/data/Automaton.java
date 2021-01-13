@@ -31,18 +31,31 @@ public class Automaton {
 		return alphabet;
 	}
 	
+	/**
+	 * @param stateId the Id of a state
+	 * @return the state associated with the Id
+	 */
 	public State getStateById(int stateId) {
 		return states.get(stateId);
 	}
 	
+	/**
+	 * @return All States of the Automaton
+	 */
 	public List<State> getAllStates() {
 		return new ArrayList<State>(states.values());
 	}
-
+	
+	/**
+	 * @return All States that are listed as Initial
+	 */
 	public List<State> getInitialStates() {
 		return initialStates;
 	}
-
+	
+	/**
+	 * @return All States that are listed as Final
+	 */
 	public List<State> getFinalStates() {
 		return finalStates;
 	}
@@ -85,7 +98,7 @@ public class Automaton {
 	
 	public void setStateInitial(State state, boolean isInitial) {
 		if(isInitial) {
-			//check if state not already final
+			//check if state not already initial
 			if(!initialStates.contains(state)) {
 				initialStates.add(state);
 			}
