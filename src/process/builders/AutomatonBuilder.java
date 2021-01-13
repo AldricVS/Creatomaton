@@ -16,8 +16,8 @@ import process.util.StateListUtility;
 import process.util.TransitionListUtility;
 
 /**
- * <p>AutomatonBuilder is used to create new modified Automaton from an Automaton.</p>
- * <p>Those will not be distinct copy, see {@link process.factory.AutomatonFactory#createCopy(Automaton) createCopy()} for that</p>
+ * <p>AutomatonBuilder is used to create new modified Automaton from a given Automaton.</p>
+ * 
  * @author Maxence
  */
 public class AutomatonBuilder {
@@ -30,6 +30,7 @@ public class AutomatonBuilder {
 	/**
 	 * Build a new {@link data.Automaton Automaton} as a Mirror, meaning all Final States are Initial, and Initial are Final.
 	 * Transition also work in reverse, going from their starting point to their destination.
+	 * <p>Use the {@link process.factory.AutomatonFactory#createCopy(Automaton) createCopy()} to create the Automaton</p>
 	 * @return the new Mirror Automaton
 	 */
 	public Automaton buildMiroirAutomaton() {
