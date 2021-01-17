@@ -46,13 +46,13 @@ public class DeterministAutomatonTest {
 		
 		automaton.addTransition(state0, state1, 'a');
 		automaton.addTransition(state1, state1, 'a');
-		automaton.addTransition(state1, state2, AutomatonConstants.EPSILON_CHAR);
-		automaton.addTransition(state2, state1, AutomatonConstants.EPSILON_CHAR);
+		automaton.addEpsilonTransition(state1, state2);
+		automaton.addEpsilonTransition(state2, state1);
 		automaton.addTransition(state2, state5, 'b');
 		
 		automaton.addTransition(state0, state3, 'b');
-		automaton.addTransition(state3, state4, AutomatonConstants.EPSILON_CHAR);
-		automaton.addTransition(state4, state4, AutomatonConstants.EPSILON_CHAR);
+		automaton.addEpsilonTransition(state3, state4);
+		automaton.addEpsilonTransition(state4, state4);
 		automaton.addTransition(state4, state5, 'c');
 	}
 	
