@@ -74,7 +74,6 @@ public class TransitionListUtility {
 	 * @return an ArrayList of all valid Destination
 	 */
 	public static List<State> getValidDestinationFromTransition(List<Transition> listTransitions, char letter) {
-		List<State> listState = new ArrayList<State>();
 		Transition nextTransition;
 		for (Iterator<Transition> it = listTransitions.iterator(); it.hasNext();) {
 			nextTransition = it.next();
@@ -84,20 +83,27 @@ public class TransitionListUtility {
 				if (!listState.contains(nextState)) {
 					listState.add(nextState);
 				}
-			} else if (nextTransition.isEpsilon()) {
-				// as a epsilon transition, we add all new valid states from this destination
-				State state = nextTransition.getDestination();
-				List<State> newTransitionFromEpsilon = getValidDestinationFromTransition(state.getTransitions(), letter);
-				for (Iterator<State> its = newTransitionFromEpsilon.iterator(); its.hasNext(); ) {
-					state = its.next();
-					if (!listState.contains(state)) {
-						listState.add(state);
+			}
+			else if (nextTransition.isEpsilon()) {
+				//as a epsilon transition, we add all new valid states from this destination
+				State nextState = nextTransition.getDestination();
+				if (!listState.contains(nextState)) {
+					listState.add(nextState);
+					List<State> newTransitionFromEpsilon = getValidDestinationFromTransition(nextState.getTransitions(), letter);
+					for (Iterator<State> its = newTransitionFromEpsilon.iterator(); its.hasNext(); ) {
+						nextState = its.next();
+						if (!listState.contains(nextState)) {
+							listState.add(nextState);
+						}
 					}
 				}
+				//the state from epsilon has already been visited
 			}
 			// else, we dont have the right letter for the transition
 		}
-		return listState;
+		List<State> validListState = new ArrayList<State>(listState);
+		listState.clear();
+		return validListState;
 	}
 
 }

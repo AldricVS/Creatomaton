@@ -2,12 +2,16 @@ package test.unit.determinist;
 
 import static org.junit.Assert.*;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import data.Automaton;
 import data.AutomatonConstants;
 import data.State;
+import process.AutomatonManager;
+import process.builders.AutomatonBuilder;
 
 /**
  * @author Maxence
@@ -28,9 +32,9 @@ public class DeterministAutomatonTest {
 		state0 = new State(0);
 		state1 = new State(1);
 		state2 = new State(2);
-		state0 = new State(3);
-		state1 = new State(4);
-		state2 = new State(5);
+		state3 = new State(3);
+		state4 = new State(4);
+		state5 = new State(5);
 		
 		//automate -> a(a*)b + bc
 		automaton.addState(state0, true, false);
@@ -52,19 +56,25 @@ public class DeterministAutomatonTest {
 		automaton.addTransition(state4, state5, 'c');
 	}
 	
-	@Test
+	@Before
+	public void isValid() {
+		AutomatonManager manager = new AutomatonManager(automaton);
+		String word;
+		word = "aab";
+		assertTrue(manager.validateAutomaton(word));
+		 word = "bc";
+		assertTrue(manager.validateAutomaton(word));
+	}
+	
+	@After
 	public void isDeterministic() {
-		fail("Not yet implemented");
+		AutomatonManager manager = new AutomatonManager(automaton);
+		assertTrue(manager.isDeterminist());
 	}
 	
 	@Test
 	public void derterminedAutomaton() {
-		fail("Not yet implemented");
+		AutomatonBuilder builder = new AutomatonBuilder(automaton);
+		automaton = builder.buildDeterminedAutomaton();
 	}
-	
-	@Test
-	public void isDeterministicAfter() {
-		fail("Not yet implemented");
-	}
-
 }
