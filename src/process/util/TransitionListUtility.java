@@ -86,16 +86,17 @@ public class TransitionListUtility {
 			}
 			else if (nextTransition.isEpsilon()) {
 				//as a epsilon transition, we add all new valid states from this destination
-				State nextState = nextTransition.getDestination();
-				if (!listState.contains(nextState)) {
-					listState.add(nextState);
-					List<State> newTransitionFromEpsilon = getValidDestinationFromTransition(nextState.getTransitions(), letter);
+				State epsilonState = nextTransition.getDestination();
+				if (!listState.contains(epsilonState)) {
+					listState.add(epsilonState);
+					List<State> newTransitionFromEpsilon = getValidDestinationFromTransition(epsilonState.getTransitions(), letter);
 					for (Iterator<State> its = newTransitionFromEpsilon.iterator(); its.hasNext(); ) {
-						nextState = its.next();
+						State nextState = its.next();
 						if (!listState.contains(nextState)) {
 							listState.add(nextState);
 						}
 					}
+					listState.remove(epsilonState);
 				}
 				//the state from epsilon has already been visited
 			}
