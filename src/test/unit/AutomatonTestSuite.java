@@ -15,6 +15,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	CreateAutomatonTest.class,
+	CreateEpsilonAutomatonTest.class,
 	})
 public class AutomatonTestSuite {
 	
