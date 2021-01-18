@@ -115,7 +115,7 @@ public class PrefsFileHelper {
 		bw.write(GRAPHVIZ_PATH_KEY + "=" + DEFAULT_GRAPHVIZ_PATH);
 		bw.newLine();
 		bw.write(DEFALUT_OUTPUT_FOLDER_KEY + "=" + DEFAULT_OUTPUT_FOLDER);
-		bw.close();
+		bw.newLine();
 		bw.write(DEFALUT_INPUT_FOLDER_KEY + "=" + DEFAULT_INPUT_FOLDER);
 		bw.close();
 
@@ -179,6 +179,7 @@ public class PrefsFileHelper {
 
 	/**
 	 * Save all preferences in the ini file.
+	 * 
 	 * @throws IOException
 	 */
 	public void saveInFile() throws IOException {
