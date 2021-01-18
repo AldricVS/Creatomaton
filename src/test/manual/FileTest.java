@@ -1,9 +1,6 @@
 package test.manual;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import process.file.PrefsFileHelper;
 import process.helpers.ProcessHelper;
