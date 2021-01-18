@@ -71,9 +71,30 @@ public class GraphvizHelper {
 		
 		fileOutputPath = searchFileOutputName(fileOutputPath);
 		
+		//in order to allow spaces in file path
+		fileOutputPath = encapsulateFilePath(fileOutputPath);
+		fileInputPath = encapsulateFilePath(fileInputPath);
+		graphvizPath = encapsulateFilePath(graphvizPath);
+		
 		String command = graphvizPath + " -Tjpg -o " + fileOutputPath + " " + fileInputPath;
+		
+		System.out.println(command);
 		ProcessHelper processHelper = new ProcessHelper(command);
 		return processHelper.runCommandAndWait();
+	}
+
+	/**
+	 * Returns a new String inside '"' characters, if it is not already the case
+	 */
+	private String encapsulateFilePath(String filePath) {
+		String res = filePath;
+		if(!filePath.startsWith("\"")) {
+			res = "\"" + res;
+		}
+		if(!filePath.endsWith("\"")) {
+			res = res + "\"";
+		}
+		return res;
 	}
 
 	private String searchFileOutputName(String filename) {

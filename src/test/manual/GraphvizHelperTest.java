@@ -15,7 +15,7 @@ public class GraphvizHelperTest {
 //			
 			String fileInputPath = "\"C:/Program Files (x86)/Graphviz/tmp/test.dot\"";
 			GraphvizHelper graphvizHelper = new GraphvizHelper(fileInputPath);
-			graphvizHelper.setFileOutputName("billy.jpg");
+			graphvizHelper.setFileOutputName("joel billy.jpg");
 			graphvizHelper.runCommand();
 		} catch (IOException e) {
 			e.printStackTrace();
