@@ -62,11 +62,18 @@ public class GraphvizHelper {
 	 */
 	public int runCommand() {
 		// check if fileOutputPath is the entire path
+		String separator;
+		if(fileOutputPath.endsWith("/") || fileOutputPath.endsWith("\\")) {
+			separator = "";
+		}else {
+			separator = "/";
+		}
+		
 		if (fileOutputName != null) {
-			fileOutputPath += "/" + fileOutputName;
+			fileOutputPath += separator + fileOutputName;
 		} else {
 			if (!fileOutputPath.endsWith(".jpg") && !fileOutputPath.endsWith(".jpg\"")) {
-				fileOutputPath += "/" + DEFAULT_OUTPUT_FILENAME;
+				fileOutputPath += separator + DEFAULT_OUTPUT_FILENAME;
 			}
 		}
 
@@ -79,7 +86,6 @@ public class GraphvizHelper {
 
 		String command = graphvizPath + " -Tjpg -o " + fileOutputPath + " " + fileInputPath;
 
-		System.out.println(command);
 		ProcessHelper processHelper = new ProcessHelper(command);
 		return processHelper.runCommandAndWait();
 	}
