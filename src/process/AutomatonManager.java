@@ -83,23 +83,39 @@ public class AutomatonManager {
 	 * <ul>
 	 * <li>Has a unique Initial State</li>
 	 * <li>No Epsilon transition</li>
+	 * <li>Only one transition for each letter</li>
 	 * </ul>
 	 */
 	public boolean isDeterminist() {
+		// check if there is multiple initial states
 		if (automaton.getNumberOfInitialStates() != 1) {
 			return false;
 		}
-		
+
+		// check if there is any epsilon transition or any multiple
+		// transition of thesame letter
 		List<State> listStates = automaton.getAllStates();
-		List<Transition> listTransitions = TransitionListUtility.getAllTransitionFromListStates(listStates);
-		Transition transition;
-		for (Iterator<Transition> it = listTransitions.iterator(); it.hasNext(); ) {
-			transition = it.next();
-			if (transition.isEpsilon()) {
-				return false;
+		for (Iterator<State> its = listStates.iterator(); its.hasNext();) {
+			State state = its.next();
+			// the list of transition
+			List<Transition> listTransitions = state.getTransitions();
+			// a list of letter of the transition
+			List<Character> listLetter = new ArrayList<Character>();
+			
+			for (Iterator<Transition> it = listTransitions.iterator(); it.hasNext();) {
+				Transition transition = it.next();
+				if (transition.isEpsilon()) {
+					return false;
+				} else if (listLetter.contains(transition.getLetter())) {
+					return false;
+				}
+				listLetter.add(transition.getLetter());
 			}
+			
+			listTransitions.clear();
+			listLetter.clear();
 		}
-		
+
 		return true;
 	}
 
