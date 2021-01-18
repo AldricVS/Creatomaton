@@ -16,6 +16,9 @@ public class FileTest {
 		
 		try {
 			PrefsFileHelper prefsFileHelper = new PrefsFileHelper();
+			
+			prefsFileHelper.changePreference(PrefsFileHelper.DEFALUT_OUTPUT_FOLDER_KEY, "C:/Creatomaton/output(2)");
+			prefsFileHelper.saveInFile();
 
 			// exec directly graphviz
 			String graphvizPath = prefsFileHelper.getPreference(PrefsFileHelper.GRAPHVIZ_PATH_KEY);

@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * Used to search the ini file in the appdata folder on the user computer and
@@ -18,6 +20,8 @@ public class PrefsFileHelper {
 	public static final String GRAPHVIZ_PATH_KEY = "dot_path";
 	public static final String DEFALUT_OUTPUT_FOLDER_KEY = "def_out";
 	public static final String DEFALUT_INPUT_FOLDER_KEY = "def_in";
+
+	private static final int NUMBER_OF_PREFERENCES = 3;
 
 	private static final String APP_FOLDER_NAME = "Creatomaton";
 	private static final String DATA_FOLDER_NAME = "data";
@@ -66,6 +70,11 @@ public class PrefsFileHelper {
 
 		String line;
 		while ((line = bufferedReader.readLine()) != null) {
+			// check if line is not a comment
+			if (line.startsWith("#")) {
+				continue;
+			}
+
 			int beginIndex = line.indexOf('=') + 1;
 			// if we didn't found any '=' sign, stop immediately for this line
 			if (beginIndex == -1) {
@@ -86,11 +95,20 @@ public class PrefsFileHelper {
 
 		bufferedReader.close();
 
+		// we must have all preferences filled, else, we reset all data
+		if (preferences.size() != NUMBER_OF_PREFERENCES) {
+			preferences.clear();
+			resetIniContent();
+		}
 	}
 
 	private void createNewIniFile() throws IOException {
 		iniFile.createNewFile();
-		FileWriter out = new FileWriter(iniFile);
+		resetIniContent();
+	}
+
+	private void resetIniContent() throws IOException {
+		FileWriter out = new FileWriter(iniFile, false);
 		BufferedWriter bw = new BufferedWriter(out);
 
 		// only 3 things to add for now
@@ -125,22 +143,53 @@ public class PrefsFileHelper {
 	public String getPreference(String key) {
 		return preferences.get(key);
 	}
-	
+
 	/**
 	 * If needed, create the default input and output folder
 	 */
 	public void createFolders() {
 		String outputPath = getPreference(PrefsFileHelper.DEFALUT_OUTPUT_FOLDER_KEY);
 		String inputPath = getPreference(PrefsFileHelper.DEFALUT_INPUT_FOLDER_KEY);
-		
+
 		File output = new File(outputPath);
-		if(!output.exists()) {
+		if (!output.exists()) {
 			output.mkdirs();
 		}
-		
+
 		File input = new File(inputPath);
-		if(!input.exists()) {
+		if (!input.exists()) {
 			input.mkdirs();
 		}
+	}
+
+	/**
+	 * Change a preference associated with a specific key. All changed need to be
+	 * saved with {@link #saveInFile()} in order to be permanent
+	 * 
+	 * @param preferenceKey the key of the preference to change
+	 * @param newValue      the new value of the key
+	 * @throws NoSuchElementException if the key provided doesn't exists
+	 */
+	public void changePreference(String preferenceKey, String newValue) throws NoSuchElementException {
+		if (!preferences.containsKey(preferenceKey)) {
+			throw new NoSuchElementException("Preference " + preferenceKey + " does not exists");
+		}
+		preferences.replace(preferenceKey, newValue);
+	}
+
+	/**
+	 * Save all preferences in the ini file.
+	 * @throws IOException
+	 */
+	public void saveInFile() throws IOException {
+		FileWriter out = new FileWriter(iniFile, false);
+		BufferedWriter bw = new BufferedWriter(out);
+
+		for (Map.Entry<String, String> map : preferences.entrySet()) {
+			bw.write(map.getKey() + "=" + map.getValue());
+			bw.newLine();
+		}
+
+		bw.close();
 	}
 }
