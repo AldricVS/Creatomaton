@@ -26,33 +26,34 @@ public class RandomAutomatonBuilder {
 	private int numberOfTransitions;
 	private int numberOfInitialStates = 1;
 	private int numberOfFinalStates = 1;
+	private int numberOfEpsilonTransitions = 0;
 
 	/**
 	 * Letters that can be used to generate the automaton
 	 */
 	private String alphabet;
 
-	/**
-	 * If set to true, epsilon transtions are allowed
-	 */
-	private boolean containsEpsilonTransitions;
+//	/**
+//	 * If set to true, epsilon transtions are allowed
+//	 */
+//	private boolean containsEpsilonTransitions;
 
 	private Automaton automaton;
 	private Random random = new Random();
 
-	public RandomAutomatonBuilder(int numberOfStates, int numberOfTransitions, String alphabet, boolean containsEpsilonTransitions) {
+	public RandomAutomatonBuilder(int numberOfStates, int numberOfTransitions, String alphabet, int numberOfEpsilonTransitions) {
 		this.numberOfStates = numberOfStates;
 		this.numberOfTransitions = numberOfTransitions;
 		this.alphabet = alphabet;
-		this.containsEpsilonTransitions = containsEpsilonTransitions;
+		this.numberOfEpsilonTransitions = numberOfEpsilonTransitions;
 	}
 
-	public RandomAutomatonBuilder(int numberOfStates, int numberOfTransitions, boolean containsEpsilonTransitions) {
-		this(numberOfStates, numberOfTransitions, DEFAULT_ALPHABET, containsEpsilonTransitions);
+	public RandomAutomatonBuilder(int numberOfStates, int numberOfTransitions, int numberOfEpsilonTransitions) {
+		this(numberOfStates, numberOfTransitions, DEFAULT_ALPHABET, numberOfEpsilonTransitions);
 	}
 
 	public RandomAutomatonBuilder(int numberOfStates, int numberOfTransitions) {
-		this(numberOfStates, numberOfTransitions, DEFAULT_ALPHABET, false);
+		this(numberOfStates, numberOfTransitions, DEFAULT_ALPHABET, 0);
 	}
 
 	/**
@@ -65,7 +66,7 @@ public class RandomAutomatonBuilder {
 	 * </ul>
 	 */
 	public RandomAutomatonBuilder() {
-		this(DEFAULT_NUMBER_OF_STATES, DEFAULT_NUMBER_OF_TRANSITIONS, DEFAULT_ALPHABET, false);
+		this(DEFAULT_NUMBER_OF_STATES, DEFAULT_NUMBER_OF_TRANSITIONS, DEFAULT_ALPHABET, 0);
 	}
 
 	public int getNumberOfStates() {
@@ -84,13 +85,17 @@ public class RandomAutomatonBuilder {
 		return numberOfFinalStates;
 	}
 
+	public int getNumberOfEpsilonTransitions() {
+		return numberOfEpsilonTransitions;
+	}
+
 	public String getAlphabet() {
 		return alphabet;
 	}
 
-	public boolean containsEpsilonTransitions() {
-		return containsEpsilonTransitions;
-	}
+//	public boolean containsEpsilonTransitions() {
+//		return containsEpsilonTransitions;
+//	}
 
 	public void setNumberOfStates(int numberOfStates) {
 		this.numberOfStates = numberOfStates;
@@ -108,13 +113,17 @@ public class RandomAutomatonBuilder {
 		this.numberOfFinalStates = numberOfFinalStates;
 	}
 
+	public void setNumberOfEpsilonTransitions(int numberOfEpsilonTransitions) {
+		this.numberOfEpsilonTransitions = numberOfEpsilonTransitions;
+	}
+
 	public void setAlphabet(String alphabet) {
 		this.alphabet = alphabet;
 	}
 
-	public void setContainsEpsilonTransitions(boolean containsEpsilonTransitions) {
-		this.containsEpsilonTransitions = containsEpsilonTransitions;
-	}
+//	public void setContainsEpsilonTransitions(boolean containsEpsilonTransitions) {
+//		this.containsEpsilonTransitions = containsEpsilonTransitions;
+//	}
 
 	/**
 	 * Build the random automaton with the help of all parameters set by user.
@@ -132,26 +141,53 @@ public class RandomAutomatonBuilder {
 
 	private void createAllTransitions() {
 		int alphabetSize = alphabet.length();
-		// if we must have epsilon transitions, add 1 to the number of characters so
-		// that we add epsilon to the pool of possible characters
-		if (containsEpsilonTransitions) {
-			alphabetSize++;
-		}
-		
+
 		int numberOfTransitionsAdded = 0;
-		while(numberOfTransitionsAdded < numberOfTransitionsAdded) {
+		int currentEpsilonTransitionsCount = 0;
+
+		// add at least one transition
+		List<State> statesWithoutTransition = new ArrayList<State>();
+		statesWithoutTransition.addAll(automaton.getAllStates());
+
+		while (!statesWithoutTransition.isEmpty()) {
+			int size = statesWithoutTransition.size();
+			int statePos = random.nextInt(size);
+			State startingState = statesWithoutTransition.get(statePos);
+			statesWithoutTransition.remove(statePos);
+
+			size = statesWithoutTransition.size();
+			statePos = random.nextInt(size);
+			State destinationState = statesWithoutTransition.get(statePos);
+			statesWithoutTransition.remove(statePos);
+
+			if (currentEpsilonTransitionsCount < numberOfEpsilonTransitions) {
+				automaton.addEpsilonTransition(startingState, destinationState);
+				currentEpsilonTransitionsCount++;
+			} else {
+				int characterIndex = random.nextInt(alphabetSize + 1);
+				automaton.addTransition(startingState, destinationState, alphabet.charAt(characterIndex));
+			}
+
+			numberOfTransitionsAdded++;
+
+		}
+
+		while (numberOfTransitionsAdded < numberOfTransitionsAdded) {
 			State startingState = searchRandomState();
 			State destinationState = searchRandomState();
-			
+
 			int characterIndex = random.nextInt(alphabetSize + 1);
 			boolean isTransitionAdded;
-			if(characterIndex == alphabetSize) {
+			if (currentEpsilonTransitionsCount < numberOfEpsilonTransitions) {
 				isTransitionAdded = automaton.addEpsilonTransition(startingState, destinationState);
-			}else {
+				if (isTransitionAdded) {
+					currentEpsilonTransitionsCount++;
+				}
+			} else {
 				isTransitionAdded = automaton.addTransition(startingState, destinationState, alphabet.charAt(characterIndex));
 			}
-			
-			if(isTransitionAdded) {
+
+			if (isTransitionAdded) {
 				numberOfTransitionsAdded++;
 			}
 		}
@@ -162,7 +198,7 @@ public class RandomAutomatonBuilder {
 		int stateId = random.nextInt(numberOfTotalStates);
 		return automaton.getStateById(stateId);
 	}
-	
+
 	private void createAllStates() {
 		boolean areAllStatesInitial = numberOfInitialStates >= numberOfStates;
 		boolean areAllStatesFinal = numberOfFinalStates >= numberOfStates;
