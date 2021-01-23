@@ -8,6 +8,7 @@ import java.util.Random;
 
 import data.Automaton;
 import data.State;
+import data.Transition;
 
 /**
  * Builder that allows to create a random automaton with parameters to specify.
@@ -123,13 +124,45 @@ public class RandomAutomatonBuilder {
 	public Automaton build() {
 		automaton = new Automaton(alphabet);
 
-		// create all states
 		createAllStates();
-		
+		createAllTransitions();
 
 		return automaton;
 	}
 
+	private void createAllTransitions() {
+		int alphabetSize = alphabet.length();
+		// if we must have epsilon transitions, add 1 to the number of characters so
+		// that we add epsilon to the pool of possible characters
+		if (containsEpsilonTransitions) {
+			alphabetSize++;
+		}
+		
+		int numberOfTransitionsAdded = 0;
+		while(numberOfTransitionsAdded < numberOfTransitionsAdded) {
+			State startingState = searchRandomState();
+			State destinationState = searchRandomState();
+			
+			int characterIndex = random.nextInt(alphabetSize + 1);
+			boolean isTransitionAdded;
+			if(characterIndex == alphabetSize) {
+				isTransitionAdded = automaton.addEpsilonTransition(startingState, destinationState);
+			}else {
+				isTransitionAdded = automaton.addTransition(startingState, destinationState, alphabet.charAt(characterIndex));
+			}
+			
+			if(isTransitionAdded) {
+				numberOfTransitionsAdded++;
+			}
+		}
+	}
+
+	private State searchRandomState() {
+		int numberOfTotalStates = automaton.getNumberOfTotalStates();
+		int stateId = random.nextInt(numberOfTotalStates);
+		return automaton.getStateById(stateId);
+	}
+	
 	private void createAllStates() {
 		boolean areAllStatesInitial = numberOfInitialStates >= numberOfStates;
 		boolean areAllStatesFinal = numberOfFinalStates >= numberOfStates;
@@ -137,26 +170,25 @@ public class RandomAutomatonBuilder {
 			State state = new State(index);
 			automaton.addState(state, areAllStatesInitial, areAllStatesFinal);
 		}
-		//define inital and final states randomly
-		if(!areAllStatesInitial) {
+		// define inital and final states randomly
+		if (!areAllStatesInitial) {
 			defineInitialStates();
 		}
-		if(!areAllStatesFinal) {
+		if (!areAllStatesFinal) {
 			defineFinalStates();
 		}
 	}
-
 
 	private void defineFinalStates() {
 		List<State> statesNonTreated = new ArrayList<State>();
 		statesNonTreated.addAll(automaton.getAllStates());
 		for (int index = 0; index < numberOfFinalStates; index++) {
-			//get one state that was not taken before 
+			// get one state that was not taken before
 			int statesCount = statesNonTreated.size();
 			int stateChoosenIndex = random.nextInt(statesCount);
 			State stateChoosen = statesNonTreated.get(stateChoosenIndex);
 			automaton.setStateFinal(stateChoosen, true);
-			//remove it from the temp list
+			// remove it from the temp list
 			statesNonTreated.remove(stateChoosenIndex);
 		}
 	}
@@ -165,12 +197,12 @@ public class RandomAutomatonBuilder {
 		List<State> statesNonTreated = new ArrayList<State>();
 		statesNonTreated.addAll(automaton.getAllStates());
 		for (int index = 0; index < numberOfInitialStates; index++) {
-			//get one state that was not taken before 
+			// get one state that was not taken before
 			int statesCount = statesNonTreated.size();
 			int stateChoosenIndex = random.nextInt(statesCount);
 			State stateChoosen = statesNonTreated.get(stateChoosenIndex);
 			automaton.setStateInitial(stateChoosen, true);
-			//remove it from the temp list
+			// remove it from the temp list
 			statesNonTreated.remove(stateChoosenIndex);
 		}
 	}

@@ -202,7 +202,7 @@ public class Automaton {
 	}
 	
 	/**
-	 * Add a transition between two states
+	 * Add a transition between two states. The transition will not be added if aleready exists
 	 * @param startingState the state where the transition starts 
 	 * @param destinationState the state where the transition starts 
 	 * @param letter the letter that "holds" the transition
