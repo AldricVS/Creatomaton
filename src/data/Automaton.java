@@ -287,5 +287,36 @@ public class Automaton {
 	public boolean isStateInitial(State state) {
 		return initialStates.contains(state);
 	}
+	
+	/**
+	 * Check if a state can be accessed by another state by any transition
+	 * @param state the id of the state to check
+	 * @return if the state is accessible or not
+	 */
+	public boolean isStateAccessible(int stateId) {
+		return isStateAccessible(states.get(stateId));
+	}
+	
+	/**
+	 * Check if a state can be accessed by another state by any transition
+	 * @param state the state to check
+	 * @return if the state is accessible or not
+	 */
+	public boolean isStateAccessible(State state) {
+		//check if all other states have any transition leading to this state
+		for (State currentState : states.values()) {
+			if(currentState == state) {
+				continue;
+			}
+			List<Transition> transitions = currentState.getTransitions();
+			for (Transition transition : transitions) {
+				State destination = transition.getDestination();
+				if(destination == state) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 }

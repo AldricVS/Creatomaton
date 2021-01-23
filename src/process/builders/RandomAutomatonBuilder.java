@@ -150,6 +150,7 @@ public class RandomAutomatonBuilder {
 		int totalNumberStates = automatonStateList.size();
 		statesWithoutTransition.addAll(automatonStateList);
 
+		// add one transition from each of the states
 		while (!statesWithoutTransition.isEmpty()) {
 			int size = statesWithoutTransition.size();
 			State startingState;
@@ -175,6 +176,7 @@ public class RandomAutomatonBuilder {
 			numberOfTransitionsAdded++;
 		}
 
+		// add remaining transitions if needed
 		while (numberOfTransitionsAdded < numberOfTransitions) {
 			State startingState = searchRandomState();
 			State destinationState = searchRandomState();
@@ -194,12 +196,38 @@ public class RandomAutomatonBuilder {
 				numberOfTransitionsAdded++;
 			}
 		}
+
+		// final step, search for all states that don't have incomming transitions
+		// (can't be accessed), and create new transitions for them
+		for (State state : automatonStateList) {
+			if (!automaton.isStateAccessible(state)) {
+				char character = randomCharFromAlphabet();
+				// search a state this is not
+				State startingState = searchDifferentState(state);
+				automaton.addTransition(startingState, state, character);
+			}
+		}
+	}
+
+	private char randomCharFromAlphabet() {
+		int characterIndex = random.nextInt(alphabet.length());
+		return alphabet.charAt(characterIndex);
 	}
 
 	private State searchRandomState() {
 		int numberOfTotalStates = automaton.getNumberOfTotalStates();
 		int stateId = random.nextInt(numberOfTotalStates);
 		return automaton.getStateById(stateId);
+	}
+
+	private State searchDifferentState(State state) {
+		State differentState;
+		int numberOfTotalStates = automaton.getNumberOfTotalStates();
+		do {
+			int stateId = random.nextInt(numberOfTotalStates);
+			differentState = automaton.getStateById(stateId);
+		} while (differentState == state);
+		return differentState;
 	}
 
 	private void createAllStates() {

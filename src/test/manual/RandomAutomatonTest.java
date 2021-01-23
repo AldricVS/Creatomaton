@@ -12,7 +12,7 @@ import process.helpers.GraphvizHelper;
 public class RandomAutomatonTest {
 	public static void main(String[] args) throws IOException {
 		for(int index = 0; index < 5; index++){
-			RandomAutomatonBuilder randomAutomatonBuilder = new RandomAutomatonBuilder(3 + index, 6 + index, index);
+			RandomAutomatonBuilder randomAutomatonBuilder = new RandomAutomatonBuilder(3 + index, index, index);
 			randomAutomatonBuilder.setAlphabet("abcdefg");
 			Automaton automaton = randomAutomatonBuilder.build();
 			
