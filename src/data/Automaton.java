@@ -46,6 +46,28 @@ public class Automaton {
 		return new ArrayList<State>(states.values());
 	}
 	
+	public List<State> getNonFinalStateList(){
+		int initialCapacity = getNumberOfTotalStates() - getNumberOfFinalStates();
+		List<State> nonFinalStateList = new ArrayList<State>(initialCapacity);
+		for (State state : states.values()) {
+			if(!finalStates.contains(state)) {
+				nonFinalStateList.add(state);
+			}
+		}
+		return nonFinalStateList;
+	}
+	
+	public List<State> getNonInitialStateList(){
+		int initialCapacity = getNumberOfTotalStates() - getNumberOfInitialStates();
+		List<State> nonInitialStateList = new ArrayList<State>(initialCapacity);
+		for (State state : states.values()) {
+			if(!initialStates.contains(state)) {
+				nonInitialStateList.add(state);
+			}
+		}
+		return nonInitialStateList;
+	}
+	
 	/**
 	 * @return All States that are listed as Initial
 	 */
