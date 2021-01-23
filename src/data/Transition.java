@@ -83,4 +83,9 @@ public class Transition{
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "Transition [letter=" + letter + ", to=" + destination.getId() + "]";
+	}
 }

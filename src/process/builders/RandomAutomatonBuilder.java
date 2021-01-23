@@ -145,38 +145,41 @@ public class RandomAutomatonBuilder {
 		int numberOfTransitionsAdded = 0;
 		int currentEpsilonTransitionsCount = 0;
 
-		// add at least one transition
 		List<State> statesWithoutTransition = new ArrayList<State>();
-		statesWithoutTransition.addAll(automaton.getAllStates());
+		List<State> automatonStateList = automaton.getAllStates();
+		int totalNumberStates = automatonStateList.size();
+		statesWithoutTransition.addAll(automatonStateList);
 
 		while (!statesWithoutTransition.isEmpty()) {
 			int size = statesWithoutTransition.size();
+			State startingState;
+			State destinationState;
+
 			int statePos = random.nextInt(size);
-			State startingState = statesWithoutTransition.get(statePos);
+			startingState = statesWithoutTransition.get(statePos);
 			statesWithoutTransition.remove(statePos);
 
 			size = statesWithoutTransition.size();
-			statePos = random.nextInt(size);
-			State destinationState = statesWithoutTransition.get(statePos);
-			statesWithoutTransition.remove(statePos);
+
+			int randomStateIndex = random.nextInt(totalNumberStates);
+			destinationState = automatonStateList.get(randomStateIndex);
 
 			if (currentEpsilonTransitionsCount < numberOfEpsilonTransitions) {
 				automaton.addEpsilonTransition(startingState, destinationState);
 				currentEpsilonTransitionsCount++;
 			} else {
-				int characterIndex = random.nextInt(alphabetSize + 1);
+				int characterIndex = random.nextInt(alphabetSize);
 				automaton.addTransition(startingState, destinationState, alphabet.charAt(characterIndex));
 			}
 
 			numberOfTransitionsAdded++;
-
 		}
 
-		while (numberOfTransitionsAdded < numberOfTransitionsAdded) {
+		while (numberOfTransitionsAdded < numberOfTransitions) {
 			State startingState = searchRandomState();
 			State destinationState = searchRandomState();
 
-			int characterIndex = random.nextInt(alphabetSize + 1);
+			int characterIndex = random.nextInt(alphabetSize);
 			boolean isTransitionAdded;
 			if (currentEpsilonTransitionsCount < numberOfEpsilonTransitions) {
 				isTransitionAdded = automaton.addEpsilonTransition(startingState, destinationState);
