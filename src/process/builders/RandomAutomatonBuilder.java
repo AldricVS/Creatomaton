@@ -17,7 +17,7 @@ import data.Transition;
  * 
  * @author Aldric Vitali Silvestre <aldric.vitali@outlook.fr>
  */
-public class RandomSillyAutomatonBuilder {
+public class RandomAutomatonBuilder {
 	public static final int DEFAULT_NUMBER_OF_STATES = 3;
 	public static final int DEFAULT_NUMBER_OF_TRANSITIONS = 5;
 	public static final String DEFAULT_ALPHABET = "abc";
@@ -41,18 +41,18 @@ public class RandomSillyAutomatonBuilder {
 	private Automaton automaton;
 	private Random random = new Random();
 
-	public RandomSillyAutomatonBuilder(int numberOfStates, int numberOfTransitions, String alphabet, int numberOfEpsilonTransitions) {
+	public RandomAutomatonBuilder(int numberOfStates, int numberOfTransitions, String alphabet, int numberOfEpsilonTransitions) {
 		this.numberOfStates = numberOfStates;
 		this.numberOfTransitions = numberOfTransitions;
 		this.alphabet = alphabet;
 		this.numberOfEpsilonTransitions = numberOfEpsilonTransitions;
 	}
 
-	public RandomSillyAutomatonBuilder(int numberOfStates, int numberOfTransitions, int numberOfEpsilonTransitions) {
+	public RandomAutomatonBuilder(int numberOfStates, int numberOfTransitions, int numberOfEpsilonTransitions) {
 		this(numberOfStates, numberOfTransitions, DEFAULT_ALPHABET, numberOfEpsilonTransitions);
 	}
 
-	public RandomSillyAutomatonBuilder(int numberOfStates, int numberOfTransitions) {
+	public RandomAutomatonBuilder(int numberOfStates, int numberOfTransitions) {
 		this(numberOfStates, numberOfTransitions, DEFAULT_ALPHABET, 0);
 	}
 
@@ -65,7 +65,7 @@ public class RandomSillyAutomatonBuilder {
 	 * <li>no epsilon-transiton</li>
 	 * </ul>
 	 */
-	public RandomSillyAutomatonBuilder() {
+	public RandomAutomatonBuilder() {
 		this(DEFAULT_NUMBER_OF_STATES, DEFAULT_NUMBER_OF_TRANSITIONS, DEFAULT_ALPHABET, 0);
 	}
 
@@ -126,11 +126,12 @@ public class RandomSillyAutomatonBuilder {
 //	}
 
 	/**
+	 * This build method is unlikely to produce always good results, so be careful using it. 
 	 * Build the random automaton with the help of all parameters set by user.
 	 * 
 	 * @return a new Random automaton
 	 */
-	public Automaton build() {
+	public Automaton buildSilly() {
 		automaton = new Automaton(alphabet);
 
 		createAllStates();
