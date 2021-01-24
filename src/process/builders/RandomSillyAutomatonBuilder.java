@@ -17,7 +17,7 @@ import data.Transition;
  * 
  * @author Aldric Vitali Silvestre <aldric.vitali@outlook.fr>
  */
-public class RandomAutomatonBuilder {
+public class RandomSillyAutomatonBuilder {
 	public static final int DEFAULT_NUMBER_OF_STATES = 3;
 	public static final int DEFAULT_NUMBER_OF_TRANSITIONS = 5;
 	public static final String DEFAULT_ALPHABET = "abc";
@@ -41,18 +41,18 @@ public class RandomAutomatonBuilder {
 	private Automaton automaton;
 	private Random random = new Random();
 
-	public RandomAutomatonBuilder(int numberOfStates, int numberOfTransitions, String alphabet, int numberOfEpsilonTransitions) {
+	public RandomSillyAutomatonBuilder(int numberOfStates, int numberOfTransitions, String alphabet, int numberOfEpsilonTransitions) {
 		this.numberOfStates = numberOfStates;
 		this.numberOfTransitions = numberOfTransitions;
 		this.alphabet = alphabet;
 		this.numberOfEpsilonTransitions = numberOfEpsilonTransitions;
 	}
 
-	public RandomAutomatonBuilder(int numberOfStates, int numberOfTransitions, int numberOfEpsilonTransitions) {
+	public RandomSillyAutomatonBuilder(int numberOfStates, int numberOfTransitions, int numberOfEpsilonTransitions) {
 		this(numberOfStates, numberOfTransitions, DEFAULT_ALPHABET, numberOfEpsilonTransitions);
 	}
 
-	public RandomAutomatonBuilder(int numberOfStates, int numberOfTransitions) {
+	public RandomSillyAutomatonBuilder(int numberOfStates, int numberOfTransitions) {
 		this(numberOfStates, numberOfTransitions, DEFAULT_ALPHABET, 0);
 	}
 
@@ -65,7 +65,7 @@ public class RandomAutomatonBuilder {
 	 * <li>no epsilon-transiton</li>
 	 * </ul>
 	 */
-	public RandomAutomatonBuilder() {
+	public RandomSillyAutomatonBuilder() {
 		this(DEFAULT_NUMBER_OF_STATES, DEFAULT_NUMBER_OF_TRANSITIONS, DEFAULT_ALPHABET, 0);
 	}
 

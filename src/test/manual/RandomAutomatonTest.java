@@ -6,7 +6,7 @@ import java.io.IOException;
 import data.Automaton;
 import process.builders.AutomatonBuilder;
 import process.builders.DotBuilder;
-import process.builders.RandomAutomatonBuilder;
+import process.builders.RandomSillyAutomatonBuilder;
 import process.file.PrefsFileHelper;
 import process.helpers.GraphvizHelper;
 
@@ -21,7 +21,7 @@ public class RandomAutomatonTest {
 		String defaultInputFolderPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFALUT_INPUT_FOLDER_KEY);
 		
 		for(int index = 0; index < 5; index++){
-			RandomAutomatonBuilder randomAutomatonBuilder = new RandomAutomatonBuilder(3 + index, 2 + index, index);
+			RandomSillyAutomatonBuilder randomAutomatonBuilder = new RandomSillyAutomatonBuilder(3 + index, 2 + index, index);
 			randomAutomatonBuilder.setAlphabet("abc");
 			Automaton automaton = randomAutomatonBuilder.build();
 			
