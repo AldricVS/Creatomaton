@@ -162,8 +162,7 @@ public class RandomAutomatonBuilder {
 
 			size = statesWithoutTransition.size();
 
-			int randomStateIndex = random.nextInt(totalNumberStates);
-			destinationState = automatonStateList.get(randomStateIndex);
+			destinationState = searchDifferentState(startingState);
 
 			if (currentEpsilonTransitionsCount < numberOfEpsilonTransitions) {
 				automaton.addEpsilonTransition(startingState, destinationState);
@@ -197,16 +196,18 @@ public class RandomAutomatonBuilder {
 			}
 		}
 
-		// final step, search for all states that don't have incomming transitions
+		// search for all states that don't have incomming transitions
 		// (can't be accessed), and create new transitions for them
 		for (State state : automatonStateList) {
 			if (!automaton.isStateAccessible(state)) {
 				char character = randomCharFromAlphabet();
 				// search a state this is not
 				State startingState = searchDifferentState(state);
+				System.out.println("from : " + startingState.getId() + " to : " + state.getId());
 				automaton.addTransition(startingState, state, character);
 			}
 		}
+		
 	}
 
 	private char randomCharFromAlphabet() {
