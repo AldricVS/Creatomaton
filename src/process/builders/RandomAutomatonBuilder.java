@@ -3,6 +3,7 @@ package process.builders;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -126,8 +127,107 @@ public class RandomAutomatonBuilder {
 //	}
 
 	/**
-	 * This build method is unlikely to produce always good results, so be careful using it. 
 	 * Build the random automaton with the help of all parameters set by user.
+	 * WARNING ! This method cannot produce automatons with multiple initial states.
+	 * 
+	 * @return
+	 */
+	public Automaton build() {
+		//if not enough states, go with the silly implementation
+		if(numberOfStates <= 3) {
+			return buildSilly();
+		}
+		
+		automaton = new Automaton(alphabet);
+		numberOfTransitions = numberOfStates + random.nextInt(numberOfStates / 2);
+
+		for (int index = 0; index < numberOfStates; index++) {
+			State state = new State(index);
+			automaton.addState(state);
+		}
+
+		// state 0 IS initial
+		State initialState = automaton.getStateById(0);
+		automaton.setStateInitial(initialState, true);
+
+		List<State> statesEncountered = new LinkedList<State>();
+		int currentNumberOfTransitions = 0;
+
+		while (currentNumberOfTransitions < numberOfTransitions) {
+			statesEncountered.clear();
+			// create a path going from initial state that will end only if state was
+			// already encountered in this path
+			statesEncountered.add(initialState);
+			int transitionsPathCount = random.nextInt(automaton.getNumberOfTotalStates());
+			int currentTransitonCount = 0;
+			State destinationState = null;
+			State lastEncounteredState = initialState;
+			boolean isPathEnded = false;
+			while (!isPathEnded && currentTransitonCount < transitionsPathCount) {
+				char character = randomCharFromAlphabet();
+				destinationState = searchDifferentState(initialState);
+				if (statesEncountered.contains(destinationState)) {
+					isPathEnded = true;
+				}
+				statesEncountered.add(destinationState);
+				if (automaton.addTransition(lastEncounteredState, destinationState, character)) {
+					currentNumberOfTransitions++;
+				}
+				lastEncounteredState = destinationState;
+			}
+			//last state encountered must go to another state
+
+			State endingPathState;
+			endingPathState = searchStateNotEncountered(lastEncounteredState);
+			automaton.addTransition(lastEncounteredState, endingPathState, randomCharFromAlphabet());
+		}
+		
+		for (State state : automaton.getAllStates()) {
+			if (state.getTransitions().isEmpty()) {
+				char character = randomCharFromAlphabet();
+				// search a state this is not
+				State destinationState = searchDifferentState(state);
+				automaton.addTransition(state, destinationState, character);
+			}
+		}
+
+		return automaton;
+	}
+
+	private State searchStateNotEncountered(State state) {
+		State resultingState;
+		boolean isValid;
+		do {
+			isValid = true;
+			int numberOfTotalStates = automaton.getNumberOfTotalStates();
+			int stateId = random.nextInt(numberOfTotalStates);
+			resultingState = automaton.getStateById(stateId);
+			
+			//search in both state's transitions if already encountered another
+			for(Transition transition : resultingState.getTransitions()) {
+				if(transition.getDestination() == state) {
+					isValid = false;
+					break;
+				}
+			}
+			if(isValid) {
+				for(Transition transition : state.getTransitions()) {
+					if(transition.getDestination() == resultingState) {
+						isValid = false;
+						break;
+					}
+				}
+			}
+			
+		}while(!isValid);
+		
+		return resultingState;
+	}
+
+	/**
+	 * This build method is unlikely to produce always good results, so be careful
+	 * using it. Build the random automaton with the help of all parameters set by
+	 * user.
 	 * 
 	 * @return a new Random automaton
 	 */
@@ -206,7 +306,7 @@ public class RandomAutomatonBuilder {
 				automaton.addTransition(startingState, state, character);
 			}
 		}
-		
+
 	}
 
 	private char randomCharFromAlphabet() {

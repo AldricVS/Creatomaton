@@ -21,14 +21,9 @@ public class RandomAutomatonTest {
 		String defaultInputFolderPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFALUT_INPUT_FOLDER_KEY);
 		
 		for(int index = 0; index < 5; index++){
-			RandomAutomatonBuilder randomAutomatonBuilder = new RandomAutomatonBuilder(3 + index, 2 + index, index);
+			RandomAutomatonBuilder randomAutomatonBuilder = new RandomAutomatonBuilder(3 + index, 4 + index, index);
 			randomAutomatonBuilder.setAlphabet("abc");
-			Automaton automaton = randomAutomatonBuilder.buildSilly();
-			
-			if(index == 2) {
-				AutomatonBuilder automatonBuilder = new AutomatonBuilder(automaton);
-				automaton = automatonBuilder.buildDeterminedAutomaton();
-			}
+			Automaton automaton = randomAutomatonBuilder.build();
 			
 			DotBuilder dotBuilder = new DotBuilder(automaton);
 			
