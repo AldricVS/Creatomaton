@@ -195,25 +195,31 @@ public class DotBuilder {
 		for (Transition transition : transitions) {
 			State destinationState = transition.getDestination();
 
-//			List<Transition> transitionsWithSamePath = TransitionListUtility.getTransitionsWithSamePath(state, destinationState);
-//			String label = "";
-//			for(Transition t : transitionsWithSamePath) {
-//				//if transition not already used before
-//				if(!usedTransitions.contains(t)) {
-//					label += t.isEpsilon() ? '\u03B5' : t.getLetter();
-//					label += ",";
-//					//remove it so that we cannot print same transition twice in file
-//					usedTransitions.add(t);
-//				}
-//			}
-//			//remove the last comma from the label 
-//			if(label.endsWith(",")) {
-//				label = label.substring(0, label.length() - 1);
-//			}
-			char transitionCharacter = transition.isEpsilon() ? '\u03B5' : transition.getLetter();
-			String transitionString = stateValidName + "->" + destinationState.getValidName() + "[label=\"" + transitionCharacter + "\"];";
-			// Exemple of resulted string : 1 -> 2 [label="a"]:
-			sb.append(transitionString);
+			List<Transition> transitionsWithSamePath = TransitionListUtility.getTransitionsWithSamePath(state, destinationState);
+			String label = "";
+			for(Transition t : transitionsWithSamePath) {
+				//if transition not already used before
+				if(!usedTransitions.contains(t)) {
+					label += t.isEpsilon() ? '\u03B5' : t.getLetter();
+					label += ",";
+					//remove it so that we cannot print same transition twice in file
+					usedTransitions.add(t);
+				}
+			}
+			//remove the last comma from the label 
+			if(label.endsWith(",")) {
+				label = label.substring(0, label.length() - 1);
+			}
+			if(!label.isEmpty()) {
+				String transitionString = stateValidName + "->" + destinationState.getValidName() + "[label=\"" + label + "\"];";
+				// Exemple of resulted string : 1 -> 2 [label="a"]:
+				sb.append(transitionString);
+			}
+			
+//			char transitionCharacter = transition.isEpsilon() ? '\u03B5' : transition.getLetter();
+//			String transitionString = stateValidName + "->" + destinationState.getValidName() + "[label=\"" + label + "\"];";
+//			// Exemple of resulted string : 1 -> 2 [label="a"]:
+//			sb.append(transitionString);
 		}
 
 		return sb.toString();

@@ -42,19 +42,18 @@ public class RandomAutomatonBuilder {
 	private Automaton automaton;
 	private Random random = new Random();
 
-	public RandomAutomatonBuilder(int numberOfStates, int numberOfTransitions, String alphabet, int numberOfEpsilonTransitions) {
+	public RandomAutomatonBuilder(int numberOfStates, String alphabet, int numberOfEpsilonTransitions) {
 		this.numberOfStates = numberOfStates;
-		this.numberOfTransitions = numberOfTransitions;
 		this.alphabet = alphabet;
 		this.numberOfEpsilonTransitions = numberOfEpsilonTransitions;
 	}
 
-	public RandomAutomatonBuilder(int numberOfStates, int numberOfTransitions, int numberOfEpsilonTransitions) {
-		this(numberOfStates, numberOfTransitions, DEFAULT_ALPHABET, numberOfEpsilonTransitions);
+	public RandomAutomatonBuilder(int numberOfStates, int numberOfEpsilonTransitions) {
+		this(numberOfStates, DEFAULT_ALPHABET, numberOfEpsilonTransitions);
 	}
 
-	public RandomAutomatonBuilder(int numberOfStates, int numberOfTransitions) {
-		this(numberOfStates, numberOfTransitions, DEFAULT_ALPHABET, 0);
+	public RandomAutomatonBuilder(int numberOfStates) {
+		this(numberOfStates, DEFAULT_ALPHABET, 0);
 	}
 
 	/**
@@ -67,7 +66,7 @@ public class RandomAutomatonBuilder {
 	 * </ul>
 	 */
 	public RandomAutomatonBuilder() {
-		this(DEFAULT_NUMBER_OF_STATES, DEFAULT_NUMBER_OF_TRANSITIONS, DEFAULT_ALPHABET, 0);
+		this(DEFAULT_NUMBER_OF_STATES, DEFAULT_ALPHABET, 0);
 	}
 
 	public int getNumberOfStates() {
@@ -111,7 +110,11 @@ public class RandomAutomatonBuilder {
 	}
 
 	public void setNumberOfFinalStates(int numberOfFinalStates) {
-		this.numberOfFinalStates = numberOfFinalStates;
+		if (numberOfFinalStates > 1) {
+			this.numberOfFinalStates = numberOfFinalStates;
+		} else {
+			System.err.println("The number of final states must be equals or more than 1.");
+		}
 	}
 
 	public void setNumberOfEpsilonTransitions(int numberOfEpsilonTransitions) {
@@ -130,21 +133,23 @@ public class RandomAutomatonBuilder {
 	 * Build the random automaton with the help of all parameters set by user.
 	 * WARNING ! This method cannot produce automatons with multiple initial states.
 	 * 
-	 * @return
+	 * @return the randomly builded automaton
 	 */
 	public Automaton build() {
-		//if not enough states, go with the silly implementation
-		if(numberOfStates <= 3) {
+		// if not enough states, go with the silly implementation
+		if (numberOfStates <= 3) {
 			return buildSilly();
 		}
-		
+
 		automaton = new Automaton(alphabet);
 		numberOfTransitions = numberOfStates + random.nextInt(numberOfStates / 2);
 
-		for (int index = 0; index < numberOfStates; index++) {
-			State state = new State(index);
-			automaton.addState(state);
+		// check some other oddities, such as the number of epsilon transitions
+		if (numberOfTransitions < numberOfEpsilonTransitions) {
+			numberOfEpsilonTransitions += numberOfEpsilonTransitions + numberOfTransitions / 2;
 		}
+
+		createAllStatesNeeded();
 
 		// state 0 IS initial
 		State initialState = automaton.getStateById(0);
@@ -163,7 +168,11 @@ public class RandomAutomatonBuilder {
 			State destinationState = null;
 			State lastEncounteredState = initialState;
 			boolean isPathEnded = false;
-			while (!isPathEnded && currentTransitonCount < transitionsPathCount) {
+
+			// in order to avoid to be in endless loop, add a number of tries if needed
+			int numberOfTries = 0;
+			int maxNumberOfTries = numberOfTransitions * 3;
+			while (!isPathEnded && currentTransitonCount < transitionsPathCount && numberOfTries < maxNumberOfTries) {
 				char character = randomCharFromAlphabet();
 				destinationState = searchDifferentState(initialState);
 				if (statesEncountered.contains(destinationState)) {
@@ -174,60 +183,135 @@ public class RandomAutomatonBuilder {
 					currentNumberOfTransitions++;
 				}
 				lastEncounteredState = destinationState;
+				numberOfTries++;
 			}
-			//last state encountered must go to another state
+			// last state encountered must go to another state
 
+//			System.out.println("path nearly ended");
 			State endingPathState;
 			endingPathState = searchStateNotEncountered(lastEncounteredState);
 			automaton.addTransition(lastEncounteredState, endingPathState, randomCharFromAlphabet());
+			numberOfTries++;
 		}
-		
-		for (State state : automaton.getAllStates()) {
-			if (state.getTransitions().isEmpty()) {
-				char character = randomCharFromAlphabet();
-				// search a state this is not
-				State destinationState = searchDifferentState(state);
-				automaton.addTransition(state, destinationState, character);
-			}
-		}
+		System.out.println("path ended");
+		// each state much have at least one transition to another one
+		repairUselessStates();
+
+		// finally, add the desired number of final states
+		initFinalStates();
+
+		// and replace some transitions by epsilon ones
+		modifySomeTransitions();
+
+		repairInaccessibleStates();
 
 		return automaton;
 	}
 
+	/**
+	 * 
+	 */
+	private void createAllStatesNeeded() {
+		for (int index = 0; index < numberOfStates; index++) {
+			State state = new State(index);
+			automaton.addState(state);
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void repairUselessStates() {
+		for (State state : automaton.getAllStates()) {
+			if (state.getTransitions().isEmpty()) {
+				char character = randomCharFromAlphabet();
+				State destinationState = searchDifferentState(state);
+				automaton.addTransition(state, destinationState, character);
+			}
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void initFinalStates() {
+		int finalStateCount = 0;
+		while (finalStateCount < numberOfFinalStates) {
+			State state = searchRandomState();
+			if (!automaton.isStateFinal(state)) {
+				automaton.setStateFinal(state, true);
+				finalStateCount++;
+			}
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void modifySomeTransitions() {
+		int epsilonTransitionCount = 0;
+		while (epsilonTransitionCount < numberOfEpsilonTransitions) {
+			State state = searchRandomState();
+			List<Transition> stateTransitionList = state.getTransitions();
+			int randomTransitionIndex = random.nextInt(stateTransitionList.size());
+			Transition transition = stateTransitionList.get(randomTransitionIndex);
+			if (!transition.isEpsilon()) {
+				transition.changeToEpsilon();
+				epsilonTransitionCount++;
+			}
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void repairInaccessibleStates() {
+		for (State state : automaton.getAllStates()) {
+			if (!automaton.isStateAccessible(state)) {
+				char character = randomCharFromAlphabet();
+				// search a state this is not
+				State startingState = searchDifferentState(state);
+				automaton.addTransition(startingState, state, character);
+			}
+		}
+	}
+
 	private State searchStateNotEncountered(State state) {
 		State resultingState;
+		List<State> checkedStateList = new ArrayList<State>(numberOfStates);
 		boolean isValid;
 		do {
 			isValid = true;
 			int numberOfTotalStates = automaton.getNumberOfTotalStates();
 			int stateId = random.nextInt(numberOfTotalStates);
 			resultingState = automaton.getStateById(stateId);
-			
-			//search in both state's transitions if already encountered another
-			for(Transition transition : resultingState.getTransitions()) {
-				if(transition.getDestination() == state) {
+			checkedStateList.add(resultingState);
+
+			// search in both state's transitions if already encountered another
+			for (Transition transition : resultingState.getTransitions()) {
+				if (transition.getDestination() == state) {
 					isValid = false;
 					break;
 				}
 			}
-			if(isValid) {
-				for(Transition transition : state.getTransitions()) {
-					if(transition.getDestination() == resultingState) {
+			if (isValid) {
+				for (Transition transition : state.getTransitions()) {
+					if (transition.getDestination() == resultingState) {
 						isValid = false;
 						break;
 					}
 				}
 			}
-			
-		}while(!isValid);
-		
+
+		} while (!isValid && checkedStateList.size() < numberOfStates);
+
 		return resultingState;
 	}
 
 	/**
 	 * This build method is unlikely to produce always good results, so be careful
-	 * using it. Build the random automaton with the help of all parameters set by
-	 * user.
+	 * using it with big automatons. Build the random automaton with the help of all
+	 * parameters set by user.
 	 * 
 	 * @return a new Random automaton
 	 */
