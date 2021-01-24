@@ -26,6 +26,22 @@ public class TransitionListUtility {
 		}
 		return listTransition;
 	}
+	
+	/**
+	 * Search and retrieve all transitions that have te same starting state and destination state.
+	 * @param startingState
+	 * @param destinationState
+	 * @return a list containing all matching transitions (this one can be empty if no transition found)
+	 */
+	public static List<Transition> getTransitionsWithSamePath(State startingState, State destinationState){
+		List<Transition> matchingTranstionList = new ArrayList<Transition>();
+		for(Transition transition : startingState.getTransitions()) {
+			if(transition.getDestination() == destinationState) {
+				matchingTranstionList.add(transition);
+			}
+		}
+		return matchingTranstionList;
+	}
 
 	/**
 	 * Method returning the list of Destination from a list of Transition

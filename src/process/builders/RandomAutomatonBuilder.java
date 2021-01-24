@@ -147,7 +147,6 @@ public class RandomAutomatonBuilder {
 
 		List<State> statesWithoutTransition = new ArrayList<State>();
 		List<State> automatonStateList = automaton.getAllStates();
-		int totalNumberStates = automatonStateList.size();
 		statesWithoutTransition.addAll(automatonStateList);
 
 		// add one transition from each of the states
@@ -203,7 +202,6 @@ public class RandomAutomatonBuilder {
 				char character = randomCharFromAlphabet();
 				// search a state this is not
 				State startingState = searchDifferentState(state);
-				System.out.println("from : " + startingState.getId() + " to : " + state.getId());
 				automaton.addTransition(startingState, state, character);
 			}
 		}

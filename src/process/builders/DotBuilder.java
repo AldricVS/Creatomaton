@@ -5,12 +5,15 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import data.Automaton;
 import data.State;
 import data.Transition;
 import process.util.ReversedList;
+import process.util.TransitionListUtility;
 
 /**
  * DotBuilder is a builder class that allows to create a ".dot" file, that can
@@ -24,46 +27,48 @@ public class DotBuilder {
 	 * The automaton to parse.
 	 */
 	private Automaton automaton;
-	
+
 	private boolean isInLandscapeMode = true;
 	/**
-	 * This value has to be changed to true in certain scenarios where Graphviz will struggle to draw nodes properly, 
-	 * like the moment where wehave a miror automaton.
+	 * This value has to be changed to true in certain scenarios where Graphviz will
+	 * struggle to draw nodes properly, like the moment where wehave a miror
+	 * automaton.
 	 */
 	private boolean isInReverseMode = false;
-	
+
 	/**
-	 * Check if the resulting graph will be displayed from left to right or top to bottom.
-	 * By default, this value is set to {@code true}.
+	 * Check if the resulting graph will be displayed from left to right or top to
+	 * bottom. By default, this value is set to {@code true}.
 	 */
 	public boolean isInLandscapeMode() {
 		return isInLandscapeMode;
 	}
 
 	/**
-	 * Set if the resulting graph will be displayed from left to right or top to bottom.
-	 * By default, this value is set to {@code true}.
+	 * Set if the resulting graph will be displayed from left to right or top to
+	 * bottom. By default, this value is set to {@code true}.
+	 * 
 	 * @param isInLandscapeMode
 	 */
 	public void setInLandscapeMode(boolean isInLandscapeMode) {
 		this.isInLandscapeMode = isInLandscapeMode;
 	}
-	
+
 	/**
 	 * Check if the resulting graph will be displayed in the state id order or not.
-	 * This value has to be changed to true in certain scenarios where Graphviz will struggle to draw nodes properly, 
-	 * like the moment where wehave a miror automaton.
-	 * By default, this value is set to {@code false}.
+	 * This value has to be changed to true in certain scenarios where Graphviz will
+	 * struggle to draw nodes properly, like the moment where wehave a miror
+	 * automaton. By default, this value is set to {@code false}.
 	 */
 	public boolean isInReverseMode() {
 		return isInReverseMode;
 	}
 
 	/**
-	 * Set if the resulting graph will be displayed from left to right or top to bottom.
-	 * This value has to be changed to true in certain scenarios where Graphviz will struggle to draw nodes properly, 
-	 * like the moment where wehave a miror automaton.
-	 * By default, this value is set to {@code false}.
+	 * Set if the resulting graph will be displayed from left to right or top to
+	 * bottom. This value has to be changed to true in certain scenarios where
+	 * Graphviz will struggle to draw nodes properly, like the moment where wehave a
+	 * miror automaton. By default, this value is set to {@code false}.
 	 */
 	public void setInReverseMode(boolean isInReverseMode) {
 		this.isInReverseMode = isInReverseMode;
@@ -109,50 +114,52 @@ public class DotBuilder {
 //
 //		return stringBuilder.toString();
 //	}
-	
+
 	/**
-	 * Exports the automaton to a specified file (that will be created if not exists) in the ".dot" format
+	 * Exports the automaton to a specified file (that will be created if not
+	 * exists) in the ".dot" format
+	 * 
 	 * @param file the file where to export automaton
 	 */
 	public void buildDotFile(File file) {
-		//in case file didn't exist
+		// in case file didn't exist
 		FileWriter fileWriter;
 		try {
 			file.createNewFile();
 			fileWriter = new FileWriter(file);
-		}catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			return;
 		}
-		
-		try (BufferedWriter bw = new BufferedWriter(fileWriter)){
-			if(isInLandscapeMode) {
+
+		try (BufferedWriter bw = new BufferedWriter(fileWriter)) {
+			if (isInLandscapeMode) {
 				bw.write("digraph G {rankdir=\"LR\";");
-			}else {
+			} else {
 				bw.write("digraph G {");
 			}
 			bw.newLine();
-			
-			//We want to go through all states, 
+
+			// We want to go through all states,
 			List<State> states = automaton.getAllStates();
 			Iterable<State> listToIterate;
-			
-			//The order of passage depends on what user choose 
-			if(isInReverseMode) {
+
+			// The order of passage depends on what user choose
+			if (isInReverseMode) {
 				listToIterate = ReversedList.revertList(states);
-			}else {
+			} else {
 				listToIterate = states;
 			}
-			
+
 			for (State state : listToIterate) {
 				String stateData = extractDataFromState(state);
 				bw.write(stateData);
 				bw.newLine();
 			}
-			
+
 			// don't forget the ending curly brace '}'
 			bw.write('}');
-		}catch(IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -180,11 +187,31 @@ public class DotBuilder {
 
 		// Now, we will want to iterate in each transition in order to display it
 		List<Transition> transitions = state.getTransitions();
+		// get a temp list of unused transitions to merge them if needed
+		List<Transition> usedTransitions = new ArrayList<Transition>(transitions.size());
+		// usedTransitions.addAll(transitions);
+
+		// iterator needed to remove items during iteration
 		for (Transition transition : transitions) {
 			State destinationState = transition.getDestination();
-			char transitionChar = transition.isEpsilon() ? '\u03B5' : transition.getLetter();
-			String transitionString = stateValidName + "->" + destinationState.getValidName() + "[label=\""
-					+ transitionChar + "\"];";
+
+//			List<Transition> transitionsWithSamePath = TransitionListUtility.getTransitionsWithSamePath(state, destinationState);
+//			String label = "";
+//			for(Transition t : transitionsWithSamePath) {
+//				//if transition not already used before
+//				if(!usedTransitions.contains(t)) {
+//					label += t.isEpsilon() ? '\u03B5' : t.getLetter();
+//					label += ",";
+//					//remove it so that we cannot print same transition twice in file
+//					usedTransitions.add(t);
+//				}
+//			}
+//			//remove the last comma from the label 
+//			if(label.endsWith(",")) {
+//				label = label.substring(0, label.length() - 1);
+//			}
+			char transitionCharacter = transition.isEpsilon() ? '\u03B5' : transition.getLetter();
+			String transitionString = stateValidName + "->" + destinationState.getValidName() + "[label=\"" + transitionCharacter + "\"];";
 			// Exemple of resulted string : 1 -> 2 [label="a"]:
 			sb.append(transitionString);
 		}

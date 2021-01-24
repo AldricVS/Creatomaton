@@ -66,7 +66,7 @@ public class State {
 	 * @return true if state's name is not null or empty, false else.
 	 */
 	public boolean hasName() {
-		return name != null && name.trim().isEmpty(); 
+		return name != null && !name.trim().isEmpty(); 
 	}
 
 	public String getName() {
