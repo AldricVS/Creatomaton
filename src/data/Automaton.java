@@ -46,6 +46,28 @@ public class Automaton {
 		return new ArrayList<State>(states.values());
 	}
 	
+	public List<State> getNonFinalStateList(){
+		int initialCapacity = getNumberOfTotalStates() - getNumberOfFinalStates();
+		List<State> nonFinalStateList = new ArrayList<State>(initialCapacity);
+		for (State state : states.values()) {
+			if(!finalStates.contains(state)) {
+				nonFinalStateList.add(state);
+			}
+		}
+		return nonFinalStateList;
+	}
+	
+	public List<State> getNonInitialStateList(){
+		int initialCapacity = getNumberOfTotalStates() - getNumberOfInitialStates();
+		List<State> nonInitialStateList = new ArrayList<State>(initialCapacity);
+		for (State state : states.values()) {
+			if(!initialStates.contains(state)) {
+				nonInitialStateList.add(state);
+			}
+		}
+		return nonInitialStateList;
+	}
+	
 	/**
 	 * @return All States that are listed as Initial
 	 */
@@ -180,7 +202,7 @@ public class Automaton {
 	}
 	
 	/**
-	 * Add a transition between two states
+	 * Add a transition between two states. The transition will not be added if aleready exists
 	 * @param startingState the state where the transition starts 
 	 * @param destinationState the state where the transition starts 
 	 * @param letter the letter that "holds" the transition
@@ -264,6 +286,37 @@ public class Automaton {
 	 */
 	public boolean isStateInitial(State state) {
 		return initialStates.contains(state);
+	}
+	
+	/**
+	 * Check if a state can be accessed by another state by any transition
+	 * @param state the id of the state to check
+	 * @return if the state is accessible or not
+	 */
+	public boolean isStateAccessible(int stateId) {
+		return isStateAccessible(states.get(stateId));
+	}
+	
+	/**
+	 * Check if a state can be accessed by another state by any transition
+	 * @param state the state to check
+	 * @return if the state is accessible or not
+	 */
+	public boolean isStateAccessible(State state) {
+		//check if all other states have any transition leading to this state
+		for (State currentState : states.values()) {
+			if(currentState == state) {
+				continue;
+			}
+			List<Transition> transitions = currentState.getTransitions();
+			for (Transition transition : transitions) {
+				State destination = transition.getDestination();
+				if(destination == state) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 }
