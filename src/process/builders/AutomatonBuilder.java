@@ -115,11 +115,17 @@ public class AutomatonBuilder {
 			//listState will take the first list of listDeterminedState
 			listState = listDeterminedStates.pop();
 			
+			//construct the name of our new determined state
+			String nameDeparture = "";
+			nameDeparture = StateListUtility.constructNameOfDeterminedStates(listState);
+			
 			//we add all transition from all the state we are coming from
 			listTransitions = TransitionListUtility.getAllTransitionFromListStates(listState);
 			
-			String nameDeparture = "";
-			nameDeparture = StateListUtility.constructNameOfDeterminedStates(listState);
+			//check if there is a final state
+			if (StateListUtility.hasCommonStates(listState, automaton.getFinalStates())) {
+				isFinal = true;
+			}
 			
 			//we dont have any interest in our old list
 			listState.clear();
@@ -134,7 +140,8 @@ public class AutomatonBuilder {
 				//create a new state in determinedAutomaton
 				stateDeparture = new State(id, nameDeparture);
 				id++;
-				determinedAutomaton.addState(stateDeparture, true, false);
+				determinedAutomaton.addState(stateDeparture, true, isFinal);
+				isFinal = false;
 			}
 			else {
 				//get the departure state
@@ -144,7 +151,7 @@ public class AutomatonBuilder {
 			
 			//for each of the alphabet letter
 			for (char letter : alphabet.toCharArray()) {
-
+				//get all state from valid transition
 				listNewState = TransitionListUtility.getValidDestinationFromTransition(listTransitions, letter);
 				if (StateListUtility.hasCommonStates(listNewState, automaton.getFinalStates())) {
 					isFinal = true;
@@ -173,7 +180,7 @@ public class AutomatonBuilder {
 						//create a new state in determinedAutomaton
 						determinedAutomaton.addState(newState, false, isFinal);
 						determinedAutomaton.addTransition(stateDeparture, newState, letter);
-						
+						isFinal = false;
 						//add the list of state to be search through
 						listDeterminedStates.add(listNewState);
 						listNewState = new ArrayList<State>();
