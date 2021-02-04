@@ -8,7 +8,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import data.Automaton;
-import data.AutomatonConstants;
 import data.State;
 import process.AutomatonManager;
 import process.builders.AutomatonBuilder;

@@ -9,6 +9,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	DeterministAutomatonTest.class,
+	MinimalAutomatonTest.class,
 	})
 public class DeterministAutomatonTestSuite {
 	
