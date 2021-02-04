@@ -194,8 +194,11 @@ public class AutomatonBuilder {
 	}
 	
 	public Automaton buildMinimalAutomaton() {
-		
-		return null;
+		automaton = buildDeterminedAutomaton();
+		automaton = buildMiroirAutomaton();
+		automaton = buildDeterminedAutomaton();
+		automaton = buildMiroirAutomaton();
+		return automaton;
 	}
 	
 }

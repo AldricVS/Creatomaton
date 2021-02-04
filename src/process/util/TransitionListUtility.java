@@ -10,11 +10,14 @@ import data.State;
 import data.Transition;
 
 /**
- * Class containing multiple method to help working around {@link data.Transition Transition}
+ * Class containing multiple method to help working around
+ * {@link data.Transition Transition}
+ * 
  * @author Maxence
  */
 public class TransitionListUtility {
 
+	// A static list of State used when using a recursive method, to avoid double
 	private static List<State> listState = new ArrayList<State>();
 
 	public static List<Transition> getAllTransitionFromListStates(List<State> listStates) {
