@@ -96,7 +96,7 @@ public class AutomatonManager {
 		List<State> listStates = automaton.getAllStates();
 		for (State state : listStates) {
 			// the list of transition
-			List<Transition> listTransitions = state.getTransitions();
+			List<Transition> listTransitions = new ArrayList<Transition>(state.getTransitions());
 			// a list of letter of the transition
 			List<Character> listLetter = new ArrayList<Character>();
 

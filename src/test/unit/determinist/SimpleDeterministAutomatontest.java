@@ -70,5 +70,4 @@ public class SimpleDeterministAutomatontest {
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
 		automaton = builder.buildDeterminedAutomaton();
 	}
-
 }
