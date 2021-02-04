@@ -2,11 +2,14 @@ package test.unit.determinist;
 
 import static org.junit.Assert.*;
 
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import data.Automaton;
 import data.State;
+import process.AutomatonManager;
+import process.builders.AutomatonBuilder;
 
 
 /**
@@ -25,6 +28,7 @@ public class MinimalAutomatonTest {
 	private static State state7;
 	private static State state8;
 	private static State state9;
+	private static Automaton minimalAutomaton;
 
 	@BeforeClass
 	public static void prepareAutomaton() {
@@ -52,7 +56,7 @@ public class MinimalAutomatonTest {
 		automaton.addState(state6, false, false);
 		automaton.addState(state7, false, false);
 		automaton.addState(state8, false, false);
-		automaton.addState(state9, false, false);
+		automaton.addState(state9, false, true);
 		
 		automaton.addTransition(state0, state1, 'a');
 		automaton.addTransition(state1, state2, 'b');
@@ -61,9 +65,27 @@ public class MinimalAutomatonTest {
 		automaton.addTransition(state3, state4, 'a');
 		automaton.addEpsilonTransition(state4, state4);
 		automaton.addTransition(state3, state5, 'a');
-		automaton.addTransition(state3, state6, 'a');
-		automaton.addEpsilonTransition(state6, state7);
+		automaton.addEpsilonTransition(state5, state7);
+		automaton.addEpsilonTransition(state3, state6);
+		automaton.addTransition(state6, state7, 'a');
 		automaton.addTransition(state3, state7, 'c');
+		automaton.addTransition(state7, state7, 'c');
+		automaton.addTransition(state7, state8, 'b');
+		automaton.addEpsilonTransition(state8, state9);
+		
+		//Note apres ecriture : cet automate est degueulasse
+	}
+	
+	@Test
+	public void buildMinimalAutomaton() {
+		AutomatonBuilder builder = new AutomatonBuilder(automaton);
+		minimalAutomaton = builder.buildMinimalAutomaton();
+	}
+	
+	@After
+	public void isMinimal() {
+		AutomatonManager manager = new AutomatonManager(minimalAutomaton);
+		assertTrue(manager.isDeterminist());
 	}
 
 }
