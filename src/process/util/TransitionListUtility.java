@@ -4,39 +4,40 @@
 package process.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import data.State;
 import data.Transition;
 
 /**
+ * Class containing multiple method to help working around {@link data.Transition Transition}
  * @author Maxence
  */
 public class TransitionListUtility {
-	
-	private static List<State>listState = new ArrayList<State>();
+
+	private static List<State> listState = new ArrayList<State>();
 
 	public static List<Transition> getAllTransitionFromListStates(List<State> listStates) {
-		State nextState;
 		List<Transition> listTransition = new ArrayList<Transition>();
-		for (Iterator<State> it = listStates.iterator(); it.hasNext();) {
-			nextState = it.next();
-			listTransition.addAll(nextState.getTransitions());
+		for (State state : listStates) {
+			listTransition.addAll(state.getTransitions());
 		}
 		return listTransition;
 	}
-	
+
 	/**
-	 * Search and retrieve all transitions that have te same starting state and destination state.
+	 * Search and retrieve all transitions that have te same starting state and
+	 * destination state.
+	 * 
 	 * @param startingState
 	 * @param destinationState
-	 * @return a list containing all matching transitions (this one can be empty if no transition found)
+	 * @return a list containing all matching transitions (this one can be empty if
+	 *         no transition found)
 	 */
-	public static List<Transition> getTransitionsWithSamePath(State startingState, State destinationState){
+	public static List<Transition> getTransitionsWithSamePath(State startingState, State destinationState) {
 		List<Transition> matchingTranstionList = new ArrayList<Transition>();
-		for(Transition transition : startingState.getTransitions()) {
-			if(transition.getDestination() == destinationState) {
+		for (Transition transition : startingState.getTransitions()) {
+			if (transition.getDestination() == destinationState) {
 				matchingTranstionList.add(transition);
 			}
 		}
@@ -51,12 +52,10 @@ public class TransitionListUtility {
 	 */
 	public static List<State> getAllDestinationFromTransition(List<Transition> listTransitions) {
 		List<State> listState = new ArrayList<State>();
-		Transition nextTransition;
-		for (Iterator<Transition> it = listTransitions.iterator(); it.hasNext();) {
-			nextTransition = it.next();
-			State nextState = nextTransition.getDestination();
-			if (!listState.contains(nextState)) {
-				listState.add(nextState);
+		for (Transition transition : listTransitions) {
+			State destinationState = transition.getDestination();
+			if (!listState.contains(destinationState)) {
+				listState.add(destinationState);
 			}
 		}
 		return listState;
@@ -68,12 +67,10 @@ public class TransitionListUtility {
 	 * 
 	 * @param listStates a list of State to search in
 	 * @param transition the transition to look for the starting point
-	 * @return the starting state of a transition, null otherwise
+	 * @return the first starting state found from the transition, null otherwise
 	 */
 	public static State getDepartureFromTransition(List<State> listStates, Transition transition) {
-		State state;
-		for (Iterator<State> it = listStates.iterator(); it.hasNext();) {
-			state = it.next();
+		for (State state : listStates) {
 			if (state.getTransitions().contains(transition)) {
 				return state;
 			}
@@ -90,31 +87,27 @@ public class TransitionListUtility {
 	 * @return an ArrayList of all valid Destination
 	 */
 	public static List<State> getValidDestinationFromTransition(List<Transition> listTransitions, char letter) {
-		Transition nextTransition;
-		for (Iterator<Transition> it = listTransitions.iterator(); it.hasNext();) {
-			nextTransition = it.next();
-			if (nextTransition.getLetter() == letter) {
+		for (Transition transition : listTransitions) {
+			if (transition.getLetter() == letter) {
 				// little check that the destination isn't already here
-				State nextState = nextTransition.getDestination();
-				if (!listState.contains(nextState)) {
-					listState.add(nextState);
+				State destinationState = transition.getDestination();
+				if (!listState.contains(destinationState)) {
+					listState.add(destinationState);
 				}
-			}
-			else if (nextTransition.isEpsilon()) {
-				//as a epsilon transition, we add all new valid states from this destination
-				State epsilonState = nextTransition.getDestination();
+			} else if (transition.isEpsilon()) {
+				// as a epsilon transition, we add all new valid states from this destination
+				State epsilonState = transition.getDestination();
 				if (!listState.contains(epsilonState)) {
 					listState.add(epsilonState);
-					List<State> newTransitionFromEpsilon = getValidDestinationFromTransition(epsilonState.getTransitions(), letter);
-					for (Iterator<State> its = newTransitionFromEpsilon.iterator(); its.hasNext(); ) {
-						State nextState = its.next();
-						if (!listState.contains(nextState)) {
-							listState.add(nextState);
+					List<State> listStatesFromEpsilon = getValidDestinationFromTransition(epsilonState.getTransitions(), letter);
+					for (State state : listStatesFromEpsilon) {
+						if (!listState.contains(state)) {
+							listState.add(state);
 						}
 					}
 					listState.remove(epsilonState);
 				}
-				//the state from epsilon has already been visited
+				// the state from epsilon has already been visited
 			}
 			// else, we dont have the right letter for the transition
 		}

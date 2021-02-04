@@ -3,8 +3,6 @@
  */
 package process.util;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
@@ -29,10 +27,8 @@ public class StateListUtility {
 	 * @return true if any element of the second list is in the first one.
 	 */
 	public static boolean hasCommonStates(List<State> listStates, List<State> listStates2) {
-		State nextState;
-		for (Iterator<State> it = listStates2.iterator(); it.hasNext();) {
-			nextState = it.next();
-			if (listStates.contains(nextState)) {
+		for (State state : listStates2) {
+			if (listStates.contains(state)) {
 				return true;
 			}
 		}
@@ -46,22 +42,19 @@ public class StateListUtility {
 	 * @return the name of a state, as a determined new state
 	 */
 	public static String constructNameOfDeterminedStates(List<State> listStates) {
-		// get a appropriate name for our new state
-		State nextState;
 		List<Integer> listStateId = new Stack<Integer>();
+		// get a appropriate name for our new state
 		String nameDestination = "";
-		for (Iterator<State> it = listStates.iterator(); it.hasNext();) {
-			nextState = it.next();
-			listStateId.add(nextState.getId());
+
+		for (State state : listStates) {
+			listStateId.add(state.getId());
 		}
 
 		// sort the id
 		listStateId.sort(null);
 
-		int id;
 		// construct the name
-		for (Iterator<Integer> it = listStateId.iterator(); it.hasNext();) {
-			id = it.next();
+		for (int id : listStateId) {
 			if (nameDestination.isEmpty()) {
 				nameDestination = String.valueOf(id);
 			} else {
@@ -80,13 +73,11 @@ public class StateListUtility {
 	 * @return the stateId found in listStates, -1 if not found
 	 */
 	public static int getIdStateFromNameInList(List<State> listStates, String name) {
-		State nextState;
-		for (Iterator<State> it = listStates.iterator(); it.hasNext();) {
-			nextState = it.next();
-			String nameCheck = nextState.getName();
+		for (State state : listStates) {
+			String nameCheck = state.getName();
 			// compare with name
 			if (name.equals(nameCheck)) {
-				return nextState.getId();
+				return state.getId();
 			}
 		}
 		return -1;

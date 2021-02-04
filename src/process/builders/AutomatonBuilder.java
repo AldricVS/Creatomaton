@@ -4,7 +4,6 @@
 package process.builders;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,8 +35,6 @@ public class AutomatonBuilder {
 	public Automaton buildMiroirAutomaton() {
 		//some variable
 		List<State> listState, listInitialState, listFinalState;
-		State state;
-		Transition transition;
 		
 		//our new automaton
 		Automaton miroirAutomaton;
@@ -58,28 +55,25 @@ public class AutomatonBuilder {
 		miroirAutomaton.clearAllStates();
 		
 		//add all states
-		for (Iterator<State> its = listState.iterator(); its.hasNext(); ) {
-			state = its.next();
+		for (State state : listState) {
 			miroirAutomaton.addState(state, false, false);
-			
 		}
 		
-		for (Iterator<Transition> it = TransitionListUtility.getAllTransitionFromListStates(listState).iterator(); it.hasNext(); ) {
-			transition = it.next();
+		List<Transition> allTransitionFromListStates = TransitionListUtility.getAllTransitionFromListStates(listState);
+		for (Transition transition : allTransitionFromListStates) {
+			State state;
 			state = TransitionListUtility.getDepartureFromTransition(listState, transition);
 			state.removeTransition(transition);
 			miroirAutomaton.addTransition(transition.getDestination(), state, transition.getLetter());
 		}
 		
 		//set all initial states
-		for (Iterator<State> it = listInitialState.iterator(); it.hasNext(); ) {
-			state = it.next();
+		for (State state : listInitialState) {
 			miroirAutomaton.setStateInitial(state, true);
 		}
 		
 		//set all final states
-		for (Iterator<State> it = listFinalState.iterator(); it.hasNext(); ) {
-			state = it.next();
+		for (State state : listFinalState) {
 			miroirAutomaton.setStateFinal(state, true);
 		}
 		
@@ -197,6 +191,11 @@ public class AutomatonBuilder {
 		}
 		
 		return determinedAutomaton;
+	}
+	
+	public Automaton buildMinimalAutomaton() {
+		
+		return null;
 	}
 	
 }

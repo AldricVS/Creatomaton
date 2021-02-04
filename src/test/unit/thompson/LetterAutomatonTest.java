@@ -2,8 +2,6 @@ package test.unit.thompson;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -46,6 +44,6 @@ public class LetterAutomatonTest {
 	
 	@Test
 	public void acceptAutomaton() {
-		//TODO : Ajouter des tests d'acceptation une fois que les algos seront implémentés 
+		//TODO : Ajouter des tests d'acceptation une fois que les algos seront implï¿½mentï¿½s 
 	}
 }
