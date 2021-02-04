@@ -134,7 +134,6 @@ public class AutomatonBuilder {
 		return determinedAutomaton;
 	}
 	
-	
 	public void removeEpsilon(Automaton automaton , State departState , Transition transition) {
 		Automaton resultAutomaton = AutomatonFactory.createCopy(automaton);
 			State finalState = transition.getDestination();
@@ -143,6 +142,10 @@ public class AutomatonBuilder {
 		if (automaton.isStateFinal(finalState.getId())) {
 			automaton.setStateFinal(departState, true);
 			automaton.setStateFinal(finalState, false);
+		}
+		if (automaton.isStateInitial(finalState.getId())) {
+			automaton.setStateInitial(departState, true);
+			automaton.setStateInitial(finalState, false);
 		}
 		
 		// prendre toute les transition qui parte de l'état final et les faire partir de l'état de départ
@@ -164,7 +167,7 @@ public class AutomatonBuilder {
 		}
 	}
 	
-	public void Synchronisation() {
+	public Automaton Synchronisation() {
 		Automaton resultAutomaton = AutomatonFactory.createCopy(automaton);
 		 //HashMap<Integer, State> ListStates=resultAutomaton.getStates();
 		 List<State> listStates =  resultAutomaton.getAllStates();
@@ -179,5 +182,6 @@ public class AutomatonBuilder {
 				 }
 			 }
 		}
+		return resultAutomaton;
 	}
 }
