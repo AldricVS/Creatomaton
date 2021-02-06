@@ -3,6 +3,9 @@ package test.unit;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+import test.unit.determinist.DeterministAutomatonTestSuite;
+import test.unit.thompson.ThompsonAutomatonTestSuite;
+
 /**
  * Global test suite of unit tests.
  * Includes 1 tests cases :
@@ -16,6 +19,8 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
 	CreateAutomatonTest.class,
 	CreateEpsilonAutomatonTest.class,
+	ThompsonAutomatonTestSuite.class,
+	DeterministAutomatonTestSuite.class,
 	})
 public class AutomatonTestSuite {
 	

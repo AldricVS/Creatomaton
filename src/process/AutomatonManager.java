@@ -4,7 +4,6 @@
 package process;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import data.Automaton;
@@ -67,10 +66,10 @@ public class AutomatonManager {
 				return false;
 			}
 		}
-		// if we arrived here, then our listState got all final state
-		for (Iterator<State> it = listState.iterator(); it.hasNext();) {
-			State finalState = it.next();
-			if (automaton.isStateFinal(finalState)) {
+
+		// if we arrived here, then our listState got all state which we have gone last
+		for (State state : listState) {
+			if (automaton.isStateFinal(state)) {
 				return true;
 			}
 		}
@@ -95,15 +94,13 @@ public class AutomatonManager {
 		// check if there is any epsilon transition or any multiple
 		// transition of thesame letter
 		List<State> listStates = automaton.getAllStates();
-		for (Iterator<State> its = listStates.iterator(); its.hasNext();) {
-			State state = its.next();
+		for (State state : listStates) {
 			// the list of transition
-			List<Transition> listTransitions = state.getTransitions();
+			List<Transition> listTransitions = new ArrayList<Transition>(state.getTransitions());
 			// a list of letter of the transition
 			List<Character> listLetter = new ArrayList<Character>();
-			
-			for (Iterator<Transition> it = listTransitions.iterator(); it.hasNext();) {
-				Transition transition = it.next();
+
+			for (Transition transition : listTransitions) {
 				if (transition.isEpsilon()) {
 					return false;
 				} else if (listLetter.contains(transition.getLetter())) {
@@ -111,7 +108,7 @@ public class AutomatonManager {
 				}
 				listLetter.add(transition.getLetter());
 			}
-			
+
 			listTransitions.clear();
 			listLetter.clear();
 		}
