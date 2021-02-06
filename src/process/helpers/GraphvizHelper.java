@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import process.file.PrefsFileHelper;
+import process.util.FileUtility;
 
 /**
  * Helper class used to handle Graphviz easily. Only jpg exports are supported
@@ -77,7 +78,7 @@ public class GraphvizHelper {
 			}
 		}
 
-		fileOutputPath = searchFileOutputName(fileOutputPath);
+		fileOutputPath = FileUtility.searchFileOutputName(fileOutputPath);
 
 		// in order to allow spaces in file path
 		fileOutputPath = encapsulateFilePath(fileOutputPath);
@@ -104,38 +105,7 @@ public class GraphvizHelper {
 		return res;
 	}
 
-	/**
-	 * Create a new file name depending on the presence (or not) of another files
-	 * that have the same name.
-	 * 
-	 * @param filename the path of the file to check
-	 * @return the same String, or a string like "file(1).ext" if file like
-	 *         "file.ext" already exists
-	 */
-	private String searchFileOutputName(String filename) {
-		final Pattern PATTERN = Pattern.compile("(.*?)(?:\\((\\d+)\\))?(\\.[^.]*)?");
-		if (fileExists(filename)) {
-			Matcher m = PATTERN.matcher(filename);
-			if (m.matches()) {
-				String prefix = m.group(1);
-				String last = m.group(2);
-				String suffix = m.group(3);
-				if (suffix == null)
-					suffix = "";
+	
 
-				int count = last != null ? Integer.parseInt(last) : 0;
-
-				do {
-					count++;
-					filename = prefix + "(" + count + ")" + suffix;
-				} while (fileExists(filename));
-			}
-		}
-		return filename;
-	}
-
-	private boolean fileExists(String filename) {
-		File file = new File(filename);
-		return file.exists();
-	}
+	
 }

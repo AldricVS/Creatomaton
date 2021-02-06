@@ -3,14 +3,14 @@ package data;
 /**
  * A Transition is a path from a State to another (it can be the exact same state).
  * Each Transition has a character indicating which letter to go through this transition
- * (if this character is empty i.e equals to '\0000' or {@code Character.MIN_VALUE}, the transition will be treated as an epsilon-transition),
+ * (if this character is empty i.e equals to '\0000' or {@code AutomatonConstants.EPSILON_CHAR}, the transition will be treated as an epsilon-transition),
  * and the State that Transition leads to.
  * 
  * @author Aldric Vitali Silvestre <aldric.vitali@outlook.fr>
  */
 public class Transition{
 	/**
-	 * If equals to '\0000', the transition is an Epsilon-transition
+	 * If equals to {@link AutomatonConstants.EPSILON_CHAR}, the transition is an Epsilon-transition
 	 */
 	private char letter;
 	
@@ -27,14 +27,14 @@ public class Transition{
 	 * @return if this transition is an Epsilon-transition or not 
 	 */
 	public boolean isEpsilon() {
-		return letter == Character.MIN_VALUE;
+		return letter == AutomatonConstants.EPSILON_CHAR;
 	}
 	
 	/**
 	 * change letter to 'Epsilon value'
 	 */
 	public void changeToEpsilon() {
-		letter = Character.MIN_VALUE;
+		letter = AutomatonConstants.EPSILON_CHAR;
 	}
 
 	public char getLetter() {
