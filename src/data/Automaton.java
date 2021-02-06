@@ -33,7 +33,7 @@ public class Automaton {
 	
 	/**
 	 * @param stateId the Id of a state
-	 * @return the state associated with the Id
+	 * @return the state associated with the Id, or {@code null} if no state have this id
 	 */
 	public State getStateById(int stateId) {
 		return states.get(stateId);

@@ -26,7 +26,7 @@ public class AutomatonFileHelper {
 	public static final String AUTOMATON_FILE_EXTENSION = "crea";
 	public static final String COMMENTARY_CHARACTER = "\"";
 	public static final String COMMAND_CHARACTER = "#";
-	
+
 	public static final String SEPARATOR_CHARACTER = ";";
 	public static final String EPSILON_STRING = "epsilon";
 
@@ -110,6 +110,7 @@ public class AutomatonFileHelper {
 				readStates(bufferedReader, automaton, false, false);
 				break;
 			case TRANSITIONS_COMMAND:
+				readTransitions(bufferedReader, automaton);
 				break;
 			default:
 				throw new FileFormatException("Command non recognized : " + line);
@@ -117,7 +118,65 @@ public class AutomatonFileHelper {
 		}
 
 		bufferedReader.close();
-		return null;
+		return automaton;
+	}
+
+	private void readTransitions(BufferedReader bufferedReader, Automaton automaton) throws FileFormatException, IOException {
+		String line;
+		boolean isEndEncountered = false;
+		while (!isEndEncountered && (line = bufferedReader.readLine()) != null) {
+			if (line.equals(END_COMMAND)) {
+				isEndEncountered = true;
+			} else {
+				String split[] = line.split(SEPARATOR_CHARACTER, 3); //limit in case of the last character IS also the separator
+				if(split.length != 3) {
+					throw new FileFormatException("A transition must be defined with 3 distinct fields");
+				}
+				
+				//read states ids
+				int startingStateId, destinationStateId;
+				try {
+					startingStateId = Integer.parseInt(split[0]);
+					destinationStateId = Integer.parseInt(split[1]);
+				}catch (NumberFormatException e) {
+					throw new FileFormatException("Invalid state Id at line : " + line);
+				}
+				
+				//read transition character : except from epsilon, they must have only 1 character
+				boolean isEpsilonTransition = false;
+				char transitionCharacter = 'a';
+				if(split[2].length() > 1) {
+					if(EPSILON_STRING.equals(split[2])) {
+						isEpsilonTransition = true;
+					}else {
+						throw new FileFormatException("Transition character is not valid at line : " + line);
+					}
+				}else if(split[2].length() == 0){
+					throw new FileFormatException("No transition character found at line :" + line);
+				}else {
+					transitionCharacter = split[2].charAt(0);
+				}
+				
+				//chack if states id really exists
+				State startingState = automaton.getStateById(startingStateId);
+				State destinationState = automaton.getStateById(destinationStateId);
+				
+				if(startingState == null || destinationState == null) {
+					throw new FileFormatException("No state found for this transition. Be sure to define all states before transitions : " + line);
+				}
+				
+				//finally, add this transition
+				if(isEpsilonTransition) {
+					automaton.addEpsilonTransition(startingState, destinationState);
+				}else {
+					automaton.addTransition(startingState, destinationState, transitionCharacter);
+				}
+			}
+		}
+		if (!isEndEncountered) {
+			// we are at the end of the file, that's anormal, we must have a "#End" before
+			throw new FileFormatException("Unespected end of file. Has not the \"" + END_COMMAND + "\" been forgotten ? ");
+		}
 	}
 
 	private void readStates(BufferedReader bufferedReader, Automaton automaton, boolean isInitial, boolean isFinal) throws FileFormatException, IOException {
@@ -126,9 +185,41 @@ public class AutomatonFileHelper {
 		while (!isEndEncountered && (line = bufferedReader.readLine()) != null) {
 			if (line.equals(END_COMMAND)) {
 				isEndEncountered = true;
-			}else {
+			} else {
 				// split the string in 2 parts : id and name
 				int splitCharacterIndex = line.indexOf(SEPARATOR_CHARACTER);
+				if (splitCharacterIndex == -1) {
+					throw new FileFormatException("Separator index (\"" + SEPARATOR_CHARACTER + "\") not found at the line : " + line);
+				}
+				//try to read Id
+				int id;
+				String name = null;
+				if(splitCharacterIndex > 0) {
+					String idString = line.substring(0, splitCharacterIndex);
+					try {
+						id = Integer.parseInt(idString);
+					}catch (NumberFormatException e) {
+						throw new FileFormatException("Id \"" + idString + "\" is not a valid Id");
+					}
+				}else {
+					throw new FileFormatException("No id found for state at : " + line);
+				}
+				
+				//try to read name (optionnal)
+				int lineLength = line.length();
+				if(splitCharacterIndex < lineLength) {
+					name = line.substring(splitCharacterIndex + 1, lineLength);
+				}
+				
+				//create the state and put it in the right place, don't put it if already exists
+				if(automaton.getStateById(id) == null) {
+					automaton.addState(new State(id, name));
+				}
+				
+				State state = automaton.getStateById(id);
+				//include if the state must be initial or final
+				automaton.setStateInitial(state, isInitial);
+				automaton.setStateFinal(state, isFinal);
 			}
 		}
 		if (!isEndEncountered) {

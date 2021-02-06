@@ -1,20 +1,15 @@
 package test.unit.files;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import data.Automaton;
-import data.AutomatonConstants;
 import data.State;
-import process.AutomatonManager;
-import process.builders.AutomatonBuilder;
 import process.file.AutomatonFileHelper;
 import process.util.FileUtility;
 
