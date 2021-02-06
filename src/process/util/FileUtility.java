@@ -1,6 +1,11 @@
 package process.util;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -96,5 +101,46 @@ public class FileUtility {
 			filename += extension;
 			return filename;
 		}
+	}
+	
+	public static long getNumberOfLines(File file) {
+		LineNumberReader numberReader;
+		long numberOfLines;
+		try {
+			numberReader = new LineNumberReader(new FileReader(file));
+			numberOfLines = numberReader.lines().count();
+			numberReader.close();
+			return numberOfLines;
+		} catch (IOException e) {
+			return 0;
+		}
+	}
+	
+	/**
+	 * Check if two files have the exact same content
+	 */
+	public static boolean areFilesHaveSameContent(File file1, File file2) throws IOException {
+		//check if they have the same number of lines
+		long numberOfLines1 = getNumberOfLines(file1);
+		long numberOfLines2 = getNumberOfLines(file2);
+		if(numberOfLines1 != numberOfLines2) {
+			return false;
+		}
+		
+		BufferedReader reader1 = new BufferedReader(new FileReader(file1));
+		BufferedReader reader2 = new BufferedReader(new FileReader(file2));
+		
+		String line1, line2;
+		boolean haveSameContent = true;
+		while(haveSameContent && (line1 = reader1.readLine()) != null) {
+			line2 = reader2.readLine();
+			if(!line1.equals(line2)) {
+				haveSameContent = false;
+			}
+		}
+		
+		reader1.close();
+		reader2.close();
+		return haveSameContent;
 	}
 }

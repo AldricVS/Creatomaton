@@ -1,0 +1,15 @@
+#Initial States
+0;EI
+2;
+#Final States
+1;
+#Remaining States
+3;normal
+#Transitions
+0;1;a
+0;3;b
+1;2;epsilon
+2;3;b
+3;1;a
+3;3;a
+#End
