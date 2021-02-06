@@ -135,17 +135,21 @@ public class AutomatonBuilder {
 	}
 	
 	public void removeEpsilon(Automaton automaton , State departState , Transition transition) {
-		Automaton resultAutomaton = AutomatonFactory.createCopy(automaton);
+	//	Automaton resultAutomaton = AutomatonFactory.createCopy(automaton);
 			State finalState = transition.getDestination();
 			Boolean boucle = false;
+			
 		// verifie si l'etat d'arrive est final, si oui l'etat de départ devient final
 		if (automaton.isStateFinal(finalState.getId())) {
 			automaton.setStateFinal(departState, true);
-			automaton.setStateFinal(finalState, false);
+			//automaton.setStateFinal(finalState, false);
+
 		}
+		
+		// verifie si l'etat d'arrive est final, si oui l'etat de départ devient final
 		if (automaton.isStateInitial(finalState.getId())) {
 			automaton.setStateInitial(departState, true);
-			automaton.setStateInitial(finalState, false);
+			//automaton.setStateInitial(finalState, false);
 		}
 		
 		// prendre toute les transition qui parte de l'état final et les faire partir de l'état de départ
@@ -154,17 +158,22 @@ public class AutomatonBuilder {
 			 departState.addTransition(transitionIeme);
 		
 			// si l'état de départ et d'arrive est le même la transition E devient la transition de la boucle
-			if (departState == finalState) {
+			if (finalState == transitionIeme.getDestination()) {
 						boucle =true;
 			}
 		}
 		// s'il n'y a pas de boucle sur l'etat final alors on supprime toute ses transitions et on supprime l'état
 		if(boucle==false) {
+
 			for (int i=0 ;i< finalState.getNumberOfTransition(); i++ ) {
 				 finalState.removeTransition(finalState.getTransitions().get(i));
 			}
 			automaton.removeState(finalState);
 		}
+		else {
+			 departState.removeTransition(transition);
+		}
+		
 	}
 	
 	public Automaton Synchronisation() {
@@ -172,11 +181,16 @@ public class AutomatonBuilder {
 		 //HashMap<Integer, State> ListStates=resultAutomaton.getStates();
 		 List<State> listStates =  resultAutomaton.getAllStates();
 		 State state;
+		 
+		 //parcours des etats
 		for (int i=0 ; i< resultAutomaton.getNumberOfTotalStates() ; i++) {
 			 state =listStates.get(i);
+			 
 			// List<Transition> listTransition =state.getTransitions();
+			//parcours des transitions de l'etat en court
 			 for (int j=0 ; j < state.getNumberOfTransition() ; j++) {
 				 Transition transition = state.getTransitions().get(j);
+				
 				 if (transition.isEpsilon()) {
 					 removeEpsilon(resultAutomaton , state ,transition);
 				 }
