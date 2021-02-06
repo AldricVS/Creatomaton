@@ -64,8 +64,8 @@ public class SaveCustomFileTest {
 	@Test
 	public void createTestFile() throws IOException{
 		//if IOException occurs, test is failed
-		AutomatonFileHelper automatonFileHelper = new AutomatonFileHelper(automaton);
-		automatonFileHelper.saveAutomaton(DIRECTORY_PATH + TEST_FILE_NAME);
+		AutomatonFileHelper automatonFileHelper = new AutomatonFileHelper();
+		automatonFileHelper.saveAutomaton(automaton, DIRECTORY_PATH + TEST_FILE_NAME);
 	}
 	
 	@Test

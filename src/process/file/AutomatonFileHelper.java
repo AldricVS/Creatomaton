@@ -1,7 +1,10 @@
 package process.file;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,6 +14,7 @@ import java.util.Objects;
 import data.Automaton;
 import data.State;
 import data.Transition;
+import exceptions.FileFormatException;
 import process.util.FileUtility;
 
 /**
@@ -20,20 +24,19 @@ import process.util.FileUtility;
  */
 public class AutomatonFileHelper {
 	public static final String AUTOMATON_FILE_EXTENSION = "crea";
+	public static final String COMMENTARY_CHARACTER = "\"";
+	public static final String COMMAND_CHARACTER = "#";
+	
+	public static final String SEPARATOR_CHARACTER = ";";
+	public static final String EPSILON_STRING = "epsilon";
 
-	private Automaton automaton;
+	public static final String INITIAL_STATES_COMMAND = "#Initial States";
+	public static final String FINAL_STATES_COMMAND = "#Final States";
+	public static final String REMAINING_STATES_COMMAND = "#Remaining States";
+	public static final String TRANSITIONS_COMMAND = "#Transitions";
+	public static final String END_COMMAND = "#End";
 
-	public AutomatonFileHelper(Automaton automaton) {
-		// if automaton is null, a NullPointerException is directly thrown
-		this.automaton = Objects.requireNonNull(automaton, "Automaton must not be null");
-	}
-
-	public Automaton getAutomaton() {
-		return automaton;
-	}
-
-	public void setAutomaton(Automaton automaton) {
-		this.automaton = automaton;
+	public AutomatonFileHelper() {
 	}
 
 	/**
@@ -49,7 +52,7 @@ public class AutomatonFileHelper {
 	 *                 have the extension ".crea" no matter what
 	 * @throws IOException If any IO error occurs (such as security error)
 	 */
-	public void saveAutomaton(String filePath) throws IOException {
+	public void saveAutomaton(Automaton automaton, String filePath) throws IOException {
 		String realFilepath = FileUtility.getRightFilenameExtension(filePath, AUTOMATON_FILE_EXTENSION);
 		realFilepath = FileUtility.searchFileOutputName(realFilepath);
 		File outputFile = new File(realFilepath);
@@ -67,13 +70,72 @@ public class AutomatonFileHelper {
 				remainingStates.add(state);
 			}
 		}
-		writeStateList("#Initial States", initialStates, bufferedWriter);
-		writeStateList("#Final States", finalStates, bufferedWriter);
-		writeStateList("#Remaining States", remainingStates, bufferedWriter);
+		writeStateList(INITIAL_STATES_COMMAND, initialStates, bufferedWriter);
+		writeStateList(FINAL_STATES_COMMAND, finalStates, bufferedWriter);
+		writeStateList(REMAINING_STATES_COMMAND, remainingStates, bufferedWriter);
 
 		writeTransitions(allStates, bufferedWriter);
-		bufferedWriter.write("#End");
 		bufferedWriter.close();
+	}
+
+	public Automaton loadAutomaton(String filename) throws FileFormatException, IOException, IllegalArgumentException {
+		File file = new File(filename);
+		if (!FileUtility.isFileWithGoodExtension(filename, AUTOMATON_FILE_EXTENSION)) {
+			throw new IllegalArgumentException("The filename doesn't have the correct extension (." + AUTOMATON_FILE_EXTENSION + ")");
+		}
+
+		BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+		Automaton automaton = new Automaton("");
+
+		String line;
+		while ((line = bufferedReader.readLine()) != null) {
+			if (line.isEmpty() || line.startsWith(COMMENTARY_CHARACTER)) {
+				continue;
+			}
+
+			// else, we must have a command, or there is a problem
+			if (!line.startsWith(COMMAND_CHARACTER)) {
+				throw new FileFormatException("Invalid starting character at the beginning of the line \n\t " + line);
+			}
+
+			// we have 3 differents starts
+			switch (line) {
+			case INITIAL_STATES_COMMAND:
+				readStates(bufferedReader, automaton, true, false);
+				break;
+			case FINAL_STATES_COMMAND:
+				readStates(bufferedReader, automaton, false, true);
+				break;
+			case REMAINING_STATES_COMMAND:
+				readStates(bufferedReader, automaton, false, false);
+				break;
+			case TRANSITIONS_COMMAND:
+				break;
+			default:
+				throw new FileFormatException("Command non recognized : " + line);
+			}
+		}
+
+		bufferedReader.close();
+		return null;
+	}
+
+	private void readStates(BufferedReader bufferedReader, Automaton automaton, boolean isInitial, boolean isFinal) throws FileFormatException, IOException {
+		String line;
+		boolean isEndEncountered = false;
+		while (!isEndEncountered && (line = bufferedReader.readLine()) != null) {
+			if (line.equals(END_COMMAND)) {
+				isEndEncountered = true;
+			}else {
+				// split the string in 2 parts : id and name
+				int splitCharacterIndex = line.indexOf(SEPARATOR_CHARACTER);
+			}
+		}
+		if (!isEndEncountered) {
+			// we are at the end of the file, that's anormal, we must have a "#End" before
+			throw new FileFormatException("Unespected end of file. Has not the \"" + END_COMMAND + "\" been forgotten ? ");
+		}
+
 	}
 
 	private void writeStateList(String sectionName, List<State> states, BufferedWriter bufferedWriter) throws IOException {
@@ -84,10 +146,12 @@ public class AutomatonFileHelper {
 			bufferedWriter.write(descritpionString);
 			bufferedWriter.newLine();
 		}
+		bufferedWriter.write(END_COMMAND);
+		bufferedWriter.newLine();
 	}
 
 	private void writeTransitions(List<State> allStates, BufferedWriter bufferedWriter) throws IOException {
-		bufferedWriter.write("#Transitions");
+		bufferedWriter.write(TRANSITIONS_COMMAND);
 		bufferedWriter.newLine();
 		for (State state : allStates) {
 			for (Transition transition : state.getTransitions()) {
@@ -96,23 +160,25 @@ public class AutomatonFileHelper {
 				bufferedWriter.newLine();
 			}
 		}
+		bufferedWriter.write(END_COMMAND);
+		bufferedWriter.newLine();
 	}
 
 	private String getStateDescription(State state) {
 		if (state.hasName()) {
-			return state.getId() + ";" + state.getName();
+			return state.getId() + SEPARATOR_CHARACTER + state.getName();
 		} else {
-			return state.getId() + ";";
+			return state.getId() + SEPARATOR_CHARACTER;
 		}
 	}
-	
+
 	private String getTransitionDescription(State sourceState, Transition transition) {
 		int destinationStateId = transition.getDestination().getId();
-		if(transition.isEpsilon()) {
-			return sourceState.getId() + ";" + destinationStateId + ";epsilon";
-		}else {
+		if (transition.isEpsilon()) {
+			return sourceState.getId() + SEPARATOR_CHARACTER + destinationStateId + SEPARATOR_CHARACTER + EPSILON_STRING;
+		} else {
 			char letter = transition.getLetter();
-			return sourceState.getId() + ";" + destinationStateId + ";" + letter;
+			return sourceState.getId() + SEPARATOR_CHARACTER + destinationStateId + SEPARATOR_CHARACTER + letter;
 		}
 	}
 }

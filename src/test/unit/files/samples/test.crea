@@ -1,10 +1,13 @@
 #Initial States
 0;EI
 2;
+#End
 #Final States
 1;
+#End
 #Remaining States
 3;normal
+#End
 #Transitions
 0;1;a
 0;3;b

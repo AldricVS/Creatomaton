@@ -103,6 +103,16 @@ public class FileUtility {
 		}
 	}
 	
+	public static boolean isFileWithGoodExtension(String filename, String extension) {
+		int dotIndex = filename.lastIndexOf('.');
+		if(dotIndex == -1) {
+			return false;
+		}
+		
+		String fileExtension = filename.substring(dotIndex + 1, filename.length());
+		return fileExtension.equals(extension);
+	}
+	
 	public static long getNumberOfLines(File file) {
 		LineNumberReader numberReader;
 		long numberOfLines;
