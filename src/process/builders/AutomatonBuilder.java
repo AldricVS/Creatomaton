@@ -243,20 +243,35 @@ public class AutomatonBuilder {
 			// si l'état de départ et d'arrive est le même la transition E devient la transition de la boucle
 			if (finalState == transitionIeme.getDestination()) {
 						boucle =true;
+						//epsilon devient la boucle
 			}
 		}
 		// s'il n'y a pas de boucle sur l'etat final alors on supprime toute ses transitions et on supprime l'état
-		if(boucle==false) {
+		/*if(boucle==false) {
 
 			for (int i=0 ;i< finalState.getNumberOfTransition(); i++ ) {
 				 finalState.removeTransition(finalState.getTransitions().get(i));
 			}
 			automaton.removeState(finalState);
 		}
-		else {
+		else {*/
 			 departState.removeTransition(transition);
-		}
+			/* if (!(automaton.isStateAccessible(finalState))){
+				 System.out.println("--supressionde l'etat "+finalState.getId());
+				automaton.removeState(finalState); 
+			 }*/
+		//}
 		
+	}
+	public Automaton removeInaccessibleState(Automaton automaton) {
+		 List<State> listStates =  automaton.getAllStates();
+		for (int i=0 ; i< automaton.getNumberOfTotalStates() ; i++) {
+			State state =listStates.get(i);
+			if (!(automaton.isStateAccessible(state)) && !(automaton.isStateFinal(state)) ) {
+				automaton.removeState(state);
+			}
+		}
+		return automaton;
 	}
 	
 	public Automaton Synchronisation() {
@@ -266,6 +281,7 @@ public class AutomatonBuilder {
 		 State state;
 		 
 		 //parcours des etats
+		 
 		for (int i=0 ; i< resultAutomaton.getNumberOfTotalStates() ; i++) {
 			 state =listStates.get(i);
 			 
@@ -279,6 +295,7 @@ public class AutomatonBuilder {
 				 }
 			 }
 		}
-		return resultAutomaton;
+		
+		return removeInaccessibleState(resultAutomaton);
 	}
 }
