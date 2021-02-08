@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -28,17 +29,17 @@ public class SaveCustomFileTest {
 	@BeforeClass
 	public static void prepareAutomaton() {
 		automaton = new Automaton("ab");
-	
+
 		State state0 = new State(0, "EI");
 		State state1 = new State(1);
 		State state2 = new State(2);
 		State state3 = new State(3, "normal");
-		
+
 		automaton.addState(state0, true, false);
 		automaton.addState(state1, false, true);
 		automaton.addState(state2, true, false);
 		automaton.addState(state3);
-		
+
 		automaton.addTransition(state0, state1, 'a');
 		automaton.addTransition(state0, state3, 'b');
 		automaton.addEpsilonTransition(state1, state2);
@@ -55,21 +56,21 @@ public class SaveCustomFileTest {
 			testFile.delete();
 		}
 	}
-	
+
 	@Test
-	public void createTestFile() throws IOException{
-		//if IOException occurs, test is failed
+	public void createTestFile() throws IOException {
+		// if IOException occurs, test is failed
 		AutomatonFileHelper automatonFileHelper = new AutomatonFileHelper();
 		automatonFileHelper.saveAutomaton(automaton, DIRECTORY_PATH + TEST_FILE_NAME);
 	}
-	
-	@Test
-	public void compareFiles() throws IOException {
+
+	@AfterClass
+	public static void compareFiles() throws IOException {
 		File testFile = new File(DIRECTORY_PATH + TEST_FILE_NAME);
 		File referenceFile = new File(DIRECTORY_PATH + REFERENCE_FILE_NAME);
 		assertTrue(testFile.exists());
 		assertTrue(referenceFile.exists());
-		
+
 		assertTrue(FileUtility.areFilesHaveSameContent(testFile, referenceFile));
 	}
 }
