@@ -1,4 +1,4 @@
-package test.unit.determinist;
+package test.unit.automatonBuilder;
 
 import static org.junit.Assert.*;
 
@@ -15,7 +15,7 @@ import process.builders.AutomatonBuilder;
 /**
  * @author Maxence
  */
-public class DeterministAutomatonTest {
+public class DeterministicAutomatonTest {
 
 	private static Automaton automaton;
 	private static State state0;
@@ -68,12 +68,12 @@ public class DeterministAutomatonTest {
 	@After
 	public void isDeterministic() {
 		AutomatonManager manager = new AutomatonManager(automaton);
-		assertTrue(manager.isDeterminist());
+		assertTrue(manager.isDeterministic());
 	}
 
 	@Test
 	public void derterminedAutomaton() {
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
-		automaton = builder.buildDeterminedAutomaton();
+		automaton = builder.buildDeterministicAutomaton();
 	}
 }

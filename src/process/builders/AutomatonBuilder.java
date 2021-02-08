@@ -4,7 +4,6 @@
 package process.builders;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,12 +21,21 @@ import process.util.TransitionListUtility;
  * </p>
  * 
  * @author Maxence
+ * @author Chloé Gateau
  */
 public class AutomatonBuilder {
 
 	private Automaton automaton;
 
 	public AutomatonBuilder(Automaton automaton) {
+		this.automaton = automaton;
+	}
+
+	public Automaton getAutomaton() {
+		return automaton;
+	}
+
+	public void setAutomaton(Automaton automaton) {
 		this.automaton = automaton;
 	}
 
@@ -42,7 +50,7 @@ public class AutomatonBuilder {
 	 * 
 	 * @return the new Mirror Automaton
 	 */
-	public Automaton buildMiroirAutomaton() {
+	public Automaton buildMirrorAutomaton() {
 		// some variable
 		List<State> listState, listInitialState, listFinalState;
 
@@ -95,7 +103,7 @@ public class AutomatonBuilder {
 	 * 
 	 * @return the new Determined Automaton
 	 */
-	public Automaton buildDeterminedAutomaton() {
+	public Automaton buildDeterministicAutomaton() {
 		// listState have all state of the first determined state
 		List<State> listState = new ArrayList<State>();
 		listState.addAll(automaton.getInitialStates());
@@ -210,14 +218,14 @@ public class AutomatonBuilder {
 	}
 
 	public Automaton buildMinimalAutomaton() {
-		automaton = buildDeterminedAutomaton();
-		automaton = buildMiroirAutomaton();
-		automaton = buildDeterminedAutomaton();
-		automaton = buildMiroirAutomaton();
+		automaton = buildDeterministicAutomaton();
+		automaton = buildMirrorAutomaton();
+		automaton = buildDeterministicAutomaton();
+		automaton = buildMirrorAutomaton();
 		return automaton;
 	}
 
-	public void removeEpsilon(Automaton automaton , State departState , Transition transition) {
+	private void removeEpsilon(Automaton automaton , State departState , Transition transition) {
 	//	Automaton resultAutomaton = AutomatonFactory.createCopy(automaton);
 			State finalState = transition.getDestination();
 			
@@ -239,7 +247,7 @@ public class AutomatonBuilder {
 		departState.removeTransition(transition);
 	}
 	
-	public Automaton removeInaccessibleState(Automaton automaton) {
+	private Automaton removeInaccessibleState(Automaton automaton) {
 		 List<State> listStates =  automaton.getAllStates();
 		for (int i=0 ; i< automaton.getNumberOfTotalStates() ; i++) {
 			State state =listStates.get(i);
@@ -250,7 +258,7 @@ public class AutomatonBuilder {
 		return automaton;
 	}
 	
-	public Automaton Synchronisation() {
+	public Automaton buildSynchronizedAutomaton() {
 		Automaton resultAutomaton = AutomatonFactory.createCopy(automaton);
 		 List<State> listStates =  resultAutomaton.getAllStates();
 		 State state;

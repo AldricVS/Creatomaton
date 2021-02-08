@@ -1,4 +1,4 @@
-package test.unit;
+package test.unit.basic;
 
 import static org.junit.Assert.*;
 
@@ -121,7 +121,7 @@ public class CreateAutomatonTest {
 	@Test
 	public void isMiror() {
 		AutomatonBuilder automatonBuilder = new AutomatonBuilder(automaton);
-		Automaton automatonMiror = automatonBuilder.buildMiroirAutomaton();
+		Automaton automatonMiror = automatonBuilder.buildMirrorAutomaton();
 		
 		assertTrue(automatonMiror.isStateInitial(2));
 		assertTrue(automatonMiror.isStateFinal(0));

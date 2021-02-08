@@ -19,7 +19,7 @@ public class TestDot {
 		try {
 			Automaton automaton = new ThompsonAutomatonBuilder("(((a*)(b*))+(e(a+b)))").build();
 			AutomatonBuilder automatonBuilder = new AutomatonBuilder(automaton);
-			automaton = automatonBuilder.buildMiroirAutomaton();
+			automaton = automatonBuilder.buildMirrorAutomaton();
 			DotBuilder builder = new DotBuilder(automaton);
 			builder.setInReverseMode(true);
 			// String res = builder.buildDotString();

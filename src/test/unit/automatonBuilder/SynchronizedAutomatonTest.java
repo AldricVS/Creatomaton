@@ -1,4 +1,4 @@
-package test.unit;
+package test.unit.automatonBuilder;
 
 import static org.junit.Assert.fail;
 
@@ -13,7 +13,7 @@ import data.Transition;
 import process.builders.AutomatonBuilder;
 import process.factory.AutomatonFactory;
 
-public class TestSynchronisation {
+public class SynchronizedAutomatonTest {
 
 	
 	private static Automaton automaton;
@@ -89,7 +89,7 @@ public class TestSynchronisation {
 	@Test
 	public void synchronisation2() {
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
-		Automaton copie = builder.Synchronisation();
+		Automaton copie = builder.buildSynchronizedAutomaton();
 		List<State> listStates =  copie.getAllStates();
 		State state;
 		if (copie.getNumberOfTotalStates()!=3) {

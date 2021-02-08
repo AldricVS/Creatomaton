@@ -1,8 +1,15 @@
 data
+exceptions
 process
 process.builders
 process.factory
+process.file
+process.helpers
 process.util
+test.apps
 test.manual
 test.unit
+test.unit.automatonBuilder
+test.unit.basic
+test.unit.files
 test.unit.thompson

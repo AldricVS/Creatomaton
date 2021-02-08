@@ -31,6 +31,14 @@ public class AutomatonManager {
 		this.automaton = automaton;
 	}
 
+	public Automaton getAutomaton() {
+		return automaton;
+	}
+
+	public void setAutomaton(Automaton automaton) {
+		this.automaton = automaton;
+	}
+
 	/**
 	 * Validate the given Automaton
 	 * 
@@ -85,7 +93,7 @@ public class AutomatonManager {
 	 * <li>Only one transition for each letter</li>
 	 * </ul>
 	 */
-	public boolean isDeterminist() {
+	public boolean isDeterministic() {
 		// check if there is multiple initial states
 		if (automaton.getNumberOfInitialStates() != 1) {
 			return false;

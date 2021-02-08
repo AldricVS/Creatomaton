@@ -1,4 +1,4 @@
-package test.unit.determinist;
+package test.unit.automatonBuilder;
 
 import static org.junit.Assert.*;
 
@@ -85,7 +85,7 @@ public class MinimalAutomatonTest {
 	@After
 	public void isMinimal() {
 		AutomatonManager manager = new AutomatonManager(minimalAutomaton);
-		assertTrue(manager.isDeterminist());
+		assertTrue(manager.isDeterministic());
 	}
 
 }
