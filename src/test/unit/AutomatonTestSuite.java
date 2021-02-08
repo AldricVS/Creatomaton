@@ -21,6 +21,7 @@ import test.unit.thompson.ThompsonAutomatonTestSuite;
 	CreateEpsilonAutomatonTest.class,
 	ThompsonAutomatonTestSuite.class,
 	DeterministAutomatonTestSuite.class,
+	TestSynchronisation.class,
 	})
 public class AutomatonTestSuite {
 	

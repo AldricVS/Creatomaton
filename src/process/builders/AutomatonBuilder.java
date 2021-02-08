@@ -4,6 +4,7 @@
 package process.builders;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -216,4 +217,58 @@ public class AutomatonBuilder {
 		return automaton;
 	}
 
+	public void removeEpsilon(Automaton automaton , State departState , Transition transition) {
+	//	Automaton resultAutomaton = AutomatonFactory.createCopy(automaton);
+			State finalState = transition.getDestination();
+			
+		// verifie si l'etat d'arrive est final, si oui l'etat de départ devient final
+		if (automaton.isStateFinal(finalState.getId())) {
+			automaton.setStateFinal(departState, true);
+		}
+		
+		// verifie si l'etat d'arrive est final, si oui l'etat de départ devient final
+		if (automaton.isStateInitial(finalState.getId())) {
+			automaton.setStateInitial(departState, true);
+		}
+		
+		// prendre toute les transition qui parte de l'état final et les faire partir de l'état de départ
+		for (int i=0 ;i< finalState.getNumberOfTransition(); i++ ) {
+			 Transition transitionIeme = finalState.getTransitions().get(i);
+			 departState.addTransition(transitionIeme);
+		}
+		departState.removeTransition(transition);
+	}
+	
+	public Automaton removeInaccessibleState(Automaton automaton) {
+		 List<State> listStates =  automaton.getAllStates();
+		for (int i=0 ; i< automaton.getNumberOfTotalStates() ; i++) {
+			State state =listStates.get(i);
+			if (!(automaton.isStateAccessible(state)) && !(automaton.isStateFinal(state)) ) {
+				automaton.removeState(state);
+			}
+		}
+		return automaton;
+	}
+	
+	public Automaton Synchronisation() {
+		Automaton resultAutomaton = AutomatonFactory.createCopy(automaton);
+		 List<State> listStates =  resultAutomaton.getAllStates();
+		 State state;
+		 
+		 //parcours des etats
+		for (int i=0 ; i< resultAutomaton.getNumberOfTotalStates() ; i++) {
+			 state =listStates.get(i);
+			 
+			//parcours des transitions de l'etat en court
+			 for (int j=0 ; j < state.getNumberOfTransition() ; j++) {
+				 Transition transition = state.getTransitions().get(j);
+				
+				 if (transition.isEpsilon()) {
+					 removeEpsilon(resultAutomaton , state ,transition);
+				 }
+			 }
+		}
+		
+		return removeInaccessibleState(resultAutomaton);
+	}
 }

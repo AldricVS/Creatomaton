@@ -87,6 +87,9 @@ public class State {
 	public void setTransitions(List<Transition> transitions) {
 		this.transitions = transitions;
 	}
+	public int getNumberOfTransition() {
+		return transitions.size();
+	}
 
 	/**
 	 * Get the next state that goes from this state with a specified letter. This
