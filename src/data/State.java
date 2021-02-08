@@ -53,6 +53,21 @@ public class State {
 	public void setId(int id) {
 		this.id = id;
 	}
+	
+	/**
+	 * Returns the name of the state if he has one, or his id number if it is not the case.
+	 */
+	public String getValidName() {
+		return hasName() ? name : String.valueOf(id);
+	}
+	
+	/**
+	 * Check if state has a valid name
+	 * @return true if state's name is not null or empty, false else.
+	 */
+	public boolean hasName() {
+		return name != null && !name.trim().isEmpty(); 
+	}
 
 	public String getName() {
 		return name;
@@ -61,7 +76,10 @@ public class State {
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
+	/**
+	 * @return All Transitions starting from this State
+	 */
 	public List<Transition> getTransitions() {
 		return transitions;
 	}
@@ -179,5 +197,10 @@ public class State {
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "State [id=" + id + ", name=" + name + "]";
 	}
 }

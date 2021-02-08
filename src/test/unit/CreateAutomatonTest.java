@@ -3,13 +3,7 @@ package test.unit;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.NoSuchElementException;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -18,6 +12,7 @@ import data.Automaton;
 import data.State;
 import data.Transition;
 import process.AutomatonManager;
+import process.builders.AutomatonBuilder;
 import process.util.StateListUtility;
 
 /**
@@ -124,9 +119,15 @@ public class CreateAutomatonTest {
 	
 	
 	@Test
-	public void isDertemined() {
+	public void isMiror() {
+		AutomatonBuilder automatonBuilder = new AutomatonBuilder(automaton);
+		Automaton automatonMiror = automatonBuilder.buildMiroirAutomaton();
 		
-		//which test TODO to assure that our automaton is determined
+		assertTrue(automatonMiror.isStateInitial(2));
+		assertTrue(automatonMiror.isStateFinal(0));
+		
+		int test = automatonMiror.getStateById(1).getTransitions().get(0).getDestination().getId();
+		assertEquals(0, test);
 		
 	}
 	
