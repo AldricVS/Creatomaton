@@ -11,7 +11,7 @@ import data.Transition;
 import process.builders.AutomatonBuilder;
 import process.factory.AutomatonFactory;
 
-public class testSynchronisation {
+public class TestSynchronisation {
 
 	
 	private static Automaton automaton;
