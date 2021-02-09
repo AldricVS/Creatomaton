@@ -61,20 +61,25 @@ public class AutomatonBuilder {
 		// miroirAutomaton = new Automaton(automaton.getAlphabet());
 
 		// get the list of Initial States from Final States
-		listInitialState = new ArrayList<State>(miroirAutomaton.getFinalStates());
+//		listInitialState = new ArrayList<State>(miroirAutomaton.getFinalStates());
 
 		// get the list of Final States from Initial States
-		listFinalState = new ArrayList<State>(miroirAutomaton.getInitialStates());
+//		listFinalState = new ArrayList<State>(miroirAutomaton.getInitialStates());
+		
+		listInitialState = miroirAutomaton.getInitialStates();
+		listFinalState = miroirAutomaton.getFinalStates();
 
 		// get the list of all States
-		listState = new ArrayList<State>(miroirAutomaton.getAllStates());
+		listState = miroirAutomaton.getAllStates();
 
 		// clear old list of states
 		miroirAutomaton.clearAllStates();
 
 		// add all states
 		for (State state : listState) {
-			miroirAutomaton.addState(state, false, false);
+			//reverse the initial and final state for each of the states
+			miroirAutomaton.setStateInitial(state, !listInitialState.contains(state));
+			miroirAutomaton.setStateFinal(state, !listFinalState.contains(state));
 		}
 
 		List<Transition> allTransitionFromListStates = TransitionListUtility.getAllTransitionFromListStates(listState);
@@ -85,15 +90,17 @@ public class AutomatonBuilder {
 			miroirAutomaton.addTransition(transition.getDestination(), state, transition.getLetter());
 		}
 
-		// set all initial states
-		for (State state : listInitialState) {
-			miroirAutomaton.setStateInitial(state, true);
-		}
-
-		// set all final states
-		for (State state : listFinalState) {
-			miroirAutomaton.setStateFinal(state, true);
-		}
+//		// set all initial states
+//		for (State state : listInitialState) {
+//			miroirAutomaton.setStateInitial(state, true);
+//		}
+//
+//		// set all final states
+//		for (State state : listFinalState) {
+//			miroirAutomaton.setStateFinal(state, true);
+//		}
+		
+		
 
 		return miroirAutomaton;
 	}
@@ -219,9 +226,9 @@ public class AutomatonBuilder {
 
 	public Automaton buildMinimalAutomaton() {
 		automaton = buildMirrorAutomaton();
-		automaton = buildDeterministicAutomaton();
-		automaton = buildMirrorAutomaton();
-		automaton = buildDeterministicAutomaton();
+		//automaton = buildDeterministicAutomaton();
+		//automaton = buildMirrorAutomaton();
+		//automaton = buildDeterministicAutomaton();
 		return automaton;
 	}
 
