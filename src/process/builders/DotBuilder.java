@@ -167,7 +167,7 @@ public class DotBuilder {
 		// Each state data will be displayed on a unique line
 		StringBuilder sb = new StringBuilder();
 		int stateId = state.getId();
-		String stateValidName = state.getValidName();
+		String stateValidName = "\"" + state.getValidName() + "\"";
 
 		// If state is initial, we want to create a substate in order to meake the
 		// illusion that the arrow come from nowhere
@@ -210,7 +210,7 @@ public class DotBuilder {
 				label = label.substring(0, label.length() - 1);
 			}
 			if(!label.isEmpty()) {
-				String transitionString = stateValidName + "->" + destinationState.getValidName() + "[label=\"" + label + "\"];";
+				String transitionString = stateValidName + "->\"" + destinationState.getValidName() + "\"[label=\"" + label + "\"];";
 				// Exemple of resulted string : 1 -> 2 [label="a"]:
 				sb.append(transitionString);
 			}

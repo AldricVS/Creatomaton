@@ -62,7 +62,7 @@ public class StateListUtility {
 			}
 		}
 
-		return nameDestination;
+		return "{" + nameDestination + "}";
 	}
 
 	/**

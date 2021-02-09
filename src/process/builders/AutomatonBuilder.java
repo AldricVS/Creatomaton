@@ -218,10 +218,10 @@ public class AutomatonBuilder {
 	}
 
 	public Automaton buildMinimalAutomaton() {
-		automaton = buildDeterministicAutomaton();
 		automaton = buildMirrorAutomaton();
 		automaton = buildDeterministicAutomaton();
 		automaton = buildMirrorAutomaton();
+		automaton = buildDeterministicAutomaton();
 		return automaton;
 	}
 
