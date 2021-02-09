@@ -225,11 +225,14 @@ public class AutomatonBuilder {
 	}
 
 	public Automaton buildMinimalAutomaton() {
+		Automaton oldAutomaton = automaton;
 		automaton = buildMirrorAutomaton();
-		//automaton = buildDeterministicAutomaton();
-		//automaton = buildMirrorAutomaton();
-		//automaton = buildDeterministicAutomaton();
-		return automaton;
+		automaton = buildDeterministicAutomaton();
+		automaton = buildMirrorAutomaton();
+		automaton = buildDeterministicAutomaton();
+		Automaton newAutomaton = automaton;
+		automaton = oldAutomaton;
+		return newAutomaton;
 	}
 
 	private void removeEpsilon(Automaton automaton , State departState , Transition transition) {
