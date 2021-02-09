@@ -125,6 +125,9 @@ public class AutomatonFileHelper {
 		String line;
 		boolean isEndEncountered = false;
 		while (!isEndEncountered && (line = bufferedReader.readLine()) != null) {
+			if (line.isEmpty() || line.startsWith(COMMENTARY_CHARACTER)) {
+				continue;
+			}
 			if (line.equals(END_COMMAND)) {
 				isEndEncountered = true;
 			} else {
@@ -183,6 +186,9 @@ public class AutomatonFileHelper {
 		String line;
 		boolean isEndEncountered = false;
 		while (!isEndEncountered && (line = bufferedReader.readLine()) != null) {
+			if (line.isEmpty() || line.startsWith(COMMENTARY_CHARACTER)) {
+				continue;
+			}
 			if (line.equals(END_COMMAND)) {
 				isEndEncountered = true;
 			} else {

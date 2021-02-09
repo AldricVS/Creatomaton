@@ -27,6 +27,21 @@ public class TransitionListUtility {
 		}
 		return listTransition;
 	}
+	
+	/**
+	 * Check if a list of states have any epsilon transition in his transitionList
+	 * @param listStates the states to check
+	 * @return if there is at least one epsilonTransition
+	 */
+	public static boolean isThereAnyEpsilonTransition(List<State> listStates) {
+		List<Transition> transitions = getAllTransitionFromListStates(listStates);
+		for (Transition transition : transitions) {
+			if(transition.isEpsilon()) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * Search and retrieve all transitions that have te same starting state and

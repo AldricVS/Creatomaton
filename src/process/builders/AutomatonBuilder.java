@@ -65,7 +65,7 @@ public class AutomatonBuilder {
 
 		// get the list of Final States from Initial States
 //		listFinalState = new ArrayList<State>(miroirAutomaton.getInitialStates());
-		
+
 		listInitialState = miroirAutomaton.getInitialStates();
 		listFinalState = miroirAutomaton.getFinalStates();
 
@@ -73,11 +73,11 @@ public class AutomatonBuilder {
 		listState = miroirAutomaton.getAllStates();
 
 		// clear old list of states
-		//miroirAutomaton.clearAllStates();
+		// miroirAutomaton.clearAllStates();
 
 		// add all states
 		for (State state : listState) {
-			//reverse the initial and final state for each of the states
+			// reverse the initial and final state for each of the states
 			miroirAutomaton.setStateInitial(state, !listInitialState.contains(state));
 			miroirAutomaton.setStateFinal(state, !listFinalState.contains(state));
 		}
@@ -99,8 +99,6 @@ public class AutomatonBuilder {
 //		for (State state : listFinalState) {
 //			miroirAutomaton.setStateFinal(state, true);
 //		}
-		
-		
 
 		return miroirAutomaton;
 	}
@@ -157,8 +155,7 @@ public class AutomatonBuilder {
 			listState.clear();
 
 			// search the state from where we come from in the automaton's list
-			int stateStartingId = StateListUtility.getIdStateFromNameInList(determinedAutomaton.getAllStates(),
-					nameDeparture);
+			int stateStartingId = StateListUtility.getIdStateFromNameInList(determinedAutomaton.getAllStates(), nameDeparture);
 
 			// verification if we find it
 			State stateDeparture;
@@ -174,7 +171,7 @@ public class AutomatonBuilder {
 
 			// for each of the alphabet letter
 			for (char letter : alphabet.toCharArray()) {
-				//reset of isFinal
+				// reset of isFinal
 				isFinal = false;
 				// get all state from valid transition
 				listNewState = TransitionListUtility.getValidDestinationFromTransition(listTransitions, letter);
@@ -192,8 +189,7 @@ public class AutomatonBuilder {
 
 					// check that it doesn't already exist
 					// we will get the Id we need after otherwise
-					int nameId = StateListUtility.getIdStateFromNameInList(determinedAutomaton.getAllStates(),
-							nameDestination);
+					int nameId = StateListUtility.getIdStateFromNameInList(determinedAutomaton.getAllStates(), nameDestination);
 
 					// if an id hasn't been found, we can create a new State
 					// creating a new state mean that it will be added to listDeterminedState
@@ -210,8 +206,7 @@ public class AutomatonBuilder {
 						listNewState = new ArrayList<State>();
 					} else {
 						// add a transition
-						determinedAutomaton.addTransition(stateDeparture, determinedAutomaton.getStateById(nameId),
-								letter);
+						determinedAutomaton.addTransition(stateDeparture, determinedAutomaton.getStateById(nameId), letter);
 					}
 
 					// reset the list of added state
@@ -235,58 +230,59 @@ public class AutomatonBuilder {
 		return newAutomaton;
 	}
 
-	private void removeEpsilon(Automaton automaton , State departState , Transition transition) {
-	//	Automaton resultAutomaton = AutomatonFactory.createCopy(automaton);
-			State finalState = transition.getDestination();
-			
+	private void removeEpsilon(Automaton automaton, State departState, Transition transition) {
+		// Automaton resultAutomaton = AutomatonFactory.createCopy(automaton);
+		State finalState = transition.getDestination();
+
 		// verifie si l'etat d'arrive est final, si oui l'etat de départ devient final
 		if (automaton.isStateFinal(finalState.getId())) {
 			automaton.setStateFinal(departState, true);
 		}
-		
+
 		// verifie si l'etat d'arrive est final, si oui l'etat de départ devient final
 		if (automaton.isStateInitial(finalState.getId())) {
 			automaton.setStateInitial(departState, true);
 		}
-		
-		// prendre toute les transition qui parte de l'état final et les faire partir de l'état de départ
-		for (int i=0 ;i< finalState.getNumberOfTransition(); i++ ) {
-			 Transition transitionIeme = finalState.getTransitions().get(i);
-			 departState.addTransition(transitionIeme);
+
+		// prendre toute les transition qui parte de l'état final et les faire partir de
+		// l'état de départ
+		for (int i = 0; i < finalState.getNumberOfTransition(); i++) {
+			Transition transitionIeme = finalState.getTransitions().get(i);
+			departState.addTransition(transitionIeme);
 		}
 		departState.removeTransition(transition);
 	}
-	
+
 	private Automaton removeInaccessibleState(Automaton automaton) {
-		 List<State> listStates =  automaton.getAllStates();
-		for (int i=0 ; i< automaton.getNumberOfTotalStates() ; i++) {
-			State state =listStates.get(i);
-			if (!(automaton.isStateAccessible(state)) && !(automaton.isStateFinal(state)) ) {
+		List<State> listStates = automaton.getAllStates();
+		for (State state : listStates) {
+			if (!(automaton.isStateAccessible(state)) && !(automaton.isStateInitial(state))) {
 				automaton.removeState(state);
 			}
 		}
 		return automaton;
 	}
-	
+
 	public Automaton buildSynchronizedAutomaton() {
 		Automaton resultAutomaton = AutomatonFactory.createCopy(automaton);
-		 List<State> listStates =  resultAutomaton.getAllStates();
-		 State state;
-		 
-		 //parcours des etats
-		for (int i=0 ; i< resultAutomaton.getNumberOfTotalStates() ; i++) {
-			 state =listStates.get(i);
-			 
-			//parcours des transitions de l'etat en court
-			 for (int j=0 ; j < state.getNumberOfTransition() ; j++) {
-				 Transition transition = state.getTransitions().get(j);
-				
-				 if (transition.isEpsilon()) {
-					 removeEpsilon(resultAutomaton , state ,transition);
-				 }
-			 }
+		List<State> listStates = resultAutomaton.getAllStates();
+		State state;
+
+		// parcours des etats, TANT QUE Y'A DES EPSILON-TRANSITIONS
+		while(TransitionListUtility.isThereAnyEpsilonTransition(listStates)) {
+			for (int i = 0; i < resultAutomaton.getNumberOfTotalStates(); i++) {
+				state = listStates.get(i);
+
+				// parcours des transitions de l'etat en court
+				for (int j = 0; j < state.getNumberOfTransition(); j++) {
+					Transition transition = state.getTransitions().get(j);
+
+					if (transition.isEpsilon()) {
+						removeEpsilon(resultAutomaton, state, transition);
+					}
+				}
+			}
 		}
-		
 		return removeInaccessibleState(resultAutomaton);
 	}
 }
