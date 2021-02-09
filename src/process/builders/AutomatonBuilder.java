@@ -73,7 +73,7 @@ public class AutomatonBuilder {
 		listState = miroirAutomaton.getAllStates();
 
 		// clear old list of states
-		miroirAutomaton.clearAllStates();
+		//miroirAutomaton.clearAllStates();
 
 		// add all states
 		for (State state : listState) {
