@@ -9,7 +9,8 @@ import java.util.List;
 import data.Automaton;
 import data.State;
 import data.Transition;
-
+import process.builders.AutomatonBuilder;
+import process.factory.AutomatonFactory;
 import process.util.StateListUtility;
 import process.util.TransitionListUtility;
 
@@ -40,12 +41,32 @@ public class AutomatonManager {
 	}
 
 	/**
-	 * Validate the given Automaton
+	 * Validate the given Automaton The Automaton must be determined
 	 * 
 	 * @param word the word to be tested
-	 * @return true if the word is Final, false otherwise
+	 * @return true if the word is Final
+	 * @return false if word isn't valid or automaton isn't determined
 	 */
 	public boolean validateAutomaton(String word) {
+		boolean isValid = false;
+		if (!isDeterministic()) {
+			Automaton automatonCopy = AutomatonFactory.createCopy(automaton);
+			AutomatonBuilder automatonBuilder = new AutomatonBuilder(automatonCopy);
+			automatonCopy = automatonBuilder.buildDeterministicAutomaton();
+			setAutomaton(automatonCopy);
+		}
+		isValid = validateWord(word);
+		setAutomaton(automaton);
+		return isValid;
+	}
+
+	/**
+	 * Check if the given word can access a final state
+	 * 
+	 * @param word
+	 * @return true if we arrived at a final state
+	 */
+	private boolean validateWord(String word) {
 		List<State> listState = new ArrayList<State>();
 		listState.addAll(automaton.getInitialStates());
 

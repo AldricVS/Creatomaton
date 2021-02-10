@@ -55,25 +55,14 @@ public class AutomatonBuilder {
 		List<State> listState, listInitialState, listFinalState;
 
 		// our new automaton
-		Automaton miroirAutomaton;
+		Automaton miroirAutomaton = AutomatonFactory.createCopy(automaton);
 
-		miroirAutomaton = AutomatonFactory.createCopy(automaton);
-		// miroirAutomaton = new Automaton(automaton.getAlphabet());
-
-		// get the list of Initial States from Final States
-//		listInitialState = new ArrayList<State>(miroirAutomaton.getFinalStates());
-
-		// get the list of Final States from Initial States
-//		listFinalState = new ArrayList<State>(miroirAutomaton.getInitialStates());
-
+		// get the list of Initial States and Final States
 		listInitialState = miroirAutomaton.getInitialStates();
 		listFinalState = miroirAutomaton.getFinalStates();
 
 		// get the list of all States
 		listState = miroirAutomaton.getAllStates();
-
-		// clear old list of states
-		// miroirAutomaton.clearAllStates();
 
 		// add all states
 		for (State state : listState) {
@@ -89,16 +78,6 @@ public class AutomatonBuilder {
 			state.removeTransition(transition);
 			miroirAutomaton.addTransition(transition.getDestination(), state, transition.getLetter());
 		}
-
-//		// set all initial states
-//		for (State state : listInitialState) {
-//			miroirAutomaton.setStateInitial(state, true);
-//		}
-//
-//		// set all final states
-//		for (State state : listFinalState) {
-//			miroirAutomaton.setStateFinal(state, true);
-//		}
 
 		return miroirAutomaton;
 	}
@@ -269,7 +248,7 @@ public class AutomatonBuilder {
 		State state;
 
 		// parcours des etats, TANT QUE Y'A DES EPSILON-TRANSITIONS
-		while(TransitionListUtility.isThereAnyEpsilonTransition(listStates)) {
+		while (TransitionListUtility.isThereAnyEpsilonTransition(listStates)) {
 			for (int i = 0; i < resultAutomaton.getNumberOfTotalStates(); i++) {
 				state = listStates.get(i);
 
