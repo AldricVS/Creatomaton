@@ -52,7 +52,7 @@ public class BuilderTest {
 		File f = new File(fileName + ".dot");
 		DotBuilder dotBuilder = new DotBuilder(automaton);
 		dotBuilder.setInReverseMode(isMirror);
-		dotBuilder.setIsTriyingToGetStatesNames(false);
+		//dotBuilder.setIsTriyingToGetStatesNames(false);
 		dotBuilder.buildDotFile(f);
 		
 		try {

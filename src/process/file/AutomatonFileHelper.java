@@ -30,6 +30,7 @@ public class AutomatonFileHelper {
 	public static final String SEPARATOR_CHARACTER = ";";
 	public static final String EPSILON_STRING = "epsilon";
 
+	public static final String STATES_COMMAND = "#States";
 	public static final String INITIAL_STATES_COMMAND = "#Initial States";
 	public static final String FINAL_STATES_COMMAND = "#Final States";
 	public static final String REMAINING_STATES_COMMAND = "#Remaining States";
@@ -52,7 +53,7 @@ public class AutomatonFileHelper {
 	 *                 have the extension ".crea" no matter what
 	 * @throws IOException If any IO error occurs (such as security error)
 	 */
-	public void saveAutomaton(Automaton automaton, String filePath) throws IOException {
+	public void saveAutomaton(Automaton automaton, String filePath) throws IOException, IllegalArgumentException {
 		String realFilepath = FileUtility.getRightFilenameExtension(filePath, AUTOMATON_FILE_EXTENSION);
 		realFilepath = FileUtility.searchFileOutputName(realFilepath);
 		File outputFile = new File(realFilepath);
@@ -78,6 +79,14 @@ public class AutomatonFileHelper {
 		bufferedWriter.close();
 	}
 
+	/**
+	 * Load an automaton from a file.
+	 * @param filename
+	 * @return
+	 * @throws FileFormatException
+	 * @throws IOException
+	 * @throws IllegalArgumentException
+	 */
 	public Automaton loadAutomaton(String filename) throws FileFormatException, IOException, IllegalArgumentException {
 		File file = new File(filename);
 		if (!FileUtility.isFileWithGoodExtension(filename, AUTOMATON_FILE_EXTENSION)) {
@@ -100,14 +109,8 @@ public class AutomatonFileHelper {
 
 			// we have 3 differents starts
 			switch (line) {
-			case INITIAL_STATES_COMMAND:
-				readStates(bufferedReader, automaton, true, false);
-				break;
-			case FINAL_STATES_COMMAND:
-				readStates(bufferedReader, automaton, false, true);
-				break;
-			case REMAINING_STATES_COMMAND:
-				readStates(bufferedReader, automaton, false, false);
+			case STATES_COMMAND:
+				readStates(bufferedReader, automaton);
 				break;
 			case TRANSITIONS_COMMAND:
 				readTransitions(bufferedReader, automaton);
@@ -182,7 +185,7 @@ public class AutomatonFileHelper {
 		}
 	}
 
-	private void readStates(BufferedReader bufferedReader, Automaton automaton, boolean isInitial, boolean isFinal) throws FileFormatException, IOException {
+	private void readStates(BufferedReader bufferedReader, Automaton automaton) throws FileFormatException, IOException {
 		String line;
 		boolean isEndEncountered = false;
 		while (!isEndEncountered && (line = bufferedReader.readLine()) != null) {
@@ -192,16 +195,12 @@ public class AutomatonFileHelper {
 			if (line.equals(END_COMMAND)) {
 				isEndEncountered = true;
 			} else {
-				// split the string in 2 parts : id and name
-				int splitCharacterIndex = line.indexOf(SEPARATOR_CHARACTER);
-				if (splitCharacterIndex == -1) {
-					throw new FileFormatException("Separator index (\"" + SEPARATOR_CHARACTER + "\") not found at the line : " + line);
-				}
-				//try to read Id
+				//try to read state description : 4 fields max
+				String split[] = line.split(SEPARATOR_CHARACTER, 4);
 				int id;
 				String name = null;
-				if(splitCharacterIndex > 0) {
-					String idString = line.substring(0, splitCharacterIndex);
+				if(split.length > 0) {
+					String idString = split[0];
 					try {
 						id = Integer.parseInt(idString);
 					}catch (NumberFormatException e) {
@@ -212,9 +211,8 @@ public class AutomatonFileHelper {
 				}
 				
 				//try to read name (optionnal)
-				int lineLength = line.length();
-				if(splitCharacterIndex < lineLength) {
-					name = line.substring(splitCharacterIndex + 1, lineLength);
+				if(split.length == 4 && !split[3].trim().isEmpty()) {
+					name = split[3];
 				}
 				
 				//create the state and put it in the right place, don't put it if already exists
@@ -222,6 +220,15 @@ public class AutomatonFileHelper {
 					automaton.addState(new State(id, name));
 				}
 				
+				//try to read initial or final from the line (also optionnal)
+				boolean isInitial = false;
+				boolean isFinal = false;
+				if(split.length >= 2 && "1".equals(split[1])) {
+					isInitial = true;
+				}
+				if(split.length >= 3 && "1".equals(split[2])) {
+					isFinal = true;
+				}
 				State state = automaton.getStateById(id);
 				//include if the state must be initial or final
 				automaton.setStateInitial(state, isInitial);

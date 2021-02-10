@@ -18,10 +18,10 @@ public class CustomFileTest {
 		
 		
 		//le modifier et le sauvegarder
-		AutomatonBuilder automatonBuilder = new AutomatonBuilder(automatonLoaded);
-		Automaton modifiedAutomaton = automatonBuilder.buildSynchronizedAutomaton();
-		BuilderTest.createImage(modifiedAutomaton, "modifiedAutomaton", false);
-		automatonFileHelper.saveAutomaton(modifiedAutomaton, "src/test/demo/creaFiles/automatonModifie.crea");
+//		AutomatonBuilder automatonBuilder = new AutomatonBuilder(automatonLoaded);
+//		Automaton modifiedAutomaton = automatonBuilder.buildSynchronizedAutomaton();
+//		BuilderTest.createImage(modifiedAutomaton, "modifiedAutomaton", false);
+//		automatonFileHelper.saveAutomaton(modifiedAutomaton, "src/test/demo/creaFiles/automatonModifie.crea");
 	}
 	
 }
