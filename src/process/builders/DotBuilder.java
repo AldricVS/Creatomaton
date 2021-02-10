@@ -36,11 +36,32 @@ public class DotBuilder {
 	private boolean isInReverseMode = false;
 
 	/**
+	 * If this value is set to "false", then only the state id will be displayed,
+	 * and not the name
+	 */
+	private boolean isTriyingToGetStatesNames = true;
+
+	/**
 	 * Check if the resulting graph will be displayed from left to right or top to
 	 * bottom. By default, this value is set to {@code true}.
 	 */
 	public boolean isInLandscapeMode() {
 		return isInLandscapeMode;
+	}
+
+	/**
+	 * Checks if the resulting graph will try to display the states names
+	 */
+	public boolean isTriyingToGetStatesNames() {
+		return isTriyingToGetStatesNames;
+	}
+
+	/**
+	 * Set if the resulting graph will try to display the states names. By default,
+	 * this value is set to {@code true}
+	 */
+	public void setIsTriyingToGetStatesNames(boolean doesTryToGetNames) {
+		this.isTriyingToGetStatesNames = doesTryToGetNames;
 	}
 
 	/**
@@ -84,35 +105,6 @@ public class DotBuilder {
 	public void setAutomaton(Automaton automaton) {
 		this.automaton = automaton;
 	}
-
-//	/**
-//	 * Create the String that could be contained in a ".dot" file. This method will
-//	 * not run properly if it tries to parse a very, very big automaton (a String
-//	 * have a space limit of 2 147 483 647 characters)
-//	 * 
-//	 * @return a String containing all informations
-//	 */
-//	public String buildDotString() {
-//		// Line separator is  different on windows and unix
-//		StringBuilder stringBuilder = new StringBuilder(); 
-//		if(isInLandscapeMode) {
-//			stringBuilder.append("digraph G {rankdir=\"LR\";" + System.lineSeparator());
-//		}else {
-//			stringBuilder.append("digraph G {" + System.lineSeparator());
-//		}
-//		
-//		//We want to go through all states
-//		List<State> states = automaton.getAllStates();
-//		for (State state : states) {
-//			String stateData = extractDataFromState(state);
-//			stringBuilder.append(stateData + System.lineSeparator());
-//		}
-//
-//		// don't forget the ending curly brace '}'
-//		stringBuilder.append('}');
-//
-//		return stringBuilder.toString();
-//	}
 
 	/**
 	 * Exports the automaton to a specified file (that will be created if not
@@ -167,7 +159,7 @@ public class DotBuilder {
 		// Each state data will be displayed on a unique line
 		StringBuilder sb = new StringBuilder();
 		int stateId = state.getId();
-		String stateValidName = "\"" + state.getValidName() + "\"";
+		String stateValidName = isTriyingToGetStatesNames ? "\"" + state.getValidName() + "\"" : "\"" + state.getId() + "\"";
 
 		// If state is initial, we want to create a substate in order to meake the
 		// illusion that the arrow come from nowhere
@@ -196,29 +188,25 @@ public class DotBuilder {
 
 			List<Transition> transitionsWithSamePath = TransitionListUtility.getTransitionsWithSamePath(state, destinationState);
 			String label = "";
-			for(Transition t : transitionsWithSamePath) {
-				//if transition not already used before
-				if(!usedTransitions.contains(t)) {
+			for (Transition t : transitionsWithSamePath) {
+				// if transition not already used before
+				if (!usedTransitions.contains(t)) {
 					label += t.isEpsilon() ? '\u03B5' : t.getLetter();
 					label += ",";
-					//remove it so that we cannot print same transition twice in file
+					// remove it so that we cannot print same transition twice in file
 					usedTransitions.add(t);
 				}
 			}
-			//remove the last comma from the label 
-			if(label.endsWith(",")) {
+			// remove the last comma from the label
+			if (label.endsWith(",")) {
 				label = label.substring(0, label.length() - 1);
 			}
-			if(!label.isEmpty()) {
-				String transitionString = stateValidName + "->\"" + destinationState.getValidName() + "\"[label=\"" + label + "\"];";
+			if (!label.isEmpty()) {
+				String validName = isTriyingToGetStatesNames ? "\"" + destinationState.getValidName() + "\"" : "\"" + destinationState.getId() + "\"";
+				String transitionString = stateValidName + "->" + validName + "[label=\"" + label + "\"];";
 				// Exemple of resulted string : 1 -> 2 [label="a"]:
 				sb.append(transitionString);
 			}
-			
-//			char transitionCharacter = transition.isEpsilon() ? '\u03B5' : transition.getLetter();
-//			String transitionString = stateValidName + "->" + destinationState.getValidName() + "[label=\"" + label + "\"];";
-//			// Exemple of resulted string : 1 -> 2 [label="a"]:
-//			sb.append(transitionString);
 		}
 
 		return sb.toString();

@@ -12,7 +12,7 @@
 #End
 #Remaining States
 " [idEtat];[nom (optionnel)]
-3;normal
+3;bernard
 #End
 #Transitions
 " [idEtatDepart];[idEtatArrivee];[caractèreTransition]
