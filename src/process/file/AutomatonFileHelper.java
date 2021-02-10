@@ -31,9 +31,6 @@ public class AutomatonFileHelper {
 	public static final String EPSILON_STRING = "epsilon";
 
 	public static final String STATES_COMMAND = "#States";
-	public static final String INITIAL_STATES_COMMAND = "#Initial States";
-	public static final String FINAL_STATES_COMMAND = "#Final States";
-	public static final String REMAINING_STATES_COMMAND = "#Remaining States";
 	public static final String TRANSITIONS_COMMAND = "#Transitions";
 	public static final String END_COMMAND = "#End";
 
@@ -60,20 +57,9 @@ public class AutomatonFileHelper {
 		outputFile.createNewFile();
 
 		BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputFile));
-
-		List<State> initialStates = automaton.getInitialStates();
-		List<State> finalStates = automaton.getFinalStates();
 		List<State> allStates = automaton.getAllStates();
-		List<State> remainingStates = new ArrayList<State>();
-
-		for (State state : allStates) {
-			if (!initialStates.contains(state) && !finalStates.contains(state)) {
-				remainingStates.add(state);
-			}
-		}
-		writeStateList(INITIAL_STATES_COMMAND, initialStates, bufferedWriter);
-		writeStateList(FINAL_STATES_COMMAND, finalStates, bufferedWriter);
-		writeStateList(REMAINING_STATES_COMMAND, remainingStates, bufferedWriter);
+		
+		writeStateList(automaton, allStates, bufferedWriter);
 
 		writeTransitions(allStates, bufferedWriter);
 		bufferedWriter.close();
@@ -242,11 +228,11 @@ public class AutomatonFileHelper {
 
 	}
 
-	private void writeStateList(String sectionName, List<State> states, BufferedWriter bufferedWriter) throws IOException {
-		bufferedWriter.write(sectionName);
+	private void writeStateList(Automaton automaton, List<State> states, BufferedWriter bufferedWriter) throws IOException {
+		bufferedWriter.write(STATES_COMMAND);
 		bufferedWriter.newLine();
 		for (State state : states) {
-			String descritpionString = getStateDescription(state);
+			String descritpionString = getStateDescription(automaton, state);
 			bufferedWriter.write(descritpionString);
 			bufferedWriter.newLine();
 		}
@@ -268,12 +254,14 @@ public class AutomatonFileHelper {
 		bufferedWriter.newLine();
 	}
 
-	private String getStateDescription(State state) {
-		if (state.hasName()) {
-			return state.getId() + SEPARATOR_CHARACTER + state.getName();
-		} else {
-			return state.getId() + SEPARATOR_CHARACTER;
+	private String getStateDescription(Automaton automaton, State state) {
+		String isInitialString = automaton.isStateInitial(state) ? "1" : "0";
+		String isFinalString = automaton.isStateFinal(state) ? "1" : "0";
+		String stateDescription = state.getId() + SEPARATOR_CHARACTER + isInitialString + SEPARATOR_CHARACTER + isFinalString;
+		if(state.hasName()) {
+			stateDescription += SEPARATOR_CHARACTER + state.getName();
 		}
+		return stateDescription;
 	}
 
 	private String getTransitionDescription(State sourceState, Transition transition) {

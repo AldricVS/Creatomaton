@@ -3,9 +3,10 @@
 " Un '#End' est nécéssaire à chaque fin de section
 #States
 " [idEtatDepart];[estInitial (0-1)];[estFinal (0-1)];[Nom (optionnel)]
+" On peut juste mettre l'ID, créant un état ni initial ni final sans nom
 0;1;1;EIF
 1
-2;1;0;
+2;1;0
 3;0;1;normal
 #End
 #Transitions
