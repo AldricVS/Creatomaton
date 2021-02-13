@@ -1,12 +1,8 @@
-#Initial States
-0;EI
-2;
-#End
-#Final States
-1;
-#End
-#Remaining States
-3;normal
+#States
+0;1;0;EI
+1;0;1
+2;1;0
+3;0;0;normal
 #End
 #Transitions
 0;1;a
