@@ -56,6 +56,34 @@ public class GraphvizHelper {
 		fileOutputName = name;
 	}
 
+	public String getGraphvizPath() {
+		return graphvizPath;
+	}
+
+	public String getFileOutputPath() {
+		return fileOutputPath;
+	}
+
+	public String getFileInputPath() {
+		return fileInputPath;
+	}
+
+	public String getFileOutputName() {
+		return fileOutputName;
+	}
+
+	public void setGraphvizPath(String graphvizPath) {
+		this.graphvizPath = graphvizPath;
+	}
+
+	public void setFileOutputPath(String fileOutputPath) {
+		this.fileOutputPath = fileOutputPath;
+	}
+
+	public void setFileInputPath(String fileInputPath) {
+		this.fileInputPath = fileInputPath;
+	}
+
 	/**
 	 * Run the command and wait for the end of it
 	 * 
