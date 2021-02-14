@@ -125,8 +125,9 @@ public class AutomatonBuilder {
 			// check if there is a epsilon transition
 			if (TransitionListUtility.isThereAnyEpsilonTransition(listState)) {
 				// add all epsilon transition coming from here
-				listState.addAll(TransitionListUtility.getValidDestinationFromTransition(listTransitions,
-						AutomatonConstants.EPSILON_CHAR));
+				List<State> listEpsilonState = TransitionListUtility.getValidDestinationFromTransition(listTransitions,
+						AutomatonConstants.EPSILON_CHAR);
+				listState.addAll(listEpsilonState);
 			}
 
 			// construct the name of our new determined state

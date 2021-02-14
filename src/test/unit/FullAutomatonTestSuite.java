@@ -7,6 +7,7 @@ import test.unit.automatonBuilder.AutomatonBuilderTestSuite;
 import test.unit.automatonBuilder.SynchronizedAutomatonTest;
 import test.unit.basic.CreateAutomatonTest;
 import test.unit.basic.CreateEpsilonAutomatonTest;
+import test.unit.basic.OnlyEpsilonTest;
 import test.unit.files.FileManagementTestSuite;
 import test.unit.thompson.ThompsonAutomatonTestSuite;
 
@@ -27,6 +28,7 @@ import test.unit.thompson.ThompsonAutomatonTestSuite;
 @Suite.SuiteClasses({
 	CreateAutomatonTest.class,
 	CreateEpsilonAutomatonTest.class,
+	OnlyEpsilonTest.class,
 	ThompsonAutomatonTestSuite.class,
 	AutomatonBuilderTestSuite.class,
 	FileManagementTestSuite.class

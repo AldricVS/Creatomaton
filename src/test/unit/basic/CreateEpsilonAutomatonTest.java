@@ -67,6 +67,8 @@ public class CreateEpsilonAutomatonTest {
 	public void dontRecognizeOtherWord() {
 		AutomatonManager manager = new AutomatonManager(automaton);
 		assertFalse(manager.validateAutomaton("acc"));
+		assertFalse(manager.validateAutomaton("acbb"));
+		assertFalse(manager.validateAutomaton("bac"));
 	}
 	
 }
