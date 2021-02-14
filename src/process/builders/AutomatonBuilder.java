@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import data.Automaton;
+import data.AutomatonConstants;
 import data.State;
 import data.Transition;
 import process.factory.AutomatonFactory;
@@ -118,12 +119,19 @@ public class AutomatonBuilder {
 			// listState will take the first list of listDeterminedState
 			listState = listDeterminedStates.pop();
 
+			// we add all transition from all the state we are coming from
+			listTransitions = TransitionListUtility.getAllTransitionFromListStates(listState);
+
+			// check if there is a epsilon transition
+			if (TransitionListUtility.isThereAnyEpsilonTransition(listState)) {
+				// add all epsilon transition coming from here
+				listState.addAll(TransitionListUtility.getValidDestinationFromTransition(listTransitions,
+						AutomatonConstants.EPSILON_CHAR));
+			}
+
 			// construct the name of our new determined state
 			String nameDeparture = "";
 			nameDeparture = StateListUtility.constructNameOfDeterminedStates(listState);
-
-			// we add all transition from all the state we are coming from
-			listTransitions = TransitionListUtility.getAllTransitionFromListStates(listState);
 
 			// check if there is a final state
 			if (StateListUtility.hasCommonStates(listState, automaton.getFinalStates())) {
@@ -134,7 +142,8 @@ public class AutomatonBuilder {
 			listState.clear();
 
 			// search the state from where we come from in the automaton's list
-			int stateStartingId = StateListUtility.getIdStateFromNameInList(determinedAutomaton.getAllStates(), nameDeparture);
+			int stateStartingId = StateListUtility.getIdStateFromNameInList(determinedAutomaton.getAllStates(),
+					nameDeparture);
 
 			// verification if we find it
 			State stateDeparture;
@@ -168,7 +177,8 @@ public class AutomatonBuilder {
 
 					// check that it doesn't already exist
 					// we will get the Id we need after otherwise
-					int nameId = StateListUtility.getIdStateFromNameInList(determinedAutomaton.getAllStates(), nameDestination);
+					int nameId = StateListUtility.getIdStateFromNameInList(determinedAutomaton.getAllStates(),
+							nameDestination);
 
 					// if an id hasn't been found, we can create a new State
 					// creating a new state mean that it will be added to listDeterminedState
@@ -185,7 +195,8 @@ public class AutomatonBuilder {
 						listNewState = new ArrayList<State>();
 					} else {
 						// add a transition
-						determinedAutomaton.addTransition(stateDeparture, determinedAutomaton.getStateById(nameId), letter);
+						determinedAutomaton.addTransition(stateDeparture, determinedAutomaton.getStateById(nameId),
+								letter);
 					}
 
 					// reset the list of added state

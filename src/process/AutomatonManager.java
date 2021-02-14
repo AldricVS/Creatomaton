@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import data.Automaton;
+import data.AutomatonConstants;
 import data.State;
 import data.Transition;
 import process.builders.AutomatonBuilder;
 import process.factory.AutomatonFactory;
-import process.util.StateListUtility;
 import process.util.TransitionListUtility;
 
 /**
@@ -41,13 +41,15 @@ public class AutomatonManager {
 	}
 
 	/**
-	 * Validate the given Automaton The Automaton must be determined
+	 * {@link #validateAutomaton(String) Validate} the given Automaton by recreating
+	 * it as a new determined Automaton. This method must be used for any Thompson's
+	 * Automaton
 	 * 
 	 * @param word the word to be tested
 	 * @return true if the word is Final
-	 * @return false if word isn't valid or automaton isn't determined
+	 * @return false if word isn't valid or if Automaton couldn't be determined
 	 */
-	public boolean validateAutomaton(String word) {
+	public boolean validateAutomatonByDeterminism(String word) {
 		boolean isValid = false;
 		if (!isDeterministic()) {
 			Automaton automatonCopy = AutomatonFactory.createCopy(automaton);
@@ -55,18 +57,20 @@ public class AutomatonManager {
 			automatonCopy = automatonBuilder.buildDeterministicAutomaton();
 			setAutomaton(automatonCopy);
 		}
-		isValid = validateWord(word);
+		isValid = validateAutomaton(word);
 		setAutomaton(automaton);
 		return isValid;
 	}
 
 	/**
-	 * Check if the given word can access a final state
+	 * Check if the given word can access a final state. In case of a Thompson's
+	 * Automaton, use {@link #validateAutomatonByDeterminism(String) validation by
+	 * determinism} instead.
 	 * 
-	 * @param word
+	 * @param word the word to be tested
 	 * @return true if we arrived at a final state
 	 */
-	private boolean validateWord(String word) {
+	public boolean validateAutomaton(String word) {
 		List<State> listState = new ArrayList<State>();
 		listState.addAll(automaton.getInitialStates());
 
@@ -74,10 +78,13 @@ public class AutomatonManager {
 
 		// we search through our list of transition for any possible transition to add
 		// then we do it again until we arrived at a final state
-		while (!word.isEmpty()) {
+		while ((!word.isEmpty()) && (!listState.isEmpty())) {
 			// first, get the next letter to search and reduced our word
-			char nextLetter = word.charAt(0);
-			word = word.substring(1);
+			char nextLetter = AutomatonConstants.EPSILON_CHAR;
+			if (!word.isEmpty()) {
+				nextLetter = word.charAt(0);
+				word = word.substring(1);
+			}
 
 			// we have some initial transition to go through
 			if (!listState.isEmpty()) {
@@ -121,11 +128,11 @@ public class AutomatonManager {
 		}
 
 		// check if there is any epsilon transition or any multiple
-		// transition of thesame letter
+		// transition of the same letter
 		List<State> listStates = automaton.getAllStates();
 		for (State state : listStates) {
 			// the list of transition
-			List<Transition> listTransitions = new ArrayList<Transition>(state.getTransitions());
+			List<Transition> listTransitions = state.getTransitions();
 			// a list of letter of the transition
 			List<Character> listLetter = new ArrayList<Character>();
 
@@ -138,7 +145,6 @@ public class AutomatonManager {
 				listLetter.add(transition.getLetter());
 			}
 
-			listTransitions.clear();
 			listLetter.clear();
 		}
 
