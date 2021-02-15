@@ -1,7 +1,5 @@
 package process.factory;
 
-import java.util.ArrayList;
-
 import data.Automaton;
 import data.State;
 import data.Transition;

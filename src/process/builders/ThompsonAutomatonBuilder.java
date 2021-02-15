@@ -5,6 +5,7 @@ import java.util.EmptyStackException;
 import java.util.Stack;
 
 import data.Automaton;
+import data.AutomatonConstants;
 import process.factory.ThompsonAutomatonFactory;
 
 /**
@@ -117,7 +118,7 @@ public class ThompsonAutomatonBuilder {
 						automatonStack.push(unionAutomaton);
 						break;
 					case CONCATENATION_CHARACTER:
-					case Character.MIN_VALUE:
+					case AutomatonConstants.EPSILON_CHAR:
 						// We have either operator '.' or not any operator, we will do a concatenation
 						Automaton concatRight = automatonStack.pop();
 						Automaton concatLeft = automatonStack.pop();
