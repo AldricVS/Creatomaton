@@ -23,7 +23,7 @@ public class OnlyEpsilonTest {
 
 	@BeforeClass
 	public static void prepareAutomaton() {
-		automaton = new Automaton("a");
+		automaton = new Automaton("ab");
 		state0 = new State(0);
 		state1 = new State(1);
 		state2 = new State(2);
@@ -41,7 +41,10 @@ public class OnlyEpsilonTest {
 	@After
 	public void isValid() {
 		AutomatonManager manager = new AutomatonManager(automaton);
-		String word = "";
+		String word;
+		word = "";
+		assertTrue(manager.validateAutomaton(word));
+		word = "a";
 		assertTrue(manager.validateAutomaton(word));
 	}
 
@@ -49,7 +52,9 @@ public class OnlyEpsilonTest {
 	public void isInvalid() {
 		AutomatonManager manager = new AutomatonManager(automaton);
 		String word;
-		word = "a";
+		word = "baa";
+		assertFalse(manager.validateAutomaton(word));
+		word = "aba";
 		assertFalse(manager.validateAutomaton(word));
 	}
 

@@ -14,6 +14,7 @@ import data.Transition;
 import process.AutomatonManager;
 import process.builders.AutomatonBuilder;
 import process.util.StateListUtility;
+import process.util.TransitionListUtility;
 
 /**
  * Muliple tests that check if an automaton is correctly created.<p>
@@ -125,9 +126,10 @@ public class CreateAutomatonTest {
 		
 		assertTrue(automatonMiror.isStateInitial(2));
 		assertTrue(automatonMiror.isStateFinal(0));
-		// change how this test is done
-//		int test = automatonMiror.getStateById(1).getTransitions().get(0).getDestination().getId();
-//		assertEquals(0, test);
+		// check if the state by id 1 go to state by id 0
+		List<State> destinationStateFromTransition = TransitionListUtility.getAllDestinationFromTransition(automatonMiror.getStateById(1).getTransitions());
+		State stateToBeFound = automatonMiror.getStateById(0);
+		assertTrue(destinationStateFromTransition.contains(stateToBeFound));
 		
 	}
 	
