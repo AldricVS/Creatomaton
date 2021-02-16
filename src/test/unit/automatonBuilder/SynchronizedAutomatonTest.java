@@ -1,6 +1,7 @@
 package test.unit.automatonBuilder;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -9,14 +10,14 @@ import org.junit.Test;
 
 import data.Automaton;
 import data.State;
-import data.Transition;
+import process.AutomatonManager;
 import process.builders.AutomatonBuilder;
-import process.factory.AutomatonFactory;
 
 public class SynchronizedAutomatonTest {
 
 	private static Automaton automaton;
 	private static AutomatonBuilder builder;
+	private static AutomatonManager manager;
 	private static State state0;
 	private static State state1;
 	private static State state2;
@@ -47,6 +48,8 @@ public class SynchronizedAutomatonTest {
 
 		builder = new AutomatonBuilder(automaton);
 		automaton = builder.buildSynchronizedAutomaton();
+		
+		manager = new AutomatonManager(automaton);
 
 	}
 
@@ -79,6 +82,7 @@ public class SynchronizedAutomatonTest {
 		builder.setAutomaton(automaton);
 		Automaton automatonCopy = builder.buildSynchronizedAutomaton();
 		//TODO comparer les deux, ils doivent être identique (methode en creation...)
+		assertTrue(manager.isEquals(automatonCopy));
 	}
 
 }

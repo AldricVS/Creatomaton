@@ -1,0 +1,17 @@
+#States
+0;1;0;EI
+1;0;0;Pierre
+2;0;0;Jean-Eude
+3;0;0
+4;0;1;EF
+#End
+
+#Transitions
+0;1;a
+0;2;b
+1;2;epsilon
+2;3;c
+3;1;epsilon
+3;0;b
+3;4;epsilon
+#End

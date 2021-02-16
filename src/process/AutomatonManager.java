@@ -4,7 +4,9 @@
 package process;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import data.Automaton;
 import data.AutomatonConstants;
@@ -115,7 +117,8 @@ public class AutomatonManager {
 
 	/**
 	 * Compare two Automaton, to see if they are equals. This method will change the
-	 * given automaton to their {@link AutomatonBuilder#buildMinimalAutomaton() minimalist} counterpart.
+	 * given automaton to their {@link AutomatonBuilder#buildMinimalAutomaton()
+	 * minimalist} counterpart.
 	 * 
 	 * @param automatonToCompare the automaton we will be comparing to
 	 * @return true if they are equals, false otherwise
@@ -127,8 +130,48 @@ public class AutomatonManager {
 		firstMinimalAutomaton = builder.buildMinimalAutomaton();
 		builder = new AutomatonBuilder(automatonToCompare);
 		secondMinimalAutomaton = builder.buildMinimalAutomaton();
-		
-		//start comparation
+
+		List<State> listStatesFirstAutomaton = firstMinimalAutomaton.getAllStates();
+		List<State> listStatesSecondAutomaton = secondMinimalAutomaton.getAllStates();
+
+		// start comparation
+		if ((listStatesFirstAutomaton.size() != listStatesSecondAutomaton.size())
+				|| (firstMinimalAutomaton.getInitialStates().size() != secondMinimalAutomaton.getInitialStates().size())
+				|| (firstMinimalAutomaton.getFinalStates().size() != secondMinimalAutomaton.getFinalStates().size())) {
+			return false;
+		}
+
+		// Map all state that are equals
+		Map<State, State> equalsStatesMap = new HashMap<State, State>();
+		// Map all transition that are equals
+		Map<Transition, Transition> equalsTransitionsMap = new HashMap<Transition, Transition>();
+
+		for (State state : listStatesFirstAutomaton) {
+			List<Transition> listTransitions = state.getTransitions();
+			for (State state2 : listStatesSecondAutomaton) {
+				List<Transition> listTransitions2 = state2.getTransitions();
+				for (Transition transition : listTransitions) {
+					for (Transition transition2 : listTransitions2) {
+						if ((transition.getDestination().getId() == transition2.getDestination().getId())
+								&& (transition.getLetter() == transition2.getLetter())) {
+							equalsTransitionsMap.put(transition, transition2);
+						}
+					}
+				}
+
+				if ((equalsTransitionsMap.keySet().containsAll(listTransitions))
+						&& (equalsTransitionsMap.values().containsAll(listTransitions2))) {
+					equalsStatesMap.put(state, state2);
+				}
+				equalsTransitionsMap.clear();
+			}
+		}
+
+		if ((equalsStatesMap.keySet().containsAll(listStatesFirstAutomaton))
+				&& (equalsStatesMap.values().containsAll(listStatesSecondAutomaton))) {
+			return true;
+		}
+
 		return false;
 	}
 

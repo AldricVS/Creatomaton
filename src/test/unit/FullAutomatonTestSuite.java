@@ -5,6 +5,7 @@ import org.junit.runners.Suite;
 
 import test.unit.automatonBuilder.AutomatonBuilderTestSuite;
 import test.unit.automatonBuilder.SynchronizedAutomatonTest;
+import test.unit.automatonBuilder.equivalence.EquivalenceTestSuite;
 import test.unit.basic.BasicAutomatonTestSuite;
 import test.unit.basic.CreateAutomatonTest;
 import test.unit.basic.CreateEpsilonAutomatonTest;
@@ -30,7 +31,8 @@ import test.unit.thompson.ThompsonAutomatonTestSuite;
 	BasicAutomatonTestSuite.class,
 	ThompsonAutomatonTestSuite.class,
 	AutomatonBuilderTestSuite.class,
-	FileManagementTestSuite.class
+	FileManagementTestSuite.class,
+	EquivalenceTestSuite.class
 	})
 public class FullAutomatonTestSuite {
 	
