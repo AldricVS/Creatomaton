@@ -114,6 +114,25 @@ public class AutomatonManager {
 	}
 
 	/**
+	 * Compare two Automaton, to see if they are equals. This method will change the
+	 * given automaton to their {@link AutomatonBuilder#buildMinimalAutomaton() minimalist} counterpart.
+	 * 
+	 * @param automatonToCompare the automaton we will be comparing to
+	 * @return true if they are equals, false otherwise
+	 */
+	public boolean isEquals(Automaton automatonToCompare) {
+		AutomatonBuilder builder;
+		Automaton firstMinimalAutomaton, secondMinimalAutomaton;
+		builder = new AutomatonBuilder(automaton);
+		firstMinimalAutomaton = builder.buildMinimalAutomaton();
+		builder = new AutomatonBuilder(automatonToCompare);
+		secondMinimalAutomaton = builder.buildMinimalAutomaton();
+		
+		//start comparation
+		return false;
+	}
+
+	/**
 	 * Check if the given automaton is Determinist :
 	 * <ul>
 	 * <li>Has a unique Initial State</li>

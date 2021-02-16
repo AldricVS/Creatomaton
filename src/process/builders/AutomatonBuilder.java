@@ -230,6 +230,14 @@ public class AutomatonBuilder {
 		return determinedAutomaton;
 	}
 
+	/**
+	 * Build the minimal automaton, with the least state and transition. This method
+	 * use the {@link #buildDeterministicAutomaton() buildDeterminism} and the
+	 * {@link #buildMirrorAutomaton() buildMirror}, and will work as follow :
+	 * det(mir(det(mit(automaton)))).
+	 * 
+	 * @return the minimal automaton
+	 */
 	public Automaton buildMinimalAutomaton() {
 		Automaton oldAutomaton = automaton;
 		automaton = buildMirrorAutomaton();

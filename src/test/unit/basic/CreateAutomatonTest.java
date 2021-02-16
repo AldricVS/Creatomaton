@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -150,5 +151,15 @@ public class CreateAutomatonTest {
 		listState.add(state2);
 		stateName = StateListUtility.constructNameOfDeterminedStates(listState);
 		assertEquals("{0;0;1;2;2}", stateName);
+	}
+	
+	@AfterClass
+	public static void clearAutomaton() {
+		automaton.clearInitialStates();
+		assertTrue(automaton.getInitialStates().isEmpty());
+		automaton.clearFinalStates();
+		assertTrue(automaton.getFinalStates().isEmpty());
+		automaton.clearAllStates();
+		assertTrue(automaton.getAllStates().isEmpty());
 	}
 }
