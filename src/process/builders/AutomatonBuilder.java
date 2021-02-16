@@ -70,87 +70,27 @@ public class AutomatonBuilder {
 		// Map all reverse transition
 		Map<State, List<Transition>> reverseTransitionMap;
 		reverseTransitionMap = new HashMap<State, List<Transition>>();
-		
-		// add all states, including reverse initial and final states
-		for (State state : listState) {
-			// reverse the initial and final state for each of the states
-			miroirAutomaton.setStateInitial(state, listFinalState.contains(state));
-			miroirAutomaton.setStateFinal(state, listInitialState.contains(state));
-			
-			reverseTransitionMap.put(state, new ArrayList<Transition>(state.getTransitions()));
-		}
 
+		// set all initial states
+		for (State state : listState) {
+			// check if the state is initial or final
+			boolean isStateInitial = miroirAutomaton.isStateFinal(state);
+			boolean isStateFinal = miroirAutomaton.isStateInitial(state);
+			// set state as initial and final
+			miroirAutomaton.setStateFinal(state, isStateFinal);
+			miroirAutomaton.setStateInitial(state, isStateInitial);
+			// get the list of transitions to reverse it later
+			List<Transition> listTransitions = state.getTransitions();
+			reverseTransitionMap.put(state, new ArrayList<Transition>(listTransitions));
+			listTransitions.clear();
+		}
+		// now, reverse all transitions
 		for (State state : reverseTransitionMap.keySet()) {
 			List<Transition> listTransitions = reverseTransitionMap.get(state);
 			for (Transition transition : listTransitions) {
-				state.removeTransition(transition);
 				miroirAutomaton.addTransition(transition.getDestination(), state, transition.getLetter());
 			}
 		}
-		// reverse all transition
-//		for (State state : listState) {
-//			// the list which contains all transition to reverse and remove
-//			List<Transition> listTransitions = state.getTransitions();
-//			List<Transition> listTransitionToRemove = new ArrayList<Transition>();
-//
-//			for (Transition transition : listTransitions) {
-//				// get the destination
-//				State destinationState = transition.getDestination();
-//				// search if we can reverse our transition
-////				if (destinationState.getId() < state.getId()) {
-////					// change only if we haven't been seen
-////					if (TransitionListUtility.getAllDestinationFromTransition(destinationState.getTransitions()).contains(state)) {
-////						// dont change anything that have been already changed
-////						boolean result;
-////						result = miroirAutomaton.addTransition(destinationState, state, transition.getLetter());
-////						if (result) {
-////							listTransitionToRemove.add(transition);
-////						}
-////					}
-////				} else
-//				 if (!(destinationState.getId() == state.getId())) {
-//					boolean result;
-//					result = miroirAutomaton.addTransition(destinationState, state, transition.getLetter());
-//					if (result) {
-//						listTransitionToRemove.add(transition);
-//					}
-//				}
-//			}
-//			for (Transition transition : listTransitionToRemove) {
-//				state.removeTransition(transition);
-//			}
-//			listTransitionToRemove.clear();
-//		}
-
-		// TODO crée l'automate miroir à parti d'un factory
-//
-//		// get all transition and reverse it
-//		for (State state : listState) {
-//			// create the list of reverse transition
-//			List<Transition> listReverseTransitions;
-//			List<Transition> listTransitions = state.getTransitions();
-//
-//			for (Transition transition : listTransitions) {
-//				Transition reverseTransition = new Transition(transition.getLetter(), state);
-//				listReverseTransitions = reverseTransitionMap.get(state);
-//				// if the list isn't initialize
-//				if (listReverseTransitions == null) {
-//					listReverseTransitions = new ArrayList<Transition>();
-//					reverseTransitionMap.put(state, listReverseTransitions);
-//				}
-//				listReverseTransitions.add(reverseTransition);
-//			}
-//
-//			listTransitions.clear();
-//		}
-//
-//		for (State state : reverseTransitionMap.keySet()) {
-//			// get the list of transition from the Map
-//			List<Transition> listTransitions = reverseTransitionMap.get(state);
-//			for (Transition transition : listTransitions) {
-//				state.addTransition(transition);
-//			}
-//		}
 
 		return miroirAutomaton;
 	}
