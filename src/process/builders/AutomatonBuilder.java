@@ -74,12 +74,12 @@ public class AutomatonBuilder {
 		// set all initial states
 		for (State state : listState) {
 			// check if the state is initial or final
-			boolean isStateInitial = miroirAutomaton.isStateFinal(state);
-			boolean isStateFinal = miroirAutomaton.isStateInitial(state);
+			boolean isStateInitial = listFinalState.contains(state);
+			boolean isStateFinal = listInitialState.contains(state);
 			// set state as initial and final
-			miroirAutomaton.setStateFinal(state, isStateFinal);
 			miroirAutomaton.setStateInitial(state, isStateInitial);
-			// get the list of transitions to reverse it later
+			miroirAutomaton.setStateFinal(state, isStateFinal);
+			// get the list of transitions to reverse it after
 			List<Transition> listTransitions = state.getTransitions();
 			reverseTransitionMap.put(state, new ArrayList<Transition>(listTransitions));
 			listTransitions.clear();
