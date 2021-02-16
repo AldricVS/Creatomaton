@@ -21,10 +21,12 @@ public class ThompsonAutomatonTest {
 		Automaton synchronizedAutomaton = automatonBuilder.buildSynchronizedAutomaton();
 		BuilderTest.createImage(synchronizedAutomaton, "ThompsonAutomatonSync", false);
 		
+		automatonBuilder.setAutomaton(synchronizedAutomaton);
+		
 		Automaton deterministAutomaton = automatonBuilder.buildDeterministicAutomaton();
 		BuilderTest.createImage(deterministAutomaton, "ThompsonAutomatonDeterm", false);
 		
-		AutomatonManager automatonManager = new AutomatonManager(automaton);
+		AutomatonManager automatonManager = new AutomatonManager(synchronizedAutomaton);
 		System.out.println(automatonManager.validateAutomatonByDeterminism(""));
 		System.out.println(automatonManager.validateAutomatonByDeterminism("aaaaa"));
 		System.out.println(automatonManager.validateAutomatonByDeterminism("bc"));

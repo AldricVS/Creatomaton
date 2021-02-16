@@ -80,6 +80,7 @@ public class TransitionListUtility {
 		return listState;
 	}
 
+	@Deprecated
 	/**
 	 * Search the Departure of a Transition from a List of States, return null if
 	 * not found
@@ -119,6 +120,9 @@ public class TransitionListUtility {
 						}
 					}
 					listState.remove(destinationStateEpsilon);
+//					if (listState.isEmpty()) {
+//						listState.add(destinationStateEpsilon);
+//					}
 				}
 				// the state from epsilon has already been visited
 			} else if (transition.getLetter() == letter) {

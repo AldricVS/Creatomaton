@@ -4,13 +4,16 @@
 package process.builders;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import data.Automaton;
 import data.AutomatonConstants;
 import data.State;
 import data.Transition;
+import process.AutomatonManager;
 import process.factory.AutomatonFactory;
 import process.util.StateListUtility;
 import process.util.TransitionListUtility;
@@ -52,43 +55,121 @@ public class AutomatonBuilder {
 	 * @return the new Mirror Automaton
 	 */
 	public Automaton buildMirrorAutomaton() {
-		// some variable
-		List<State> listState, listInitialState, listFinalState;
-
-		// our new automaton
+		// create a new automaton
 		Automaton miroirAutomaton = AutomatonFactory.createCopy(automaton);
 
-		// get the list of Initial States and Final States
-		listInitialState = miroirAutomaton.getInitialStates();
-		listFinalState = miroirAutomaton.getFinalStates();
-
 		// get the list of all States
+		List<State> listState;
 		listState = miroirAutomaton.getAllStates();
 
-		// add all states
+		// get the list of Initial States and Final States
+		List<State> listInitialState, listFinalState;
+		listInitialState = new ArrayList<State>(miroirAutomaton.getInitialStates());
+		listFinalState = new ArrayList<State>(miroirAutomaton.getFinalStates());
+
+		// Map all reverse transition
+		Map<State, List<Transition>> reverseTransitionMap;
+		reverseTransitionMap = new HashMap<State, List<Transition>>();
+		
+		// add all states, including reverse initial and final states
 		for (State state : listState) {
 			// reverse the initial and final state for each of the states
-			miroirAutomaton.setStateInitial(state, !listInitialState.contains(state));
-			miroirAutomaton.setStateFinal(state, !listFinalState.contains(state));
+			miroirAutomaton.setStateInitial(state, listFinalState.contains(state));
+			miroirAutomaton.setStateFinal(state, listInitialState.contains(state));
+			
+			reverseTransitionMap.put(state, new ArrayList<Transition>(state.getTransitions()));
 		}
 
-		List<Transition> allTransitionFromListStates = TransitionListUtility.getAllTransitionFromListStates(listState);
-		for (Transition transition : allTransitionFromListStates) {
-			State state;
-			state = TransitionListUtility.getDepartureFromTransition(listState, transition);
-			state.removeTransition(transition);
-			miroirAutomaton.addTransition(transition.getDestination(), state, transition.getLetter());
+		for (State state : reverseTransitionMap.keySet()) {
+			List<Transition> listTransitions = reverseTransitionMap.get(state);
+			for (Transition transition : listTransitions) {
+				state.removeTransition(transition);
+				miroirAutomaton.addTransition(transition.getDestination(), state, transition.getLetter());
+			}
 		}
+		// reverse all transition
+//		for (State state : listState) {
+//			// the list which contains all transition to reverse and remove
+//			List<Transition> listTransitions = state.getTransitions();
+//			List<Transition> listTransitionToRemove = new ArrayList<Transition>();
+//
+//			for (Transition transition : listTransitions) {
+//				// get the destination
+//				State destinationState = transition.getDestination();
+//				// search if we can reverse our transition
+////				if (destinationState.getId() < state.getId()) {
+////					// change only if we haven't been seen
+////					if (TransitionListUtility.getAllDestinationFromTransition(destinationState.getTransitions()).contains(state)) {
+////						// dont change anything that have been already changed
+////						boolean result;
+////						result = miroirAutomaton.addTransition(destinationState, state, transition.getLetter());
+////						if (result) {
+////							listTransitionToRemove.add(transition);
+////						}
+////					}
+////				} else
+//				 if (!(destinationState.getId() == state.getId())) {
+//					boolean result;
+//					result = miroirAutomaton.addTransition(destinationState, state, transition.getLetter());
+//					if (result) {
+//						listTransitionToRemove.add(transition);
+//					}
+//				}
+//			}
+//			for (Transition transition : listTransitionToRemove) {
+//				state.removeTransition(transition);
+//			}
+//			listTransitionToRemove.clear();
+//		}
+
+		// TODO crée l'automate miroir à parti d'un factory
+//
+//		// get all transition and reverse it
+//		for (State state : listState) {
+//			// create the list of reverse transition
+//			List<Transition> listReverseTransitions;
+//			List<Transition> listTransitions = state.getTransitions();
+//
+//			for (Transition transition : listTransitions) {
+//				Transition reverseTransition = new Transition(transition.getLetter(), state);
+//				listReverseTransitions = reverseTransitionMap.get(state);
+//				// if the list isn't initialize
+//				if (listReverseTransitions == null) {
+//					listReverseTransitions = new ArrayList<Transition>();
+//					reverseTransitionMap.put(state, listReverseTransitions);
+//				}
+//				listReverseTransitions.add(reverseTransition);
+//			}
+//
+//			listTransitions.clear();
+//		}
+//
+//		for (State state : reverseTransitionMap.keySet()) {
+//			// get the list of transition from the Map
+//			List<Transition> listTransitions = reverseTransitionMap.get(state);
+//			for (Transition transition : listTransitions) {
+//				state.addTransition(transition);
+//			}
+//		}
 
 		return miroirAutomaton;
 	}
 
 	/**
-	 * Build a new Automaton with all his States as determined.
+	 * Build a new Automaton with all his States as determined. Calling this method
+	 * will change the given automaton and {@link #buildSynchronizedAutomaton()
+	 * synchronized} it (if it isn't already synchronized)
 	 * 
 	 * @return the new Determined Automaton
 	 */
 	public Automaton buildDeterministicAutomaton() {
+		AutomatonManager manager = new AutomatonManager(automaton);
+		// check if automaton is synchronized
+		if (!manager.isSynchronized()) {
+			// if not, synchronize it
+			automaton = buildSynchronizedAutomaton();
+		}
+
 		// listState have all state of the first determined state
 		List<State> listState = new ArrayList<State>();
 		listState.addAll(automaton.getInitialStates());
@@ -206,7 +287,6 @@ public class AutomatonBuilder {
 			}
 			listTransitions.clear();
 		}
-
 		return determinedAutomaton;
 	}
 
@@ -254,6 +334,12 @@ public class AutomatonBuilder {
 		return automaton;
 	}
 
+	/**
+	 * Transform the automaton by synchronising it, meaning that there will no
+	 * longer have epsilon transition
+	 * 
+	 * @return the synchronized automaton
+	 */
 	public Automaton buildSynchronizedAutomaton() {
 		Automaton resultAutomaton = AutomatonFactory.createCopy(automaton);
 		List<State> listStates = resultAutomaton.getAllStates();

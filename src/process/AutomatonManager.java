@@ -137,9 +137,7 @@ public class AutomatonManager {
 			List<Character> listLetter = new ArrayList<Character>();
 
 			for (Transition transition : listTransitions) {
-				if (transition.isEpsilon()) {
-					return false;
-				} else if (listLetter.contains(transition.getLetter())) {
+				if ((transition.isEpsilon()) || (listLetter.contains(transition.getLetter()))) {
 					return false;
 				}
 				listLetter.add(transition.getLetter());
@@ -149,6 +147,18 @@ public class AutomatonManager {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Check if an Automaton is synchronized :
+	 * <ul>
+	 * <li>No Epsilon transition</li>
+	 * </ul>
+	 * 
+	 * @return true if automaton is synchronized, false otherwise
+	 */
+	public boolean isSynchronized() {
+		return !TransitionListUtility.isThereAnyEpsilonTransition(automaton.getAllStates());
 	}
 
 }
