@@ -27,16 +27,17 @@ public class TransitionListUtility {
 		}
 		return listTransition;
 	}
-	
+
 	/**
 	 * Check if a list of states have any epsilon transition in his transitionList
+	 * 
 	 * @param listStates the states to check
 	 * @return if there is at least one epsilonTransition
 	 */
 	public static boolean isThereAnyEpsilonTransition(List<State> listStates) {
 		List<Transition> transitions = getAllTransitionFromListStates(listStates);
 		for (Transition transition : transitions) {
-			if(transition.isEpsilon()) {
+			if (transition.isEpsilon()) {
 				return true;
 			}
 		}
@@ -79,6 +80,7 @@ public class TransitionListUtility {
 		return listState;
 	}
 
+	@Deprecated
 	/**
 	 * Search the Departure of a Transition from a List of States, return null if
 	 * not found
@@ -106,26 +108,29 @@ public class TransitionListUtility {
 	 */
 	public static List<State> getValidDestinationFromTransition(List<Transition> listTransitions, char letter) {
 		for (Transition transition : listTransitions) {
-			if (transition.getLetter() == letter) {
-				// little check that the destination isn't already here
-				State destinationState = transition.getDestination();
-				if (!listState.contains(destinationState)) {
-					listState.add(destinationState);
-				}
-			} else if (transition.isEpsilon()) {
+			if (transition.isEpsilon()) {
 				// as a epsilon transition, we add all new valid states from this destination
-				State epsilonState = transition.getDestination();
-				if (!listState.contains(epsilonState)) {
-					listState.add(epsilonState);
-					List<State> listStatesFromEpsilon = getValidDestinationFromTransition(epsilonState.getTransitions(), letter);
+				State destinationStateEpsilon = transition.getDestination();
+				if (!listState.contains(destinationStateEpsilon)) {
+					listState.add(destinationStateEpsilon);
+					List<State> listStatesFromEpsilon = getValidDestinationFromTransition(destinationStateEpsilon.getTransitions(), letter);
 					for (State state : listStatesFromEpsilon) {
 						if (!listState.contains(state)) {
 							listState.add(state);
 						}
 					}
-					listState.remove(epsilonState);
+					listState.remove(destinationStateEpsilon);
+//					if (listState.isEmpty()) {
+//						listState.add(destinationStateEpsilon);
+//					}
 				}
 				// the state from epsilon has already been visited
+			} else if (transition.getLetter() == letter) {
+				// little check that the destination isn't already here
+				State destinationState = transition.getDestination();
+				if (!listState.contains(destinationState)) {
+					listState.add(destinationState);
+				}
 			}
 			// else, we dont have the right letter for the transition
 		}

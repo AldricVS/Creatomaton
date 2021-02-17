@@ -18,6 +18,7 @@ import process.builders.AutomatonBuilder;
 public class DeterministicAutomatonTest {
 
 	private static Automaton automaton;
+	private static Automaton automatonDeterminist;
 	private static State state0;
 	private static State state1;
 	private static State state2;
@@ -55,25 +56,33 @@ public class DeterministicAutomatonTest {
 		automaton.addTransition(state4, state5, 'c');
 	}
 
-	@Before
+	@After
 	public void isValid() {
-		AutomatonManager manager = new AutomatonManager(automaton);
+		AutomatonManager manager = new AutomatonManager(automatonDeterminist);
 		String word;
-		word = "aab";
+		word = "ab";
+		assertTrue(manager.validateAutomaton(word));
+		word = "aaaab";
 		assertTrue(manager.validateAutomaton(word));
 		word = "bc";
 		assertTrue(manager.validateAutomaton(word));
 	}
 
 	@After
-	public void isDeterministic() {
-		AutomatonManager manager = new AutomatonManager(automaton);
+	public void isNewAutomatonDeterminist() {
+		AutomatonManager manager = new AutomatonManager(automatonDeterminist);
 		assertTrue(manager.isDeterministic());
+	}
+	
+	@Test
+	public void validateAutomatonByDeterminism() {
+		AutomatonManager manager = new AutomatonManager(automaton);
+		assertTrue(manager.validateAutomatonByDeterminism("aaab"));
 	}
 
 	@Test
 	public void derterminedAutomaton() {
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
-		automaton = builder.buildDeterministicAutomaton();
+		automatonDeterminist = builder.buildDeterministicAutomaton();
 	}
 }

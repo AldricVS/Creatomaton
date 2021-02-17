@@ -220,7 +220,7 @@ public class Automaton {
 	 * @return if the transition was successfully added
 	 */
 	public boolean addEpsilonTransition(State startingState, State destinationState) {
-		return startingState.addTransition(Character.MIN_VALUE, destinationState);
+		return startingState.addTransition(AutomatonConstants.EPSILON_CHAR, destinationState);
 	}
 	
 	/*======= CLEAR =======*/

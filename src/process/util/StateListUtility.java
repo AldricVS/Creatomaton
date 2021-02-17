@@ -19,7 +19,7 @@ public class StateListUtility {
 	 * Method to compare if an element of a State List is in another list.
 	 * </p>
 	 * <p>
-	 * Useful when comparing with Initial or Final List of State.
+	 * Check If any State of the second list is in the first
 	 * </p>
 	 * 
 	 * @param listStates  the first list to compare with

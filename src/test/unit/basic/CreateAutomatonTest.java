@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -14,6 +15,7 @@ import data.Transition;
 import process.AutomatonManager;
 import process.builders.AutomatonBuilder;
 import process.util.StateListUtility;
+import process.util.TransitionListUtility;
 
 /**
  * Muliple tests that check if an automaton is correctly created.<p>
@@ -125,9 +127,10 @@ public class CreateAutomatonTest {
 		
 		assertTrue(automatonMiror.isStateInitial(2));
 		assertTrue(automatonMiror.isStateFinal(0));
-		
-		int test = automatonMiror.getStateById(1).getTransitions().get(0).getDestination().getId();
-		assertEquals(0, test);
+		// check if the state by id 1 go to state by id 0
+		List<State> destinationStateFromTransition = TransitionListUtility.getAllDestinationFromTransition(automatonMiror.getStateById(1).getTransitions());
+		State stateToBeFound = automatonMiror.getStateById(0);
+		assertTrue(destinationStateFromTransition.contains(stateToBeFound));
 		
 	}
 	
@@ -148,5 +151,15 @@ public class CreateAutomatonTest {
 		listState.add(state2);
 		stateName = StateListUtility.constructNameOfDeterminedStates(listState);
 		assertEquals("{0;0;1;2;2}", stateName);
+	}
+	
+	@AfterClass
+	public static void clearAutomaton() {
+		automaton.clearInitialStates();
+		assertTrue(automaton.getInitialStates().isEmpty());
+		automaton.clearFinalStates();
+		assertTrue(automaton.getFinalStates().isEmpty());
+		automaton.clearAllStates();
+		assertTrue(automaton.getAllStates().isEmpty());
 	}
 }

@@ -1,12 +1,19 @@
 package process.factory;
 
-import java.util.ArrayList;
-
 import data.Automaton;
 import data.State;
 import data.Transition;
 
 public class AutomatonFactory {
+	
+	/**
+	 * Create a new Automaton, with his alphabet
+	 * @param alphabet the alphabet that the automaton will understand
+	 * @return the new Automaton
+	 */
+	public static Automaton createAutomaton(String alphabet) {
+		return new Automaton(alphabet);
+	}
 
 	/**
 	 * Create a distinct copy of an automaton. Therefore, a change in an automaton will not change the other one

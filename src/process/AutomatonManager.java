@@ -4,13 +4,16 @@
 package process;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import data.Automaton;
+import data.AutomatonConstants;
 import data.State;
 import data.Transition;
-
-import process.util.StateListUtility;
+import process.builders.AutomatonBuilder;
+import process.factory.AutomatonFactory;
 import process.util.TransitionListUtility;
 
 /**
@@ -40,10 +43,34 @@ public class AutomatonManager {
 	}
 
 	/**
-	 * Validate the given Automaton
+	 * {@link #validateAutomaton(String) Validate} the given Automaton by recreating
+	 * it as a new determined Automaton. This method must be used for any Thompson's
+	 * Automaton
 	 * 
 	 * @param word the word to be tested
-	 * @return true if the word is Final, false otherwise
+	 * @return true if the word is Final
+	 * @return false if word isn't valid or if Automaton couldn't be determined
+	 */
+	public boolean validateAutomatonByDeterminism(String word) {
+		boolean isValid = false;
+		if (!isDeterministic()) {
+			Automaton automatonCopy = AutomatonFactory.createCopy(automaton);
+			AutomatonBuilder automatonBuilder = new AutomatonBuilder(automatonCopy);
+			automatonCopy = automatonBuilder.buildDeterministicAutomaton();
+			setAutomaton(automatonCopy);
+		}
+		isValid = validateAutomaton(word);
+		setAutomaton(automaton);
+		return isValid;
+	}
+
+	/**
+	 * Check if the given word can access a final state. In case of a Thompson's
+	 * Automaton, use {@link #validateAutomatonByDeterminism(String) validation by
+	 * determinism} instead.
+	 * 
+	 * @param word the word to be tested
+	 * @return true if we arrived at a final state
 	 */
 	public boolean validateAutomaton(String word) {
 		List<State> listState = new ArrayList<State>();
@@ -53,10 +80,13 @@ public class AutomatonManager {
 
 		// we search through our list of transition for any possible transition to add
 		// then we do it again until we arrived at a final state
-		while (!word.isEmpty()) {
+		while ((!word.isEmpty()) && (!listState.isEmpty())) {
 			// first, get the next letter to search and reduced our word
-			char nextLetter = word.charAt(0);
-			word = word.substring(1);
+			char nextLetter = AutomatonConstants.EPSILON_CHAR;
+			if (!word.isEmpty()) {
+				nextLetter = word.charAt(0);
+				word = word.substring(1);
+			}
 
 			// we have some initial transition to go through
 			if (!listState.isEmpty()) {
@@ -86,6 +116,66 @@ public class AutomatonManager {
 	}
 
 	/**
+	 * Compare two Automaton, to see if they are equals. This method will change the
+	 * given automaton to their {@link AutomatonBuilder#buildMinimalAutomaton()
+	 * minimalist} counterpart.
+	 * 
+	 * @param automatonToCompare the automaton we will be comparing to
+	 * @return true if they are equals, false otherwise
+	 */
+	public boolean isEquals(Automaton automatonToCompare) {
+		AutomatonBuilder builder;
+		Automaton firstMinimalAutomaton, secondMinimalAutomaton;
+		builder = new AutomatonBuilder(automaton);
+		firstMinimalAutomaton = builder.buildMinimalAutomaton();
+		builder = new AutomatonBuilder(automatonToCompare);
+		secondMinimalAutomaton = builder.buildMinimalAutomaton();
+
+		List<State> listStatesFirstAutomaton = firstMinimalAutomaton.getAllStates();
+		List<State> listStatesSecondAutomaton = secondMinimalAutomaton.getAllStates();
+
+		// start comparation
+		if ((listStatesFirstAutomaton.size() != listStatesSecondAutomaton.size())
+				|| (firstMinimalAutomaton.getInitialStates().size() != secondMinimalAutomaton.getInitialStates().size())
+				|| (firstMinimalAutomaton.getFinalStates().size() != secondMinimalAutomaton.getFinalStates().size())) {
+			return false;
+		}
+
+		// Map all state that are equals
+		Map<State, State> equalsStatesMap = new HashMap<State, State>();
+		// Map all transition that are equals
+		Map<Transition, Transition> equalsTransitionsMap = new HashMap<Transition, Transition>();
+
+		for (State state : listStatesFirstAutomaton) {
+			List<Transition> listTransitions = state.getTransitions();
+			for (State state2 : listStatesSecondAutomaton) {
+				List<Transition> listTransitions2 = state2.getTransitions();
+				for (Transition transition : listTransitions) {
+					for (Transition transition2 : listTransitions2) {
+						if ((transition.getDestination().getId() == transition2.getDestination().getId())
+								&& (transition.getLetter() == transition2.getLetter())) {
+							equalsTransitionsMap.put(transition, transition2);
+						}
+					}
+				}
+
+				if ((equalsTransitionsMap.keySet().containsAll(listTransitions))
+						&& (equalsTransitionsMap.values().containsAll(listTransitions2))) {
+					equalsStatesMap.put(state, state2);
+				}
+				equalsTransitionsMap.clear();
+			}
+		}
+
+		if ((equalsStatesMap.keySet().containsAll(listStatesFirstAutomaton))
+				&& (equalsStatesMap.values().containsAll(listStatesSecondAutomaton))) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Check if the given automaton is Determinist :
 	 * <ul>
 	 * <li>Has a unique Initial State</li>
@@ -100,28 +190,37 @@ public class AutomatonManager {
 		}
 
 		// check if there is any epsilon transition or any multiple
-		// transition of thesame letter
+		// transition of the same letter
 		List<State> listStates = automaton.getAllStates();
 		for (State state : listStates) {
 			// the list of transition
-			List<Transition> listTransitions = new ArrayList<Transition>(state.getTransitions());
+			List<Transition> listTransitions = state.getTransitions();
 			// a list of letter of the transition
 			List<Character> listLetter = new ArrayList<Character>();
 
 			for (Transition transition : listTransitions) {
-				if (transition.isEpsilon()) {
-					return false;
-				} else if (listLetter.contains(transition.getLetter())) {
+				if ((transition.isEpsilon()) || (listLetter.contains(transition.getLetter()))) {
 					return false;
 				}
 				listLetter.add(transition.getLetter());
 			}
 
-			listTransitions.clear();
 			listLetter.clear();
 		}
 
 		return true;
+	}
+
+	/**
+	 * Check if an Automaton is synchronized :
+	 * <ul>
+	 * <li>No Epsilon transition</li>
+	 * </ul>
+	 * 
+	 * @return true if automaton is synchronized, false otherwise
+	 */
+	public boolean isSynchronized() {
+		return !TransitionListUtility.isThereAnyEpsilonTransition(automaton.getAllStates());
 	}
 
 }

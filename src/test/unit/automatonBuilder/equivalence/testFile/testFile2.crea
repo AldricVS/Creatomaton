@@ -1,0 +1,13 @@
+#States
+0;1;0;EI
+1;0;0;Billy
+2;0;1;EF
+#End
+
+#Transitions
+0;1;a
+0;1;b
+1;2;c
+2;2;c
+2;0;b
+#End
