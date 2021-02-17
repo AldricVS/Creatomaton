@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import process.util.FileUtility;
+
 /**
  * Used to search the ini file in the appdata folder on the user computer and
  * deals with it
@@ -28,10 +30,9 @@ public class PrefsFileHelper {
 	private static final String INI_FILE_NAME = "settings.ini";
 
 	private static final String DEFAULT_GRAPHVIZ_PATH = "C:\\Program Files (x86)\\Graphviz\\bin\\dot.exe";
-	private static final String DEFAULT_OUTPUT_FOLDER = "C:\\Creatomaton\\output";
-	private static final String DEFAULT_INPUT_FOLDER = "C:\\Creatomaton\\input";
+	private static final String DEFAULT_OUTPUT_FOLDER = "data/output";
+	private static final String DEFAULT_INPUT_FOLDER = "data/input";
 
-	private String iniFilePath;
 	File iniFile;
 
 	private HashMap<String, String> preferences = new HashMap<String, String>();
@@ -43,20 +44,12 @@ public class PrefsFileHelper {
 	 * @throws IOException
 	 */
 	public PrefsFileHelper() throws IOException {
+		FileUtility.createDataFolders();
 		handleIniFile();
 	}
 
 	private void handleIniFile() throws IOException {
-		// try to get the user folder location
-		iniFilePath = System.getProperty("user.home") + "/" + APP_FOLDER_NAME + "/" + DATA_FOLDER_NAME;
-
-		// create folders if not exists and go in
-		File appFolder = new File(iniFilePath);
-		if (!appFolder.exists() || !appFolder.isDirectory()) {
-			appFolder.mkdirs();
-		}
-
-		iniFile = new File(iniFilePath + "/" + INI_FILE_NAME);
+		iniFile = new File(DATA_FOLDER_NAME + "/" + INI_FILE_NAME);
 		if (!iniFile.exists()) {
 			createNewIniFile();
 		} else {
