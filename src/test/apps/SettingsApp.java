@@ -133,7 +133,7 @@ public class SettingsApp extends JFrame {
 	private void tryLoadIni() {
 		try {
 			prefsFileHelper = new PrefsFileHelper();
-			String defaultOutputPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFALUT_OUTPUT_FOLDER_KEY);
+			String defaultOutputPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY);
 			String graphvizPath = prefsFileHelper.getPreference(PrefsFileHelper.GRAPHVIZ_PATH_KEY);
 			graphvizTextField.setText(graphvizPath);
 			defaultOutputTextField.setText(defaultOutputPath);
@@ -193,7 +193,7 @@ public class SettingsApp extends JFrame {
 			prefsFileHelper.changePreference(PrefsFileHelper.GRAPHVIZ_PATH_KEY, graphvizNewPath);
 
 			String defaultOutputNewPath = defaultOutputTextField.getText();
-			prefsFileHelper.changePreference(PrefsFileHelper.DEFALUT_OUTPUT_FOLDER_KEY, defaultOutputNewPath);
+			prefsFileHelper.changePreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY, defaultOutputNewPath);
 
 			try {
 				prefsFileHelper.saveInFile();

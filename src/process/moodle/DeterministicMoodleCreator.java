@@ -23,6 +23,7 @@ import data.Automaton;
 import process.builders.AutomatonBuilder;
 import process.builders.DotBuilder;
 import process.builders.RandomAutomatonBuilder;
+import process.file.PrefsFileHelper;
 import process.helpers.GraphvizHelper;
 
 //TODO : plus des tests qu'autre chose pour l'instant, à rendre plus flexible
@@ -40,7 +41,8 @@ public class DeterministicMoodleCreator {
 		// dotBuilder.setIsTriyingToGetStatesNames(false);
 		dotBuilder.buildDotFile(f);
 
-		GraphvizHelper graphvizHelper = new GraphvizHelper(f.getAbsolutePath());
+		PrefsFileHelper prefsFileHelper = new PrefsFileHelper();
+		GraphvizHelper graphvizHelper = new GraphvizHelper(f.getAbsolutePath(), prefsFileHelper);
 		graphvizHelper.setFileOutputPath(OUTPUT_TEMP_PATH);
 		graphvizHelper.setFileOutputName(fileName + ".jpg");
 		graphvizHelper.runCommand();

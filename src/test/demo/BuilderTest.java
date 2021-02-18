@@ -64,14 +64,14 @@ public class BuilderTest {
 		PrefsFileHelper prefsFileHelper;
 		try {
 			prefsFileHelper = new PrefsFileHelper();
-			String inputFolderName = prefsFileHelper.getPreference(PrefsFileHelper.DEFALUT_INPUT_FOLDER_KEY);
+			String inputFolderName = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_INPUT_FOLDER_KEY);
 			File f = new File(inputFolderName + "/" + fileName + ".dot");
 			DotBuilder dotBuilder = new DotBuilder(automaton);
 			dotBuilder.setInReverseMode(isMirror);
 			// dotBuilder.setIsTriyingToGetStatesNames(false);
 			dotBuilder.buildDotFile(f);
 
-			GraphvizHelper graphvizHelper = new GraphvizHelper(f.getAbsolutePath());
+			GraphvizHelper graphvizHelper = new GraphvizHelper(f.getAbsolutePath(), prefsFileHelper);
 			graphvizHelper.setFileOutputName(fileName + ".jpg");
 			graphvizHelper.runCommand();
 		} catch (IOException e) {

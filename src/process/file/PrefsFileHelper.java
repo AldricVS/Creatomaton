@@ -20,8 +20,8 @@ import process.util.FileUtility;
  */
 public class PrefsFileHelper {
 	public static final String GRAPHVIZ_PATH_KEY = "dot_path";
-	public static final String DEFALUT_OUTPUT_FOLDER_KEY = "def_out";
-	public static final String DEFALUT_INPUT_FOLDER_KEY = "def_in";
+	public static final String DEFAULT_OUTPUT_FOLDER_KEY = "def_out";
+	public static final String DEFAULT_INPUT_FOLDER_KEY = "def_in";
 
 	private static final int NUMBER_OF_PREFERENCES = 3;
 
@@ -38,6 +38,7 @@ public class PrefsFileHelper {
 	private HashMap<String, String> preferences = new HashMap<String, String>();
 
 	/**
+	 * Create all data folders needed.
 	 * Tries to open the ini file in the right location and create a new one else,
 	 * then parse it in order to put it in the prefereces hashmap
 	 * 
@@ -77,11 +78,11 @@ public class PrefsFileHelper {
 			if (line.startsWith(GRAPHVIZ_PATH_KEY)) {
 				preferences.put(GRAPHVIZ_PATH_KEY, substr);
 
-			} else if (line.startsWith(DEFALUT_OUTPUT_FOLDER_KEY)) {
-				preferences.put(DEFALUT_OUTPUT_FOLDER_KEY, substr);
+			} else if (line.startsWith(DEFAULT_OUTPUT_FOLDER_KEY)) {
+				preferences.put(DEFAULT_OUTPUT_FOLDER_KEY, substr);
 
-			} else if (line.startsWith(DEFALUT_INPUT_FOLDER_KEY)) {
-				preferences.put(DEFALUT_INPUT_FOLDER_KEY, substr);
+			} else if (line.startsWith(DEFAULT_INPUT_FOLDER_KEY)) {
+				preferences.put(DEFAULT_INPUT_FOLDER_KEY, substr);
 			}
 			// else, don't read the line
 		}
@@ -107,15 +108,15 @@ public class PrefsFileHelper {
 		// only 3 things to add for now
 		bw.write(GRAPHVIZ_PATH_KEY + "=" + DEFAULT_GRAPHVIZ_PATH);
 		bw.newLine();
-		bw.write(DEFALUT_OUTPUT_FOLDER_KEY + "=" + DEFAULT_OUTPUT_FOLDER);
+		bw.write(DEFAULT_OUTPUT_FOLDER_KEY + "=" + DEFAULT_OUTPUT_FOLDER);
 		bw.newLine();
-		bw.write(DEFALUT_INPUT_FOLDER_KEY + "=" + DEFAULT_INPUT_FOLDER);
+		bw.write(DEFAULT_INPUT_FOLDER_KEY + "=" + DEFAULT_INPUT_FOLDER);
 		bw.close();
 
 		// no need to parse, we already know preferences
 		preferences.put(GRAPHVIZ_PATH_KEY, DEFAULT_GRAPHVIZ_PATH);
-		preferences.put(DEFALUT_OUTPUT_FOLDER_KEY, DEFAULT_OUTPUT_FOLDER);
-		preferences.put(DEFALUT_INPUT_FOLDER_KEY, DEFAULT_INPUT_FOLDER);
+		preferences.put(DEFAULT_OUTPUT_FOLDER_KEY, DEFAULT_OUTPUT_FOLDER);
+		preferences.put(DEFAULT_INPUT_FOLDER_KEY, DEFAULT_INPUT_FOLDER);
 	}
 
 	/**
@@ -141,8 +142,8 @@ public class PrefsFileHelper {
 	 * If needed, create the default input and output folder
 	 */
 	public void createFolders() {
-		String outputPath = getPreference(PrefsFileHelper.DEFALUT_OUTPUT_FOLDER_KEY);
-		String inputPath = getPreference(PrefsFileHelper.DEFALUT_INPUT_FOLDER_KEY);
+		String outputPath = getPreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY);
+		String inputPath = getPreference(PrefsFileHelper.DEFAULT_INPUT_FOLDER_KEY);
 
 		File output = new File(outputPath);
 		if (!output.exists()) {
