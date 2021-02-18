@@ -16,19 +16,19 @@ import process.file.ImageCreator;
 
 /**
  * An helper class that will allows to quickly create a xml tree for one
- * question. Before creating the xml tree, each field must be set. Else,
- * unpredictible elements can occur
+ * numerical question (with only one integer as the answer). Before creating the
+ * xml tree, each field must be set. Else, unpredictible elements can occur
  * 
  * @author Aldric Vitali Silvestre <aldric.vitali@outlook.fr>
  */
 public class NumericalQuestionGenerator {
 	private ImageCreator imageCreator;
 
-	private String questionTitle;
-	private String questionTopText;
-	private String questionBottomText;
-	private String answerTopText;
-	private String answerBottomText;
+	private String questionTitle = "";
+	private String questionTopText = "";
+	private String questionBottomText = "";
+	private String answerTopText = "";
+	private String answerBottomText = "";
 
 	private Automaton questionAutomaton;
 	private Automaton answerAutomaton;
@@ -39,7 +39,7 @@ public class NumericalQuestionGenerator {
 	private int answerValue;
 
 	private Document document;
-	
+
 	private String questionImageName;
 	private String answerImageName;
 
@@ -49,7 +49,9 @@ public class NumericalQuestionGenerator {
 
 	/**
 	 * Create the question xml tree with all data gathered
-	 * @param questionNumber the number of the question, useful when want to create multiple questions
+	 * 
+	 * @param questionNumber the number of the question, useful when want to create
+	 *                       multiple questions
 	 * @return the xml root node of the question (XML moodle format)
 	 * @throws IOException
 	 */
@@ -74,7 +76,7 @@ public class NumericalQuestionGenerator {
 	 * @param questionNode
 	 */
 	private void initQuestionNode(Element questionNode) {
-		//only numerical answers for now
+		// only numerical answers for now
 		Attr questionAttr = document.createAttribute("type");
 		questionAttr.setValue("numerical");
 		questionNode.setAttributeNode(questionAttr);
@@ -132,7 +134,7 @@ public class NumericalQuestionGenerator {
 
 		Element generalFeedbackTextNode = document.createElement("text");
 		generalFeedbackNode.appendChild(generalFeedbackTextNode);
-		//String answerBegin = "Voici l'automate après déterminisation : ";
+		// String answerBegin = "Voici l'automate après déterminisation : ";
 		String imageAnswerName = answerImageName + ".jpg";
 		String generalFeedbackContent = "<p>"
 				+ answerTopText
@@ -147,9 +149,9 @@ public class NumericalQuestionGenerator {
 	}
 
 	private void createImage(Automaton automaton, String autoImageName) throws IOException {
-		if(imageCreator == null) {
+		if (imageCreator == null) {
 			imageCreator = new ImageCreator(automaton, autoImageName);
-		}else {
+		} else {
 			imageCreator.setAutomaton(automaton);
 			imageCreator.setFilename(autoImageName);
 		}
@@ -165,7 +167,7 @@ public class NumericalQuestionGenerator {
 	 */
 	private void appendAnswer(Element questionNode, Element generalFeedbackNode) throws IOException {
 		// image answer
-		Element imageAnswerNode = createImageFileNode(answerImageName, DataFilePaths.TEMP_PATH + "/" + answerImageName, document);
+		Element imageAnswerNode = createImageFileNode(answerImageName, DataFilePaths.TEMP_PATH + "/" + answerImageName + ".jpg", document);
 		generalFeedbackNode.appendChild(imageAnswerNode);
 
 		// data for the question

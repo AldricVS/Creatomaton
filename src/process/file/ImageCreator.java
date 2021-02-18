@@ -80,6 +80,7 @@ public class ImageCreator {
 	 * @throws IOException
 	 */
 	private File createDotFile() throws IOException {
+		dotBuilder.setAutomaton(automaton);
 		// retreive the file input path from the PrefsFileHelper
 		String inputFolderPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_INPUT_FOLDER_KEY);
 		File inputFile = new File(inputFolderPath);

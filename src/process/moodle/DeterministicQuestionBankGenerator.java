@@ -1,6 +1,8 @@
 package process.moodle;
 
-import org.w3c.dom.Element;
+import data.Automaton;
+import process.builders.AutomatonBuilder;
+import process.builders.RandomAutomatonBuilder;
 
 /**
  * Implémentation of the QuestionBankGenerator that permits to create question
@@ -10,14 +12,40 @@ import org.w3c.dom.Element;
  */
 public class DeterministicQuestionBankGenerator extends QuestionBankGenerator {
 
-	public DeterministicQuestionBankGenerator(int numberOfQuestons) {
-		super(numberOfQuestons);
+	public DeterministicQuestionBankGenerator(String title, int numberOfQuestons) {
+		super(title, numberOfQuestons);
 	}
 
 	@Override
-	public Element generateQuestion() {
-		//TODO : random automaton ==> deterministic one ==> create NumericalQuestionGenerator(fill content)
-		return null;
+	protected void defineQuestion(){
+		// Create a random automaton
+		RandomAutomatonBuilder randomAutomatonBuilder = new RandomAutomatonBuilder();
+		randomAutomatonBuilder.setAlphabet(getAlphabet());
+		randomAutomatonBuilder.setNumberOfStates(getNumberOfStates());
+		randomAutomatonBuilder.setNumberOfFinalStates(getNumberOfFinalStates());
+		randomAutomatonBuilder.setNumberOfEpsilonTransitions(getNumberOfEpsilonTransitions());
+		Automaton automaton = randomAutomatonBuilder.build();
+		
+		// And the deterministic one
+		AutomatonBuilder automatonBuilder = new AutomatonBuilder(automaton);
+		Automaton deterministicAutomaton = automatonBuilder.buildDeterministicAutomaton();
+		
+		//The answer is the number of states of the deterministic automaton
+		int answer = deterministicAutomaton.getNumberOfTotalStates();
+		
+		// Define the question with all elements needed
+		NumericalQuestionGenerator numericalQuestionGenerator = getNumericalQuestionGenerator();
+		numericalQuestionGenerator.setAnswerValue(answer);
+		numericalQuestionGenerator.setQuestionAutomaton(automaton);
+		numericalQuestionGenerator.setAnswerAutomaton(deterministicAutomaton);
+	}
+	
+	@Override
+	protected void initSpecificQuestionGenerator() {
+		NumericalQuestionGenerator numericalQuestionGenerator = getNumericalQuestionGenerator();
+		numericalQuestionGenerator.setQuestionTopText("Soit l'automate suivant :");
+		numericalQuestionGenerator.setQuestionBottomText("Après déterminisation, combien d'états aura-t'il ?");
+		numericalQuestionGenerator.setAnswerTopText("Voici l'automate après déterminisation : ");
 	}
 
 }
