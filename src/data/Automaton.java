@@ -82,15 +82,6 @@ public class Automaton {
 		return finalStates;
 	}
 	
-	/**
-	 * @param stateId the Id of desired state
-	 * @return State the state at the given Id, null if it doesn't exist
-	 */
-	public State getStateFromId(int stateId) {
-		return states.get(stateId);
-	}
-
-	
 	public void setAlphabet(String alphabet) {
 		this.alphabet = alphabet;
 	}
@@ -127,6 +118,13 @@ public class Automaton {
 		}else {
 			initialStates.remove(state);
 		}
+	}
+	
+	/**
+	 * @return true if the Automaton doesn't have any state
+	 */
+	public boolean isEmpty() {
+		return states.isEmpty();
 	}
 	
 	/*=======ADD & REMOVE=======*/
@@ -318,5 +316,6 @@ public class Automaton {
 		}
 		return false;
 	}
+
 
 }

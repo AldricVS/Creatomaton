@@ -40,7 +40,7 @@ public class State {
 		this.id = id;
 		this.name = name;
 	}
-	
+
 	public State(int id) {
 		super();
 		this.id = id;
@@ -53,20 +53,22 @@ public class State {
 	public void setId(int id) {
 		this.id = id;
 	}
-	
+
 	/**
-	 * Returns the name of the state if he has one, or his id number if it is not the case.
+	 * Returns the name of the state if he has one, or his id number if it is not
+	 * the case.
 	 */
 	public String getValidName() {
 		return hasName() ? name : String.valueOf(id);
 	}
-	
+
 	/**
 	 * Check if state has a valid name
+	 * 
 	 * @return true if state's name is not null or empty, false else.
 	 */
 	public boolean hasName() {
-		return name != null && !name.trim().isEmpty(); 
+		return name != null && !name.trim().isEmpty();
 	}
 
 	public String getName() {
@@ -76,7 +78,7 @@ public class State {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	/**
 	 * @return All Transitions starting from this State
 	 */
@@ -87,6 +89,7 @@ public class State {
 	public void setTransitions(List<Transition> transitions) {
 		this.transitions = transitions;
 	}
+
 	public int getNumberOfTransition() {
 		return transitions.size();
 	}
@@ -157,9 +160,10 @@ public class State {
 		Transition transition = new Transition(letter, state);
 		return addTransition(transition);
 	}
-	
+
 	/**
 	 * Tries to remove a specific transition from the list.
+	 * 
 	 * @param transition the transition to remove
 	 * @return if the transition was in the list
 	 */
@@ -203,4 +207,5 @@ public class State {
 	public String toString() {
 		return "State [id=" + id + ", name=" + name + "]";
 	}
+
 }
