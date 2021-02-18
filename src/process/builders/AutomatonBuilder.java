@@ -100,6 +100,12 @@ public class AutomatonBuilder {
 	 * will change the given automaton and {@link #buildSynchronizedAutomaton()
 	 * synchronized} it (if it isn't already synchronized)
 	 * 
+	 * To create our new determinist Automaton, we will using a method for the
+	 * {@link #createDeterminisedState(Automaton, List) the creation of State} and
+	 * another for
+	 * {@link #addDestinationFromTransitionLetterForDeterminisedAutomaton(Automaton, List, State, char)
+	 * the linking with their destination}
+	 * 
 	 * @return the new Determined Automaton
 	 */
 	public Automaton buildDeterministicAutomaton() {
@@ -148,7 +154,7 @@ public class AutomatonBuilder {
 				listState.addAll(listEpsilonState);
 			}
 
-			State stateDeparture = createDeterminedState(determinedAutomaton, listState);
+			State stateDeparture = createDeterminisedState(determinedAutomaton, listState);
 			if (stateDeparture.getId() >= nextStateId) {
 				nextStateId++;
 			}
@@ -158,8 +164,8 @@ public class AutomatonBuilder {
 
 			// for each of the alphabet letter
 			for (char letter : alphabet.toCharArray()) {
-				listNewState = addDestinationFromTransitionLetterForDeterminedAutomaton(determinedAutomaton, listTransitions,
-						stateDeparture, letter);
+				listNewState = addDestinationFromTransitionLetterForDeterminisedAutomaton(determinedAutomaton,
+						listTransitions, stateDeparture, letter);
 
 				if (determinedAutomaton.getStateById(nextStateId) != null) {
 					// add the list of state to be search through
@@ -180,14 +186,12 @@ public class AutomatonBuilder {
 	 * transition with the given letter from the given state to the new automaton.
 	 * 
 	 * @param determinedAutomaton the Automaton to add the new state
-	 * @param listTransitions the list of transition 
-	 * @param stateDeparture
-	 * @param letter
-	 * @param id
-	 * @param listDeterminedStates
+	 * @param listTransitions     the list of transition
+	 * @param stateDeparture      the determinised state we come from
+	 * @param letter              the letter of the transition we will create
 	 * @return
 	 */
-	private List<State> addDestinationFromTransitionLetterForDeterminedAutomaton(Automaton determinedAutomaton,
+	private List<State> addDestinationFromTransitionLetterForDeterminisedAutomaton(Automaton determinedAutomaton,
 			List<Transition> listTransitions, State stateDeparture, char letter) {
 
 		// get all state from valid transition
@@ -197,7 +201,7 @@ public class AutomatonBuilder {
 		// we have gone through all transition
 		// check that we have found a destination
 		if (!listNewState.isEmpty()) {
-			State newDeterminedState = createDeterminedState(determinedAutomaton, listNewState);
+			State newDeterminedState = createDeterminisedState(determinedAutomaton, listNewState);
 			determinedAutomaton.addTransition(stateDeparture, newDeterminedState, letter);
 		}
 		return listNewState;
@@ -210,10 +214,9 @@ public class AutomatonBuilder {
 	 *                            added
 	 * @param listState           the list of State which will be based on to create
 	 *                            the new determined State
-	 * @param stateId
-	 * @return
+	 * @return the new determinised State
 	 */
-	private State createDeterminedState(Automaton determinedAutomaton, List<State> listState) {
+	private State createDeterminisedState(Automaton determinedAutomaton, List<State> listState) {
 		// check if the state is initial or not
 		boolean isInitial = false;
 		if (determinedAutomaton.isEmpty()) {
