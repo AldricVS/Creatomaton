@@ -2,7 +2,6 @@ package process.util;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
@@ -51,6 +50,24 @@ public class FileUtility {
 		File outputFolder = new File("data/output");
 		if(!outputFolder.exists() || !outputFolder.isDirectory()) {
 			outputFolder.mkdirs();
+		}
+	}
+	
+	/**
+	 * Clear all the content in a folder (such as files and sub-folders).
+	 * If the folder the path provided doesn't exists or is not a directory, nothing will be done.
+	 * @param folderName the name (with path) of the folder to clear content 
+	 */
+	public static void clearFolder(String folderName) {
+		File directory = new File(folderName);
+		if(directory.isDirectory()) {
+			for (File file : directory.listFiles()) {
+				//we must clear a folder before deleting it
+				if(file.isDirectory()) {
+					clearFolder(file.getAbsolutePath());
+				}
+				file.delete();
+			}
 		}
 	}
 

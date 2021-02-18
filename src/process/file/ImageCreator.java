@@ -25,15 +25,17 @@ public class ImageCreator {
 	 */
 	private String filename;
 
+	private String outputFolder = null;
+
 	/**
 	 * If the automaton is a mirror of another automaton, set this varible to true
 	 * in order to help graphviz to draw a viable image
 	 * 
 	 */
 	private boolean isMirror = false;
-	
+
 	private boolean doesTryToGetNames = true;
-	
+
 	private boolean isInLandscapeMode = true;
 
 	/**
@@ -50,14 +52,15 @@ public class ImageCreator {
 			throw new IllegalArgumentException("Empty filename (or with only spaces) is not allowed");
 		}
 		this.automaton = automaton;
+		this.filename = filename;
 		graphvizHelper = new GraphvizHelper();
 		dotBuilder = new DotBuilder(automaton);
 	}
 
 	/**
-	 * Generates the image file (as a jpeg file) with al the parameters gathered. It
-	 * will be created in the output folder defined in the settings.ini file
-	 * preferences
+	 * Generates the image file (as a jpeg file) with al the parameters gathered. If
+	 * no output folder was defined before, the file will be created in the output
+	 * folder defined in the settings.ini file preferences
 	 * 
 	 * @return the file where the image is stored
 	 * @throws IOException if an IOError occurs (mostly a security or permission
@@ -86,10 +89,10 @@ public class ImageCreator {
 
 		// create the fot file
 		String name = filename;
-		if (!filename.endsWith(".dot")) {
+		if (!name.endsWith(".dot")) {
 			name += ".dot";
 		}
-		File dotFile = new File(name);
+		File dotFile = new File(inputFile.getAbsolutePath() + "/" + name);
 		if (!dotFile.exists()) {
 			dotFile.createNewFile();
 		}
@@ -107,7 +110,7 @@ public class ImageCreator {
 	 * 
 	 * @param dotFile the dot file to create image with
 	 * @return the image file
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private File createImage(File dotFile) throws IOException {
 		GraphvizHelper graphvizHelper = new GraphvizHelper(dotFile.getAbsolutePath(), prefsFileHelper);
@@ -116,46 +119,81 @@ public class ImageCreator {
 			name += ".jpg";
 		}
 		graphvizHelper.setFileOutputName(name);
+		if(outputFolder != null) {
+			graphvizHelper.setFileOutputPath(outputFolder);
+		}
 		graphvizHelper.runCommand();
-		//check if the file exists
+		// check if the file exists
 		File imageFile = new File(prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY) + "/" + name);
 		return imageFile;
+	}
+
+	public GraphvizHelper getGraphvizHelper() {
+		return graphvizHelper;
+	}
+
+	public DotBuilder getDotBuilder() {
+		return dotBuilder;
+	}
+
+	public PrefsFileHelper getPrefsFileHelper() {
+		return prefsFileHelper;
 	}
 
 	public Automaton getAutomaton() {
 		return automaton;
 	}
 
-	public boolean isMirror() {
-		return isMirror;
-	}
-
-	public void setAutomaton(Automaton automaton) {
-		this.automaton = automaton;
-	}
-
-	public void setIsMirror(boolean isMirror) {
-		this.isMirror = isMirror;
-	}
-
 	public String getFilename() {
 		return filename;
 	}
 
-	public void setFilename(String filename) {
-		this.filename = filename;
+	public String getOutputFolder() {
+		return outputFolder;
+	}
+
+	public boolean isMirror() {
+		return isMirror;
 	}
 
 	public boolean isDoesTryToGetNames() {
 		return doesTryToGetNames;
 	}
 
-	public void setDoesTryToGetNames(boolean doesTryToGetNames) {
-		this.doesTryToGetNames = doesTryToGetNames;
-	}
-
 	public boolean isInLandscapeMode() {
 		return isInLandscapeMode;
+	}
+
+	public void setGraphvizHelper(GraphvizHelper graphvizHelper) {
+		this.graphvizHelper = graphvizHelper;
+	}
+
+	public void setDotBuilder(DotBuilder dotBuilder) {
+		this.dotBuilder = dotBuilder;
+	}
+
+	public void setPrefsFileHelper(PrefsFileHelper prefsFileHelper) {
+		this.prefsFileHelper = prefsFileHelper;
+	}
+
+	public void setAutomaton(Automaton automaton) {
+		this.automaton = automaton;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
+	public void setOutputFolder(String outputFolder) {
+		this.outputFolder = outputFolder;
+	}
+
+	public void setMirror(boolean isMirror) {
+		this.isMirror = isMirror;
+	}
+
+	public void setDoesTryToGetNames(boolean doesTryToGetNames) {
+		this.doesTryToGetNames = doesTryToGetNames;
 	}
 
 	public void setInLandscapeMode(boolean isInLandscapeMode) {

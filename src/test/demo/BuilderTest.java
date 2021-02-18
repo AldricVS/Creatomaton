@@ -7,6 +7,7 @@ import data.Automaton;
 import data.State;
 import process.builders.AutomatonBuilder;
 import process.builders.DotBuilder;
+import process.file.ImageCreator;
 import process.file.PrefsFileHelper;
 import process.helpers.GraphvizHelper;
 
@@ -64,16 +65,9 @@ public class BuilderTest {
 		PrefsFileHelper prefsFileHelper;
 		try {
 			prefsFileHelper = new PrefsFileHelper();
-			String inputFolderName = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_INPUT_FOLDER_KEY);
-			File f = new File(inputFolderName + "/" + fileName + ".dot");
-			DotBuilder dotBuilder = new DotBuilder(automaton);
-			dotBuilder.setInReverseMode(isMirror);
-			// dotBuilder.setIsTriyingToGetStatesNames(false);
-			dotBuilder.buildDotFile(f);
-
-			GraphvizHelper graphvizHelper = new GraphvizHelper(f.getAbsolutePath(), prefsFileHelper);
-			graphvizHelper.setFileOutputName(fileName + ".jpg");
-			graphvizHelper.runCommand();
+			ImageCreator imageCreator = new ImageCreator(automaton, fileName);
+			imageCreator.setMirror(isMirror);
+			imageCreator.createImageFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
