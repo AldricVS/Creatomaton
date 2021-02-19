@@ -35,7 +35,7 @@ public abstract class QuestionBankGenerator {
 	 * fraction. For exemple, 1.0/3.0 will produce 0.333333..., more prcise than
 	 * just 0.33.
 	 */
-	private double penaltyPerTry = 1.0 / 0.3;
+	private double penaltyPerTry = 1.0 / 3.0;
 
 	// Attributes relative to the automaton and its random creation
 	private String alphabet = "abc";

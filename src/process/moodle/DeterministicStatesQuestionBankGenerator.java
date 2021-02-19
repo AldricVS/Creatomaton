@@ -10,9 +10,9 @@ import process.builders.RandomAutomatonBuilder;
  * 
  * @author Aldric Vitali Silvestre <aldric.vitali@outlook.fr>
  */
-public class DeterministicQuestionBankGenerator extends QuestionBankGenerator {
+public class DeterministicStatesQuestionBankGenerator extends QuestionBankGenerator {
 
-	public DeterministicQuestionBankGenerator(String title, int numberOfQuestons) {
+	public DeterministicStatesQuestionBankGenerator(String title, int numberOfQuestons) {
 		super(title, numberOfQuestons);
 	}
 

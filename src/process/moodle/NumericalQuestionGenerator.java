@@ -100,19 +100,17 @@ public class NumericalQuestionGenerator {
 
 		Element textNode = document.createElement("text");
 		questionTextNode.appendChild(textNode);
-		String startQuestion = "Soit l'automate suivant : ";
-		String endQuestion = "Combien d'états aura-t-il suite à sa déterminisation ?";
 		String imageQuestionName = questionImageName + ".jpg";
 
 		// No need for StringBuilder, as he will be automatically be used when compiling
 		String questionContent = "<p>"
-				+ startQuestion
+				+ questionTopText
 				+ "</p>"
 				+ "<p><img src=\"@@PLUGINFILE@@/"
 				+ imageQuestionName
 				+ "\" alt=\"\" role=\"presentation\" class=\"img-responsive atto_image_button_text-bottom\"><br></p>"
 				+ "<p>"
-				+ endQuestion
+				+ questionBottomText
 				+ "</p>";
 
 		textNode.appendChild(document.createCDATASection(questionContent));
