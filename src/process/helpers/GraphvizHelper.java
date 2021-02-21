@@ -22,6 +22,8 @@ public class GraphvizHelper {
 	private String fileInputPath = null;
 
 	private String fileOutputName = null;
+	
+	private PrefsFileHelper prefsFileHelper;
 
 	public GraphvizHelper(String graphvizPath, String fileInputPath, String fileOutputPath) {
 		this.graphvizPath = graphvizPath;
@@ -29,16 +31,21 @@ public class GraphvizHelper {
 		this.fileInputPath = fileInputPath;
 	}
 
-	public GraphvizHelper(String fileInputPath, String fileOutputPath) throws IOException {
+	public GraphvizHelper(String fileInputPath, String fileOutputPath, PrefsFileHelper helper) throws IOException {
+		prefsFileHelper = helper;
 		this.fileOutputPath = fileOutputPath;
 		this.fileInputPath = fileInputPath;
 		retrieveDefaultPreferences();
 	}
 
-	public GraphvizHelper(String fileInputPath) throws IOException {
+	public GraphvizHelper(String fileInputPath, PrefsFileHelper helper) throws IOException {
+		prefsFileHelper = helper;
 		this.fileInputPath = fileInputPath;
 		retrieveDefaultPreferences();
+	}
 
+	public GraphvizHelper() throws IOException {
+		retrieveDefaultPreferences();
 	}
 
 	private void retrieveDefaultPreferences() throws IOException {
@@ -48,7 +55,10 @@ public class GraphvizHelper {
 		}
 		if (fileOutputPath == null) {
 			// we only have directory in the preferences
-			fileOutputPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFALUT_OUTPUT_FOLDER_KEY);
+			fileOutputPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY);
+		}
+		if(fileInputPath == null) {
+			fileInputPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_INPUT_FOLDER_KEY);
 		}
 	}
 

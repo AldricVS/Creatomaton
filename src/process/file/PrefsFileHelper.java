@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import process.util.FileUtility;
+
 /**
  * Used to search the ini file in the appdata folder on the user computer and
  * deals with it
@@ -18,8 +20,8 @@ import java.util.NoSuchElementException;
  */
 public class PrefsFileHelper {
 	public static final String GRAPHVIZ_PATH_KEY = "dot_path";
-	public static final String DEFALUT_OUTPUT_FOLDER_KEY = "def_out";
-	public static final String DEFALUT_INPUT_FOLDER_KEY = "def_in";
+	public static final String DEFAULT_OUTPUT_FOLDER_KEY = "def_out";
+	public static final String DEFAULT_INPUT_FOLDER_KEY = "def_in";
 
 	private static final int NUMBER_OF_PREFERENCES = 3;
 
@@ -28,35 +30,27 @@ public class PrefsFileHelper {
 	private static final String INI_FILE_NAME = "settings.ini";
 
 	private static final String DEFAULT_GRAPHVIZ_PATH = "C:\\Program Files (x86)\\Graphviz\\bin\\dot.exe";
-	private static final String DEFAULT_OUTPUT_FOLDER = "C:\\Creatomaton\\output";
-	private static final String DEFAULT_INPUT_FOLDER = "C:\\Creatomaton\\input";
+	private static final String DEFAULT_OUTPUT_FOLDER = "data/output";
+	private static final String DEFAULT_INPUT_FOLDER = "data/input";
 
-	private String iniFilePath;
 	File iniFile;
 
 	private HashMap<String, String> preferences = new HashMap<String, String>();
 
 	/**
+	 * Create all data folders needed.
 	 * Tries to open the ini file in the right location and create a new one else,
 	 * then parse it in order to put it in the prefereces hashmap
 	 * 
 	 * @throws IOException
 	 */
 	public PrefsFileHelper() throws IOException {
+		FileUtility.createDataFolders();
 		handleIniFile();
 	}
 
 	private void handleIniFile() throws IOException {
-		// try to get the user folder location
-		iniFilePath = System.getProperty("user.home") + "/" + APP_FOLDER_NAME + "/" + DATA_FOLDER_NAME;
-
-		// create folders if not exists and go in
-		File appFolder = new File(iniFilePath);
-		if (!appFolder.exists() || !appFolder.isDirectory()) {
-			appFolder.mkdirs();
-		}
-
-		iniFile = new File(iniFilePath + "/" + INI_FILE_NAME);
+		iniFile = new File(DATA_FOLDER_NAME + "/" + INI_FILE_NAME);
 		if (!iniFile.exists()) {
 			createNewIniFile();
 		} else {
@@ -84,11 +78,11 @@ public class PrefsFileHelper {
 			if (line.startsWith(GRAPHVIZ_PATH_KEY)) {
 				preferences.put(GRAPHVIZ_PATH_KEY, substr);
 
-			} else if (line.startsWith(DEFALUT_OUTPUT_FOLDER_KEY)) {
-				preferences.put(DEFALUT_OUTPUT_FOLDER_KEY, substr);
+			} else if (line.startsWith(DEFAULT_OUTPUT_FOLDER_KEY)) {
+				preferences.put(DEFAULT_OUTPUT_FOLDER_KEY, substr);
 
-			} else if (line.startsWith(DEFALUT_INPUT_FOLDER_KEY)) {
-				preferences.put(DEFALUT_INPUT_FOLDER_KEY, substr);
+			} else if (line.startsWith(DEFAULT_INPUT_FOLDER_KEY)) {
+				preferences.put(DEFAULT_INPUT_FOLDER_KEY, substr);
 			}
 			// else, don't read the line
 		}
@@ -114,15 +108,15 @@ public class PrefsFileHelper {
 		// only 3 things to add for now
 		bw.write(GRAPHVIZ_PATH_KEY + "=" + DEFAULT_GRAPHVIZ_PATH);
 		bw.newLine();
-		bw.write(DEFALUT_OUTPUT_FOLDER_KEY + "=" + DEFAULT_OUTPUT_FOLDER);
+		bw.write(DEFAULT_OUTPUT_FOLDER_KEY + "=" + DEFAULT_OUTPUT_FOLDER);
 		bw.newLine();
-		bw.write(DEFALUT_INPUT_FOLDER_KEY + "=" + DEFAULT_INPUT_FOLDER);
+		bw.write(DEFAULT_INPUT_FOLDER_KEY + "=" + DEFAULT_INPUT_FOLDER);
 		bw.close();
 
 		// no need to parse, we already know preferences
 		preferences.put(GRAPHVIZ_PATH_KEY, DEFAULT_GRAPHVIZ_PATH);
-		preferences.put(DEFALUT_OUTPUT_FOLDER_KEY, DEFAULT_OUTPUT_FOLDER);
-		preferences.put(DEFALUT_INPUT_FOLDER_KEY, DEFAULT_INPUT_FOLDER);
+		preferences.put(DEFAULT_OUTPUT_FOLDER_KEY, DEFAULT_OUTPUT_FOLDER);
+		preferences.put(DEFAULT_INPUT_FOLDER_KEY, DEFAULT_INPUT_FOLDER);
 	}
 
 	/**
@@ -148,8 +142,8 @@ public class PrefsFileHelper {
 	 * If needed, create the default input and output folder
 	 */
 	public void createFolders() {
-		String outputPath = getPreference(PrefsFileHelper.DEFALUT_OUTPUT_FOLDER_KEY);
-		String inputPath = getPreference(PrefsFileHelper.DEFALUT_INPUT_FOLDER_KEY);
+		String outputPath = getPreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY);
+		String inputPath = getPreference(PrefsFileHelper.DEFAULT_INPUT_FOLDER_KEY);
 
 		File output = new File(outputPath);
 		if (!output.exists()) {

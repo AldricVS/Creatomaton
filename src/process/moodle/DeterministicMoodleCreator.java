@@ -23,25 +23,26 @@ import data.Automaton;
 import process.builders.AutomatonBuilder;
 import process.builders.DotBuilder;
 import process.builders.RandomAutomatonBuilder;
+import process.file.DataFilePaths;
+import process.file.PrefsFileHelper;
 import process.helpers.GraphvizHelper;
+import process.util.FileUtility;
 
 //TODO : plus des tests qu'autre chose pour l'instant, à rendre plus flexible
 public class DeterministicMoodleCreator {
-	private static final String OUTPUT_TEMP_PATH = "data/tmp/";
-	private static final String OUTPUT_XML_PATH = "data/xml/";
-
 	public DeterministicMoodleCreator() {
 
 	}
 
 	public void createImage(Automaton automaton, String fileName) throws IOException {
-		File f = new File(OUTPUT_TEMP_PATH + fileName + ".dot");
+		File f = new File(DataFilePaths.TEMP_PATH + "/" + fileName + ".dot");
 		DotBuilder dotBuilder = new DotBuilder(automaton);
 		// dotBuilder.setIsTriyingToGetStatesNames(false);
 		dotBuilder.buildDotFile(f);
 
-		GraphvizHelper graphvizHelper = new GraphvizHelper(f.getAbsolutePath());
-		graphvizHelper.setFileOutputPath(OUTPUT_TEMP_PATH);
+		PrefsFileHelper prefsFileHelper = new PrefsFileHelper();
+		GraphvizHelper graphvizHelper = new GraphvizHelper(f.getAbsolutePath(), prefsFileHelper);
+		graphvizHelper.setFileOutputPath(DataFilePaths.TEMP_PATH);
 		graphvizHelper.setFileOutputName(fileName + ".jpg");
 		graphvizHelper.runCommand();
 	}
@@ -115,7 +116,7 @@ public class DeterministicMoodleCreator {
 				textNode.appendChild(document.createCDATASection(questionContent));
 
 				// image question
-				Element imageQuestionNode = createImageFileNode(imageQuestionName, OUTPUT_TEMP_PATH + imageQuestionName, document);
+				Element imageQuestionNode = createImageFileNode(imageQuestionName, DataFilePaths.TEMP_PATH + "/" + imageQuestionName, document);
 				questionTextNode.appendChild(imageQuestionNode);
 
 				// general feedback
@@ -139,7 +140,7 @@ public class DeterministicMoodleCreator {
 				generalFeedbackTextNode.appendChild(document.createCDATASection(generalFeedbackContent));
 
 				// image answer
-				Element imageAnswerNode = createImageFileNode(imageAnswerName, OUTPUT_TEMP_PATH + imageAnswerName, document);
+				Element imageAnswerNode = createImageFileNode(imageAnswerName, DataFilePaths.TEMP_PATH + "/" + imageAnswerName, document);
 				generalFeedbackNode.appendChild(imageAnswerNode);
 
 				// data for the question
@@ -179,8 +180,11 @@ public class DeterministicMoodleCreator {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource domSource = new DOMSource(document);
-			StreamResult streamResult = new StreamResult(new File(OUTPUT_XML_PATH + filePath));
+			StreamResult streamResult = new StreamResult(new File(DataFilePaths.XML_PATH + "/" + filePath));
 			transformer.transform(domSource, streamResult);
+			
+			// And clear temp folder
+			FileUtility.clearFolder("data/tmp");
 
 		} catch (ParserConfigurationException e) {
 			System.err.println("Error while creating the xml tree : " + e.getMessage());

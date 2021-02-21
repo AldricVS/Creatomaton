@@ -14,13 +14,13 @@ public class FileTest {
 		try {
 			PrefsFileHelper prefsFileHelper = new PrefsFileHelper();
 			
-			prefsFileHelper.changePreference(PrefsFileHelper.DEFALUT_OUTPUT_FOLDER_KEY, "C:/Creatomaton/output(2)");
+			prefsFileHelper.changePreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY, "C:/Creatomaton/output(2)");
 			prefsFileHelper.saveInFile();
 
 			// exec directly graphviz
 			String graphvizPath = prefsFileHelper.getPreference(PrefsFileHelper.GRAPHVIZ_PATH_KEY);
-			String outputPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFALUT_OUTPUT_FOLDER_KEY);
-			String inputPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFALUT_INPUT_FOLDER_KEY);
+			String outputPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY);
+			String inputPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_INPUT_FOLDER_KEY);
 			
 			//create input & output folder
 			prefsFileHelper.createFolders();
