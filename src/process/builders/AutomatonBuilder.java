@@ -76,9 +76,11 @@ public class AutomatonBuilder {
 			// check if the state is initial or final
 			boolean isStateInitial = listFinalState.contains(state);
 			boolean isStateFinal = listInitialState.contains(state);
+
 			// set state as initial and final
 			miroirAutomaton.setStateInitial(state, isStateInitial);
 			miroirAutomaton.setStateFinal(state, isStateFinal);
+
 			// get the list of transitions to reverse it after
 			List<Transition> listTransitions = state.getTransitions();
 			reverseTransitionMap.put(state, new ArrayList<Transition>(listTransitions));
@@ -103,7 +105,7 @@ public class AutomatonBuilder {
 	 * To create our new determinist Automaton, we will using a method for the
 	 * {@link #createDeterminisedState(Automaton, List) the creation of State} and
 	 * another for
-	 * {@link #addDestinationFromTransitionLetterForDeterminisedAutomaton(Automaton, List, State, char)
+	 * {@link #addDeterminissedDestinationFromTransitionLetter(Automaton, List, State, char)
 	 * the linking with their destination}
 	 * 
 	 * @return the new Determined Automaton
@@ -164,8 +166,8 @@ public class AutomatonBuilder {
 
 			// for each of the alphabet letter
 			for (char letter : alphabet.toCharArray()) {
-				listNewState = addDestinationFromTransitionLetterForDeterminisedAutomaton(determinedAutomaton,
-						listTransitions, stateDeparture, letter);
+				listNewState = addDeterminissedDestinationFromTransitionLetter(determinedAutomaton, listTransitions,
+						stateDeparture, letter);
 
 				if (determinedAutomaton.getStateById(nextStateId) != null) {
 					// add the list of state to be search through
@@ -185,13 +187,13 @@ public class AutomatonBuilder {
 	 * state, in the determined automaton with the specified id, then add a
 	 * transition with the given letter from the given state to the new automaton.
 	 * 
-	 * @param determinedAutomaton the Automaton to add the new state
-	 * @param listTransitions     the list of transition
+	 * @param determinedAutomaton the Automaton to add the new determinised state
+	 * @param listTransitions     the list of transition to form the new state
 	 * @param stateDeparture      the determinised state we come from
 	 * @param letter              the letter of the transition we will create
 	 * @return
 	 */
-	private List<State> addDestinationFromTransitionLetterForDeterminisedAutomaton(Automaton determinedAutomaton,
+	private List<State> addDeterminissedDestinationFromTransitionLetter(Automaton determinedAutomaton,
 			List<Transition> listTransitions, State stateDeparture, char letter) {
 
 		// get all state from valid transition
