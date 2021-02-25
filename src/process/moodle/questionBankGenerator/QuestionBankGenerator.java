@@ -1,4 +1,4 @@
-package process.moodle;
+package process.moodle.questionBankGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,17 +16,19 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import process.file.DataFilePaths;
+import process.moodle.questionGenerator.QuestionGenerator;
 import process.util.FileUtility;
 
 /**
- * The abstract class of all bank generator's questions
+ * The abstract class of all bank generator's questions. This permit to create
+ * an xml file containing a list of questions of the same type.
  * 
  * @author Aldric Vitali Silvestre <aldric.vitali@outlook.fr>
  */
 public abstract class QuestionBankGenerator {
 	private int numberOfQuestions;
 	private String title;
-	private NumericalQuestionGenerator numericalQuestionGenerator;
+	private QuestionGenerator questionGenerator;
 
 	// Attributes relative to the grading of the question
 	private double questionPoints = 1.0;
@@ -67,7 +69,7 @@ public abstract class QuestionBankGenerator {
 
 			for (int index = 0; index < numberOfQuestions; index++) {
 				defineQuestion();
-				Element generatedQuestion = numericalQuestionGenerator.generateQuestion(index);
+				Element generatedQuestion = questionGenerator.generateQuestion(index);
 				rootNode.appendChild(generatedQuestion);
 			}
 
@@ -81,7 +83,7 @@ public abstract class QuestionBankGenerator {
 			// And clear temp folder
 			FileUtility.clearFolder(DataFilePaths.TEMP_PATH);
 			FileUtility.clearFolder(DataFilePaths.INPUT_PATH);
-			
+
 		} catch (ParserConfigurationException e) {
 			System.err.println("Error while creating the xml tree : " + e.getMessage());
 			e.printStackTrace();
@@ -95,19 +97,28 @@ public abstract class QuestionBankGenerator {
 	}
 
 	/**
+	 * Choose which implementation of the question generator the question need to
+	 * use
+	 * 
+	 * @return a new instance of the QuestionGenerator implementation choosen.
+	 */
+	protected abstract QuestionGenerator defineQuestionGenerator(Document document);
+
+	/**
 	 * Set all values that are common to all question in the question generator
 	 * 
 	 * @param document
 	 */
 	private void initGlobalQuestionGenerator(Document document) {
-		numericalQuestionGenerator = new NumericalQuestionGenerator(document);
-		numericalQuestionGenerator.setQuestionPoints(questionPoints);
-		numericalQuestionGenerator.setPenaltyPerTry(penaltyPerTry);
+		questionGenerator = defineQuestionGenerator(document);
+		questionGenerator.setQuestionPoints(questionPoints);
+		questionGenerator.setPenaltyPerTry(penaltyPerTry);
 	}
 
 	/**
 	 * This method must init the QuestionGenerator with all values that depends on
-	 * the question, so the text (question sentence, answer sentence,...)
+	 * the question, so the text (question sentence, answer sentence,...), and the
+	 * question Generator Type
 	 */
 	protected abstract void initSpecificQuestionGenerator();
 
@@ -125,8 +136,8 @@ public abstract class QuestionBankGenerator {
 		return title;
 	}
 
-	public NumericalQuestionGenerator getNumericalQuestionGenerator() {
-		return numericalQuestionGenerator;
+	public QuestionGenerator getNumericalQuestionGenerator() {
+		return questionGenerator;
 	}
 
 	public double getQuestionPoints() {
@@ -139,6 +150,10 @@ public abstract class QuestionBankGenerator {
 
 	public String getAlphabet() {
 		return alphabet;
+	}
+
+	public QuestionGenerator getQuestionGenerator() {
+		return questionGenerator;
 	}
 
 	public int getNumberOfStates() {
@@ -161,8 +176,8 @@ public abstract class QuestionBankGenerator {
 		this.title = title;
 	}
 
-	public void setNumericalQuestionGenerator(NumericalQuestionGenerator numericalQuestionGenerator) {
-		this.numericalQuestionGenerator = numericalQuestionGenerator;
+	public void setQuestionGenerator(QuestionGenerator questionGenerator) {
+		this.questionGenerator = questionGenerator;
 	}
 
 	public void setQuestionPoints(double questionPoints) {

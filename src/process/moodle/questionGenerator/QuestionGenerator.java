@@ -1,4 +1,4 @@
-package process.moodle;
+package process.moodle.questionGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,35 +15,45 @@ import process.file.DataFilePaths;
 import process.file.ImageCreator;
 
 /**
- * An helper class that will allows to quickly create a xml tree for one
- * numerical question (with only one integer as the answer). Before creating the
- * xml tree, each field must be set. Else, unpredictible elements can occur
+ * Abstract class for creating a question. Any child of this class can have a
+ * different answer type (numerical, string, ...). Used by the
+ * QuestionBankGenerator in order to generate questions of the same type
  * 
  * @author Aldric Vitali Silvestre <aldric.vitali@outlook.fr>
  */
-public class NumericalQuestionGenerator {
-	private ImageCreator imageCreator;
+public abstract class QuestionGenerator {
+	// Common to all questions
+	protected ImageCreator imageCreator;
+	protected String questionTitle = "";
+	protected String questionTopText = "";
+	protected String questionBottomText = "";
+	protected String answerTopText = "";
+	protected String answerBottomText = "";
 
-	private String questionTitle = "";
-	private String questionTopText = "";
-	private String questionBottomText = "";
-	private String answerTopText = "";
-	private String answerBottomText = "";
+	protected Automaton questionAutomaton;
+	protected Automaton answerAutomaton;
 
-	private Automaton questionAutomaton;
-	private Automaton answerAutomaton;
+	protected double questionPoints;
+	protected double penaltyPerTry;
 
-	private double questionPoints;
-	private double penaltyPerTry;
+	protected Document document;
 
-	private int answerValue;
+	protected String questionImageName;
+	protected String answerImageName;
 
-	private Document document;
+	/**
+	 * By default, set to true. If for some reason a question generator doesn't have
+	 * to show an image as the answer, then this variable must be set to false.
+	 */
+	protected boolean mustShowAnswerImage = true;
 
-	private String questionImageName;
-	private String answerImageName;
+	/**
+	 * The category of the question (moodle format). It must be explicitly defined
+	 * by the child class.
+	 */
+	protected String moodleCategory;
 
-	public NumericalQuestionGenerator(Document document) {
+	public QuestionGenerator(Document document) {
 		this.document = document;
 	}
 
@@ -56,17 +66,21 @@ public class NumericalQuestionGenerator {
 	 * @throws IOException
 	 */
 	public Element generateQuestion(int questionNumber) throws IOException {
+		defineMoodleCategory();
 		// create the images for them
 		questionImageName = "Auto_" + questionNumber;
 		createImage(questionAutomaton, questionImageName);
-		answerImageName = String.format("Auto_%d_answer", questionNumber);
-		createImage(answerAutomaton, answerImageName);
-
+		if(mustShowAnswerImage) {
+			answerImageName = String.format("Auto_%d_answer", questionNumber);
+			createImage(answerAutomaton, answerImageName);
+		}
+		
 		Element questionNode = document.createElement("question");
 		initQuestionNode(questionNode);
 		appendQuestionContent(questionNode);
 		Element generalFeedbackNode = appendGeneralFeedBackNode(questionNode);
 		appendAnswer(questionNode, generalFeedbackNode);
+		appendGradeAndPenalty(questionNode);
 		// The others little nodes
 		appendRemainingNodes(questionNode);
 		return questionNode;
@@ -75,10 +89,24 @@ public class NumericalQuestionGenerator {
 	/**
 	 * @param questionNode
 	 */
+	private void appendGradeAndPenalty(Element questionNode) {
+		// In order to keep 7 digits after the decimal operator, format the double
+		// Also, the "Locale.ROOT" property force the "." as the decimal separator
+		// (else, we could have ',')
+		String gradeString = String.format(Locale.ROOT, "%.7f", questionPoints);
+		String penaltyString = String.format(Locale.ROOT, "%.7f", penaltyPerTry);
+
+		appendElementToNode("defaultgrade", gradeString, questionNode, document);
+		appendElementToNode("penalty", penaltyString, questionNode, document);
+	}
+
+	/**
+	 * @param questionNode
+	 */
 	private void initQuestionNode(Element questionNode) {
 		// only numerical answers for now
 		Attr questionAttr = document.createAttribute("type");
-		questionAttr.setValue("numerical");
+		questionAttr.setValue(moodleCategory);
 		questionNode.setAttributeNode(questionAttr);
 
 		// name of the question
@@ -131,18 +159,20 @@ public class NumericalQuestionGenerator {
 		questionNode.appendChild(generalFeedbackNode);
 
 		Element generalFeedbackTextNode = document.createElement("text");
-		generalFeedbackNode.appendChild(generalFeedbackTextNode);
-		// String answerBegin = "Voici l'automate après déterminisation : ";
-		String imageAnswerName = answerImageName + ".jpg";
-		String generalFeedbackContent = "<p>"
-				+ answerTopText
-				+ "</p>"
-				+ "<p><img src=\"@@PLUGINFILE@@/"
-				+ imageAnswerName
-				+ "\" alt=\"\" width=\"355\" height=\"109\" role=\"presentation\" class=\"img-responsive atto_image_button_text-bottom\"><br></p><p>"
-				+ answerBottomText
-				+ "<br></p>";
-		generalFeedbackTextNode.appendChild(document.createCDATASection(generalFeedbackContent));
+		if(mustShowAnswerImage) {
+			generalFeedbackNode.appendChild(generalFeedbackTextNode);
+			// String answerBegin = "Voici l'automate après déterminisation : ";
+			String imageAnswerName = answerImageName + ".jpg";
+			String generalFeedbackContent = "<p>"
+					+ answerTopText
+					+ "</p>"
+					+ "<p><img src=\"@@PLUGINFILE@@/"
+					+ imageAnswerName
+					+ "\" alt=\"\" width=\"355\" height=\"109\" role=\"presentation\" class=\"img-responsive atto_image_button_text-bottom\"><br></p><p>"
+					+ answerBottomText
+					+ "<br></p>";
+			generalFeedbackTextNode.appendChild(document.createCDATASection(generalFeedbackContent));
+		}
 		return generalFeedbackNode;
 	}
 
@@ -158,56 +188,35 @@ public class NumericalQuestionGenerator {
 	}
 
 	/**
-	 * @param questionNode
-	 * @param generalFeedbackNode
-	 * @param imageAnswerName
-	 * @throws IOException
+	 * Here, the child class must set te name of the moodle category question (ex:
+	 * for a question with 1 number as an answer, the category is "numerical"). This
+	 * category name can be found as the attribute "type" in the "question" node.
 	 */
-	private void appendAnswer(Element questionNode, Element generalFeedbackNode) throws IOException {
-		// image answer
-		Element imageAnswerNode = createImageFileNode(answerImageName, DataFilePaths.TEMP_PATH + "/" + answerImageName + ".jpg", document);
-		generalFeedbackNode.appendChild(imageAnswerNode);
-
-		// data for the question
-		String answerString = String.valueOf(answerValue);
-
-		// answer node
-		Element answerDataNode = document.createElement("answer");
-		questionNode.appendChild(answerDataNode);
-		answerDataNode.setAttribute("fraction", "100"); // Only 1 valid answer per question (determinist)
-		answerDataNode.setAttribute("format", "moodle_auto_format");
-		appendElementToNode("text", answerString, answerDataNode, document);
-		appendElementToNode("tolerance", "0", answerDataNode, document); // no tolerance
-	}
+	protected abstract void defineMoodleCategory();
 
 	/**
-	 * @param questionNode
-	 * @param questionGrade
-	 * @param penalty
+	 * @param questionNode        the node where the answer data must be set
+	 * @param generalFeedbackNode the node where the image of the answer have to be
+	 *                            appended to
+	 * @throws IOException
 	 */
-	private void appendRemainingNodes(Element questionNode) {
-		// In order to keep 7 digits after the decimal operator, format the double
-		// Also, the "Locale.ROOT" property force the "." as the decimal separator
-		// (else, we could have ',')
-		String gradeString = String.format(Locale.ROOT, "%.7f", questionPoints);
-		String penaltyString = String.format(Locale.ROOT, "%.7f", penaltyPerTry);
+	protected abstract void appendAnswer(Element questionNode, Element generalFeedbackNode) throws IOException;
 
-		appendElementToNode("defaultgrade", gradeString, questionNode, document);
-		appendElementToNode("penalty", penaltyString, questionNode, document);
-		appendElementToNode("hidden", "0", questionNode, document);
-		appendElementToNode("unitgradingtype", "0", questionNode, document);
-		appendElementToNode("unitpenalty", "0.1000000", questionNode, document);
-		appendElementToNode("showunits", "3", questionNode, document);
-		appendElementToNode("unitsleft", "0", questionNode, document);
-	}
+	/**
+	 * Here, the child class must append all tiny nodes that is contained in this
+	 * question type ("hidden", "showunits", ...)
+	 * 
+	 * @param questionNode where those new nodes must be appended
+	 */
+	protected abstract void appendRemainingNodes(Element questionNode);
 
-	private void appendElementToNode(String name, String value, Element node, Document document) {
+	protected void appendElementToNode(String name, String value, Element node, Document document) {
 		Element element = document.createElement(name);
 		element.setTextContent(value);
 		node.appendChild(element);
 	}
 
-	private Element createImageFileNode(String imageName, String imageFile, Document document) throws IOException {
+	protected Element createImageFileNode(String imageName, String imageFile, Document document) throws IOException {
 		Element imageNode = document.createElement("file");
 		imageNode.setAttribute("name", imageName);
 		imageNode.setAttribute("path", "/");
@@ -269,10 +278,6 @@ public class NumericalQuestionGenerator {
 		return penaltyPerTry;
 	}
 
-	public int getAnswerValue() {
-		return answerValue;
-	}
-
 	public Document getDocument() {
 		return document;
 	}
@@ -321,10 +326,6 @@ public class NumericalQuestionGenerator {
 		this.penaltyPerTry = penaltyPerTry;
 	}
 
-	public void setAnswerValue(int answerValue) {
-		this.answerValue = answerValue;
-	}
-
 	public void setDocument(Document document) {
 		this.document = document;
 	}
@@ -335,5 +336,21 @@ public class NumericalQuestionGenerator {
 
 	public void setAnswerImageName(String answerImageName) {
 		this.answerImageName = answerImageName;
+	}
+
+	public String getMoodleCategory() {
+		return moodleCategory;
+	}
+
+	public void setMoodleCategory(String moodleCategory) {
+		this.moodleCategory = moodleCategory;
+	}
+
+	public boolean isMustShowAnswerImage() {
+		return mustShowAnswerImage;
+	}
+
+	public void setMustShowAnswerImage(boolean mustShowAnswerImage) {
+		this.mustShowAnswerImage = mustShowAnswerImage;
 	}
 }
