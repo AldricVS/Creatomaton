@@ -1,12 +1,17 @@
-package process.moodle;
+package process.moodle.questionBankGenerator.deterministic;
 
 import java.util.List;
+
+import org.w3c.dom.Document;
 
 import data.Automaton;
 import data.State;
 import data.Transition;
 import process.builders.AutomatonBuilder;
 import process.builders.RandomAutomatonBuilder;
+import process.moodle.questionBankGenerator.QuestionBankGenerator;
+import process.moodle.questionGenerator.NumericalQuestionGenerator;
+import process.moodle.questionGenerator.QuestionGenerator;
 import process.util.TransitionListUtility;
 
 /**
@@ -19,6 +24,11 @@ public class DeterministicTransitionsQuestionBankGenerator extends QuestionBankG
 
 	public DeterministicTransitionsQuestionBankGenerator(String title, int numberOfQuestons) {
 		super(title, numberOfQuestons);
+	}
+	
+	@Override
+	protected QuestionGenerator defineQuestionGenerator(Document document) {
+		return new NumericalQuestionGenerator(document);
 	}
 
 	@Override
@@ -41,18 +51,21 @@ public class DeterministicTransitionsQuestionBankGenerator extends QuestionBankG
 		int answer = allTransitionFromListStates.size();
 		
 		// Define the question with all elements needed
-		NumericalQuestionGenerator numericalQuestionGenerator = getNumericalQuestionGenerator();
-		numericalQuestionGenerator.setAnswerValue(answer);
+		NumericalQuestionGenerator numericalQuestionGenerator = (NumericalQuestionGenerator) getQuestionGenerator();
+		numericalQuestionGenerator.setAnswer(answer);
 		numericalQuestionGenerator.setQuestionAutomaton(automaton);
 		numericalQuestionGenerator.setAnswerAutomaton(deterministicAutomaton);
 	}
 	
 	@Override
 	protected void initSpecificQuestionGenerator() {
-		NumericalQuestionGenerator numericalQuestionGenerator = getNumericalQuestionGenerator();
-		numericalQuestionGenerator.setQuestionTopText("Soit l'automate suivant :");
-		numericalQuestionGenerator.setQuestionBottomText("Après déterminisation, combien de transitions aura-t'il ?");
-		numericalQuestionGenerator.setAnswerTopText("Voici l'automate après déterminisation : ");
+		QuestionGenerator questionGenerator = getQuestionGenerator();
+		questionGenerator.setQuestionTitle("Déterminisation - Transitions");
+		questionGenerator.setQuestionTopText("Soit l'automate suivant :");
+		questionGenerator.setQuestionBottomText("Après déterminisation, combien de transitions aura-t'il ?");
+		questionGenerator.setAnswerTopText("Voici l'automate après déterminisation : ");
 	}
+
+	
 
 }
