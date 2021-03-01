@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 import data.Automaton;
+import data.AutomatonConstants;
 import data.State;
 import data.Transition;
 import exceptions.FileFormatException;
@@ -136,7 +137,7 @@ public class AutomatonFileHelper {
 				
 				//read transition character : except from epsilon, they must have only 1 character
 				boolean isEpsilonTransition = false;
-				char transitionCharacter = 'a';
+				char transitionCharacter = AutomatonConstants.EPSILON_CHAR;
 				if(split[2].length() > 1) {
 					if(EPSILON_STRING.equals(split[2])) {
 						isEpsilonTransition = true;
@@ -157,6 +158,11 @@ public class AutomatonFileHelper {
 					throw new FileFormatException("No state found for this transition. Be sure to define all states before transitions : " + line);
 				}
 				
+				//add the letter to the alphabet of the automaton if it isn't present
+				String alphabetAutomaton = automaton.getAlphabet();
+				if (alphabetAutomaton.indexOf(transitionCharacter) < 0) {
+					automaton.setAlphabet(alphabetAutomaton + transitionCharacter);
+				}
 				//finally, add this transition
 				if(isEpsilonTransition) {
 					automaton.addEpsilonTransition(startingState, destinationState);
