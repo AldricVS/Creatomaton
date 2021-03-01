@@ -1,0 +1,14 @@
+#States
+0;1;0;EI
+1;0;1
+2;1;0
+3;0;0;normal
+#End
+#Transitions
+0;1;a
+0;3;b
+1;2;epsilon
+2;3;b
+3;1;a
+3;3;a
+#End
