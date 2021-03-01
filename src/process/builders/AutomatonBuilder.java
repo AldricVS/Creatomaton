@@ -1,6 +1,3 @@
-/**
- * 
- */
 package process.builders;
 
 import java.util.ArrayList;
@@ -20,9 +17,15 @@ import process.util.TransitionListUtility;
 
 /**
  * <p>
- * AutomatonBuilder is used to create new modified Automaton from a given
+ * AutomatonBuilder is used to create new modified {@link data.Automaton Automaton} from a given
  * Automaton.
  * </p>
+ * <ul> List of possible modification :
+ * <li>build a {@link #buildMirrorAutomaton() mirror} Automaton</li>
+ * <li>build a {@link #buildSynchronizedAutomaton() synchronized} Automaton</li>
+ * <li>build a {@link #buildDeterministicAutomaton() determinist} Automaton</li>
+ * <li>build a {@link #buildMinimalAutomaton() minimal} Automaton</li>
+ * </ul>
  * 
  * @author Maxence
  * @author Chloé Gateau
@@ -161,9 +164,6 @@ public class AutomatonBuilder {
 				nextStateId++;
 			}
 
-			// we dont have any interest in our old list
-			listState.clear();
-
 			// for each of the alphabet letter
 			for (char letter : alphabet.toCharArray()) {
 				listNewState = addDeterminissedDestinationFromTransitionLetter(determinedAutomaton, listTransitions,
@@ -175,8 +175,6 @@ public class AutomatonBuilder {
 					nextStateId++;
 				}
 			}
-
-			listTransitions.clear();
 		}
 		return determinedAutomaton;
 	}
