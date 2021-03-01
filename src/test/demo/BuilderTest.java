@@ -62,9 +62,7 @@ public class BuilderTest {
 	}
 
 	public static void createImage(Automaton automaton, String fileName, boolean isMirror) {
-		PrefsFileHelper prefsFileHelper;
 		try {
-			prefsFileHelper = new PrefsFileHelper();
 			ImageCreator imageCreator = new ImageCreator(automaton, fileName);
 			imageCreator.setMirror(isMirror);
 			imageCreator.createImageFile();

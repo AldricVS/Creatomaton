@@ -327,17 +327,64 @@ public class Automaton {
 	public boolean isStateAccessible(State state) {
 		// check if all other states have any transition leading to this state
 		for (State currentState : states.values()) {
-			if (currentState == state) {
-				continue;
-			}
-			List<Transition> transitions = currentState.getTransitions();
-			for (Transition transition : transitions) {
-				State destination = transition.getDestination();
-				if (destination == state) {
-					return true;
+			if (!currentState.equals(state)) {
+				List<Transition> transitions = currentState.getTransitions();
+				for (Transition transition : transitions) {
+					State destination = transition.getDestination();
+					if (destination == state) {
+						return true;
+					}
 				}
 			}
 		}
+		return false;
+	}
+
+	public boolean isEquals(Automaton automaton) {
+		// start comparation
+		if ((this.getNumberOfTotalStates() != automaton.getNumberOfTotalStates())
+				|| (this.getNumberOfInitialStates() != automaton.getNumberOfInitialStates())
+				|| (this.getNumberOfFinalStates() != automaton.getNumberOfFinalStates())) {
+			return false;
+		}
+
+		// get the list of all states
+		List<State> listStatesFirstAutomaton = this.getAllStates();
+		List<State> listStatesSecondAutomaton = automaton.getAllStates();
+		// Map all state that are equals
+		Map<State, State> equalsStatesMap = new HashMap<State, State>();
+		// Map all transition that are equals
+		Map<Transition, Transition> equalsTransitionsMap = new HashMap<Transition, Transition>();
+
+		for (State state : listStatesFirstAutomaton) {
+			List<Transition> listTransitions = state.getTransitions();
+
+			for (State state2 : listStatesSecondAutomaton) {
+				List<Transition> listTransitions2 = state2.getTransitions();
+
+				for (Transition transition : listTransitions) {
+					for (Transition transition2 : listTransitions2) {
+
+						if ((transition.getDestination().getId() == transition2.getDestination().getId())
+								&& (transition.getLetter() == transition2.getLetter())) {
+							equalsTransitionsMap.put(transition, transition2);
+						}
+					}
+				}
+
+				if ((equalsTransitionsMap.keySet().containsAll(listTransitions))
+						&& (equalsTransitionsMap.values().containsAll(listTransitions2))) {
+					equalsStatesMap.put(state, state2);
+				}
+				equalsTransitionsMap.clear();
+			}
+		}
+
+		if ((equalsStatesMap.keySet().containsAll(listStatesFirstAutomaton))
+				&& (equalsStatesMap.values().containsAll(listStatesSecondAutomaton))) {
+			return true;
+		}
+
 		return false;
 	}
 

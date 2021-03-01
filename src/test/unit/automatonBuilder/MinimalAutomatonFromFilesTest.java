@@ -12,6 +12,7 @@ import exceptions.FileFormatException;
 import process.AutomatonManager;
 import process.builders.AutomatonBuilder;
 import process.file.AutomatonFileHelper;
+import process.file.ImageCreator;
 
 /**
  * @author Maxence
@@ -24,6 +25,7 @@ public class MinimalAutomatonFromFilesTest {
 	private static final String AUTOMATON_EX2_2_FILENAME = "src/test/unit/automatonBuilder/testFile/MinimalAutomaton4.crea";
 	
 	private static final String AUTOMATON_EX3_FILENAME = "src/test/unit/automatonBuilder/testFile/MinimalAutomaton5.crea";
+	private static final String AUTOMATON_EX3_OUT_FILENAME = "ex3";
 
 	private static Automaton automaton1;
 	private static Automaton automaton2;
@@ -59,10 +61,22 @@ public class MinimalAutomatonFromFilesTest {
 	public void areAutomatonEquals3() {
 		//from the given exercice, the minimal automaton is the same
 		AutomatonBuilder builder = new AutomatonBuilder(automaton5);
-		Automaton miniAutomaton5 = builder.buildMinimalAutomaton();
 		
-		assertEquals(automaton5.getNumberOfTotalStates(), miniAutomaton5.getNumberOfTotalStates());
-		assertEquals(automaton5.getNumberOfFinalStates(), miniAutomaton5.getNumberOfFinalStates());
+		//TODO bug avec le determinisme, a verifier ...
+		Automaton miniAutomaton5 = builder.buildMirrorAutomaton();
+		/*
+		ImageCreator imageCreator;
+		try {
+			imageCreator = new ImageCreator(automaton5, AUTOMATON_EX3_OUT_FILENAME);
+			imageCreator.createImageFile();
+			
+			imageCreator.setAutomaton(miniAutomaton5);
+			imageCreator.createImageFile();
+		} catch (IllegalArgumentException | IOException e) {
+			fail();
+		}
+		*/
+		assertTrue(automaton5.isEquals(miniAutomaton5));
 	}
 	
 }
