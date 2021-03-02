@@ -66,7 +66,7 @@ public class MinimalAutomatonFromFilesTest {
 		// automaton5 a été créer sans alphabet ... je continue le debug
 		// automaton5 possède son alphabet, mais le déterminisme change l'ordre des ids, je vais voir si je peux empecher ça ...
 		Automaton miniAutomaton5 = builder.buildMinimalAutomaton();
-		
+		/*
 		ImageCreator imageCreator;
 		try {
 			imageCreator = new ImageCreator(automaton5, AUTOMATON_EX3_OUT_FILENAME);
@@ -77,7 +77,7 @@ public class MinimalAutomatonFromFilesTest {
 		} catch (IllegalArgumentException | IOException e) {
 			fail();
 		}
-		
+		*/
 		assertTrue(automaton5.isEquals(miniAutomaton5));
 	}
 	

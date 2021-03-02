@@ -108,7 +108,7 @@ public class AutomatonBuilder {
 	 * To create our new determinist Automaton, we will using a method for the
 	 * {@link #createDeterminisedState(Automaton, List) the creation of State} and
 	 * another for
-	 * {@link #addDeterminissedDestinationFromTransitionLetter(Automaton, List, State, char)
+	 * {@link #addDeterminisedDestinationFromTransitionLetter(Automaton, List, State, char)
 	 * the linking with their destination}
 	 * 
 	 * @return the new Determined Automaton
@@ -166,7 +166,7 @@ public class AutomatonBuilder {
 
 			// for each of the alphabet letter
 			for (char letter : alphabet.toCharArray()) {
-				listNewState = addDeterminissedDestinationFromTransitionLetter(determinedAutomaton, listTransitions,
+				listNewState = addDeterminisedDestinationFromTransitionLetter(determinedAutomaton, listTransitions,
 						stateDeparture, letter);
 
 				if (determinedAutomaton.getStateById(nextStateId) != null) {
@@ -191,7 +191,7 @@ public class AutomatonBuilder {
 	 * @param letter              the letter of the transition we will create
 	 * @return
 	 */
-	private List<State> addDeterminissedDestinationFromTransitionLetter(Automaton determinedAutomaton,
+	private List<State> addDeterminisedDestinationFromTransitionLetter(Automaton determinedAutomaton,
 			List<Transition> listTransitions, State stateDeparture, char letter) {
 
 		// get all state from valid transition
