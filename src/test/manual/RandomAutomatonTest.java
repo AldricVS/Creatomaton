@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 
 import data.Automaton;
-import process.builders.AutomatonBuilder;
 import process.builders.DotBuilder;
 import process.builders.RandomAutomatonBuilder;
 import process.file.PrefsFileHelper;
@@ -33,8 +32,7 @@ public class RandomAutomatonTest {
 					File file = new File(defaultInputFolderPath + "result.dot");
 					dotBuilder.buildDotFile(file);
 
-					PrefsFileHelper prefsFileHelper = new PrefsFileHelper();
-					graphvizHelper = new GraphvizHelper(file.getAbsolutePath(), defaultOutputFolderPath, prefsFileHelper);
+					graphvizHelper = new GraphvizHelper(file.getAbsolutePath(), defaultOutputFolderPath);
 					graphvizHelper.setFileOutputName("result" + index + ".jpg");
 					graphvizHelper.runCommand();
 				} catch (Exception e) {

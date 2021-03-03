@@ -25,6 +25,9 @@ public class AutomatonManager {
 
 	private Automaton automaton;
 
+	/**
+	 * Create the manager for the given Automaton
+	 */
 	public AutomatonManager(Automaton automaton) {
 		this.automaton = automaton;
 	}
@@ -69,7 +72,18 @@ public class AutomatonManager {
 	 */
 	public boolean validateAutomaton(String word) {
 		List<State> listState = new ArrayList<State>();
-		listState.addAll(automaton.getInitialStates());
+		List<State> listFinalState = null;
+		//check if we can synchronised the automaton
+		if (isSynchronized()) {
+			listState.addAll(automaton.getInitialStates());
+			listFinalState = automaton.getFinalStates();
+		} else {
+			//make it simpler for the validation
+			AutomatonBuilder builder = new AutomatonBuilder(automaton);
+			Automaton synchroAutomaton = builder.buildSynchronizedAutomaton();
+			listState.addAll(synchroAutomaton.getInitialStates());
+			listFinalState = synchroAutomaton.getFinalStates();
+		}
 
 		List<Transition> listTransitions = new ArrayList<Transition>();
 
@@ -88,11 +102,9 @@ public class AutomatonManager {
 
 				// we add all transition from all the state we are searching
 				listTransitions = TransitionListUtility.getAllTransitionFromListStates(listState);
-				listState.clear();
 
 				// we added all transition, add all next state that we are looking for
 				listState = TransitionListUtility.getValidDestinationFromTransition(listTransitions, nextLetter);
-				listTransitions.clear();
 			}
 			// if its empty, then we can stop our research
 			else {
@@ -101,8 +113,10 @@ public class AutomatonManager {
 		}
 
 		// if we arrived here, then our listState got all state which we have gone last
+		listState.addAll(TransitionListUtility.getValidDestinationFromTransition(listTransitions,
+				AutomatonConstants.EPSILON_CHAR));
 		for (State state : listState) {
-			if (automaton.isStateFinal(state)) {
+			if (listFinalState.contains(state)) {
 				return true;
 			}
 		}
@@ -121,23 +135,12 @@ public class AutomatonManager {
 	public boolean isEqualsByMinimalism(Automaton automatonToCompare) {
 		AutomatonBuilder builder;
 		Automaton firstMinimalAutomaton, secondMinimalAutomaton;
-		
+
 		builder = new AutomatonBuilder(automaton);
 		firstMinimalAutomaton = builder.buildMinimalAutomaton();
 		builder = new AutomatonBuilder(automatonToCompare);
 		secondMinimalAutomaton = builder.buildMinimalAutomaton();
-		/*
-		ImageCreator imageCreator;
-		try {
-			imageCreator = new ImageCreator(firstMinimalAutomaton, "deter");
-			imageCreator.createImageFile();
-			
-			imageCreator.setAutomaton(secondMinimalAutomaton);
-			imageCreator.createImageFile();
-		} catch (IllegalArgumentException | IOException e) {
-			return false;
-		}
-		*/
+
 		return firstMinimalAutomaton.isEquals(secondMinimalAutomaton);
 	}
 

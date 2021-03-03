@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import data.Automaton;
 import data.Transition;
+import process.AutomatonManager;
 import process.factory.ThompsonAutomatonFactory;
 
 /**
@@ -42,6 +43,8 @@ public class LetterAutomatonTest {
 	
 	@Test
 	public void acceptAutomaton() {
-		//TODO : Ajouter des tests d'acceptation une fois que les algos seront impl�ment�s 
+		AutomatonManager manager = new AutomatonManager(automaton);
+		assertTrue(manager.validateAutomaton("a"));
+		assertFalse(manager.validateAutomaton(""));
 	}
 }

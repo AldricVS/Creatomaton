@@ -41,7 +41,7 @@ public class DeterministicMoodleCreator {
 		dotBuilder.buildDotFile(f);
 
 		PrefsFileHelper prefsFileHelper = new PrefsFileHelper();
-		GraphvizHelper graphvizHelper = new GraphvizHelper(f.getAbsolutePath(), prefsFileHelper);
+		GraphvizHelper graphvizHelper = new GraphvizHelper(f.getAbsolutePath());
 		graphvizHelper.setFileOutputPath(DataFilePaths.TEMP_PATH);
 		graphvizHelper.setFileOutputName(fileName + ".jpg");
 		graphvizHelper.runCommand();
