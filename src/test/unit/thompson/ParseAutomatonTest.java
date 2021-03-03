@@ -40,11 +40,7 @@ public class ParseAutomatonTest {
 
 		int numberOfStates = automaton.getNumberOfTotalStates();
 		assertEquals(14, numberOfStates);
-		/*
-		 * ImageCreator imageCreator; try { imageCreator = new ImageCreator(automaton,
-		 * "parse2"); imageCreator.createImageFile(); } catch (IllegalArgumentException
-		 * | IOException e) { return; }
-		 */
+		
 		AutomatonManager manager = new AutomatonManager(automaton);
 		assertTrue(manager.validateAutomaton("abbb"));
 		assertTrue(manager.validateAutomaton("c"));

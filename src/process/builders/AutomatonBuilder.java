@@ -17,10 +17,11 @@ import process.util.TransitionListUtility;
 
 /**
  * <p>
- * AutomatonBuilder is used to create new modified {@link data.Automaton Automaton} from a given
- * Automaton.
+ * AutomatonBuilder is used to create new modified {@link data.Automaton
+ * Automaton} from a given Automaton.
  * </p>
- * <ul> List of possible modification :
+ * <ul>
+ * List of possible modification :
  * <li>build a {@link #buildMirrorAutomaton() mirror} Automaton</li>
  * <li>build a {@link #buildSynchronizedAutomaton() synchronized} Automaton</li>
  * <li>build a {@link #buildDeterministicAutomaton() determinist} Automaton</li>
@@ -280,19 +281,18 @@ public class AutomatonBuilder {
 		if (epsilonTransition.isEpsilon()) {
 			State destinationState = epsilonTransition.getDestination();
 
-			// verifie si l'etat d'arrive est initial, si oui l'etat de départ devient
-			// initial
-			if (automaton.isStateInitial(destinationState.getId())) {
+			// si la destination est initial, l'etat de départ devient initial
+			if (automaton.isStateInitial(destinationState)) {
 				automaton.setStateInitial(departState, true);
 			}
 
-			// verifie si l'etat d'arrive est final, si oui l'etat de départ devient final
-			if (automaton.isStateFinal(destinationState.getId())) {
+			// si la destination est final, l'etat de départ devient final
+			if (automaton.isStateFinal(destinationState)) {
 				automaton.setStateFinal(departState, true);
 			}
 
-			// prendre toute les transition qui parte de l'état final et les faire partir de
-			// l'état de départ
+			// recupere toutes les transition qui partent de l'état final et les faire
+			// partir de l'état de départ
 			for (Transition transition : destinationState.getTransitions()) {
 				departState.addTransition(transition);
 			}
