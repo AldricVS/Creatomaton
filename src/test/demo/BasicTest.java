@@ -6,7 +6,6 @@ import java.io.IOException;
 import data.Automaton;
 import data.State;
 import process.builders.DotBuilder;
-import process.file.PrefsFileHelper;
 import process.helpers.GraphvizHelper;
 
 public class BasicTest {
@@ -31,8 +30,7 @@ public class BasicTest {
 		dotBuilder.buildDotFile(f);
 		
 		try {
-			PrefsFileHelper prefsFileHelper = new PrefsFileHelper();
-			GraphvizHelper graphvizHelper = new GraphvizHelper(f.getAbsolutePath(), prefsFileHelper);
+			GraphvizHelper graphvizHelper = new GraphvizHelper(f.getAbsolutePath());
 			graphvizHelper.setFileOutputName("basicAutomaton.jpg");
 			graphvizHelper.runCommand();
 		} catch (IOException e) {
