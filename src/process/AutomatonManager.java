@@ -1,12 +1,7 @@
-/**
- * 
- */
 package process;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import data.Automaton;
 import data.AutomatonConstants;
@@ -30,6 +25,9 @@ public class AutomatonManager {
 
 	private Automaton automaton;
 
+	/**
+	 * Create the manager for the given Automaton
+	 */
 	public AutomatonManager(Automaton automaton) {
 		this.automaton = automaton;
 	}
@@ -74,7 +72,18 @@ public class AutomatonManager {
 	 */
 	public boolean validateAutomaton(String word) {
 		List<State> listState = new ArrayList<State>();
-		listState.addAll(automaton.getInitialStates());
+		List<State> listFinalState = null;
+		//check if we can synchronised the automaton
+		if (isSynchronized()) {
+			listState.addAll(automaton.getInitialStates());
+			listFinalState = automaton.getFinalStates();
+		} else {
+			//make it simpler for the validation
+			AutomatonBuilder builder = new AutomatonBuilder(automaton);
+			Automaton synchroAutomaton = builder.buildSynchronizedAutomaton();
+			listState.addAll(synchroAutomaton.getInitialStates());
+			listFinalState = synchroAutomaton.getFinalStates();
+		}
 
 		List<Transition> listTransitions = new ArrayList<Transition>();
 
@@ -93,11 +102,9 @@ public class AutomatonManager {
 
 				// we add all transition from all the state we are searching
 				listTransitions = TransitionListUtility.getAllTransitionFromListStates(listState);
-				listState.clear();
 
 				// we added all transition, add all next state that we are looking for
 				listState = TransitionListUtility.getValidDestinationFromTransition(listTransitions, nextLetter);
-				listTransitions.clear();
 			}
 			// if its empty, then we can stop our research
 			else {
@@ -106,8 +113,10 @@ public class AutomatonManager {
 		}
 
 		// if we arrived here, then our listState got all state which we have gone last
+		listState.addAll(TransitionListUtility.getValidDestinationFromTransition(listTransitions,
+				AutomatonConstants.EPSILON_CHAR));
 		for (State state : listState) {
-			if (automaton.isStateFinal(state)) {
+			if (listFinalState.contains(state)) {
 				return true;
 			}
 		}
@@ -123,56 +132,16 @@ public class AutomatonManager {
 	 * @param automatonToCompare the automaton we will be comparing to
 	 * @return true if they are equals, false otherwise
 	 */
-	public boolean isEquals(Automaton automatonToCompare) {
+	public boolean isEqualsByMinimalism(Automaton automatonToCompare) {
 		AutomatonBuilder builder;
 		Automaton firstMinimalAutomaton, secondMinimalAutomaton;
+
 		builder = new AutomatonBuilder(automaton);
 		firstMinimalAutomaton = builder.buildMinimalAutomaton();
 		builder = new AutomatonBuilder(automatonToCompare);
 		secondMinimalAutomaton = builder.buildMinimalAutomaton();
 
-		List<State> listStatesFirstAutomaton = firstMinimalAutomaton.getAllStates();
-		List<State> listStatesSecondAutomaton = secondMinimalAutomaton.getAllStates();
-
-		// start comparation
-		if ((listStatesFirstAutomaton.size() != listStatesSecondAutomaton.size())
-				|| (firstMinimalAutomaton.getInitialStates().size() != secondMinimalAutomaton.getInitialStates().size())
-				|| (firstMinimalAutomaton.getFinalStates().size() != secondMinimalAutomaton.getFinalStates().size())) {
-			return false;
-		}
-
-		// Map all state that are equals
-		Map<State, State> equalsStatesMap = new HashMap<State, State>();
-		// Map all transition that are equals
-		Map<Transition, Transition> equalsTransitionsMap = new HashMap<Transition, Transition>();
-
-		for (State state : listStatesFirstAutomaton) {
-			List<Transition> listTransitions = state.getTransitions();
-			for (State state2 : listStatesSecondAutomaton) {
-				List<Transition> listTransitions2 = state2.getTransitions();
-				for (Transition transition : listTransitions) {
-					for (Transition transition2 : listTransitions2) {
-						if ((transition.getDestination().getId() == transition2.getDestination().getId())
-								&& (transition.getLetter() == transition2.getLetter())) {
-							equalsTransitionsMap.put(transition, transition2);
-						}
-					}
-				}
-
-				if ((equalsTransitionsMap.keySet().containsAll(listTransitions))
-						&& (equalsTransitionsMap.values().containsAll(listTransitions2))) {
-					equalsStatesMap.put(state, state2);
-				}
-				equalsTransitionsMap.clear();
-			}
-		}
-
-		if ((equalsStatesMap.keySet().containsAll(listStatesFirstAutomaton))
-				&& (equalsStatesMap.values().containsAll(listStatesSecondAutomaton))) {
-			return true;
-		}
-
-		return false;
+		return firstMinimalAutomaton.isEquals(secondMinimalAutomaton);
 	}
 
 	/**

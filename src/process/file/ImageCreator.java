@@ -114,7 +114,7 @@ public class ImageCreator {
 	 * @throws IOException
 	 */
 	private File createImage(File dotFile) throws IOException {
-		GraphvizHelper graphvizHelper = new GraphvizHelper(dotFile.getAbsolutePath(), prefsFileHelper);
+		GraphvizHelper graphvizHelper = new GraphvizHelper(dotFile.getAbsolutePath());
 		String name = filename;
 		if (!filename.endsWith(".jpg")) {
 			name += ".jpg";

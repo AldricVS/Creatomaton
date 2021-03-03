@@ -22,8 +22,6 @@ public class GraphvizHelper {
 	private String fileInputPath = null;
 
 	private String fileOutputName = null;
-	
-	private PrefsFileHelper prefsFileHelper;
 
 	public GraphvizHelper(String graphvizPath, String fileInputPath, String fileOutputPath) {
 		this.graphvizPath = graphvizPath;
@@ -31,15 +29,13 @@ public class GraphvizHelper {
 		this.fileInputPath = fileInputPath;
 	}
 
-	public GraphvizHelper(String fileInputPath, String fileOutputPath, PrefsFileHelper helper) throws IOException {
-		prefsFileHelper = helper;
+	public GraphvizHelper(String fileInputPath, String fileOutputPath) throws IOException {
 		this.fileOutputPath = fileOutputPath;
 		this.fileInputPath = fileInputPath;
 		retrieveDefaultPreferences();
 	}
 
-	public GraphvizHelper(String fileInputPath, PrefsFileHelper helper) throws IOException {
-		prefsFileHelper = helper;
+	public GraphvizHelper(String fileInputPath) throws IOException {
 		this.fileInputPath = fileInputPath;
 		retrieveDefaultPreferences();
 	}
@@ -57,7 +53,7 @@ public class GraphvizHelper {
 			// we only have directory in the preferences
 			fileOutputPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY);
 		}
-		if(fileInputPath == null) {
+		if (fileInputPath == null) {
 			fileInputPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_INPUT_FOLDER_KEY);
 		}
 	}
@@ -102,12 +98,12 @@ public class GraphvizHelper {
 	public int runCommand() {
 		// check if fileOutputPath is the entire path
 		String separator;
-		if(fileOutputPath.endsWith("/") || fileOutputPath.endsWith("\\")) {
+		if (fileOutputPath.endsWith("/") || fileOutputPath.endsWith("\\")) {
 			separator = "";
-		}else {
+		} else {
 			separator = "/";
 		}
-		
+
 		if (fileOutputName != null) {
 			fileOutputPath += separator + fileOutputName;
 		} else {
@@ -143,7 +139,4 @@ public class GraphvizHelper {
 		return res;
 	}
 
-	
-
-	
 }

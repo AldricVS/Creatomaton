@@ -81,8 +81,7 @@ public class SynchronizedAutomatonTest {
 	public void synchronisationOfSynchronized() {
 		builder.setAutomaton(automaton);
 		Automaton automatonCopy = builder.buildSynchronizedAutomaton();
-		//TODO comparer les deux, ils doivent être identique (methode en creation...)
-		assertTrue(manager.isEquals(automatonCopy));
+		assertTrue(manager.isEqualsByMinimalism(automatonCopy));
 	}
 
 }

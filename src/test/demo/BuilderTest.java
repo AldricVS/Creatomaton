@@ -1,15 +1,11 @@
 package test.demo;
 
-import java.io.File;
 import java.io.IOException;
 
 import data.Automaton;
 import data.State;
 import process.builders.AutomatonBuilder;
-import process.builders.DotBuilder;
 import process.file.ImageCreator;
-import process.file.PrefsFileHelper;
-import process.helpers.GraphvizHelper;
 
 public class BuilderTest {
 
@@ -62,9 +58,7 @@ public class BuilderTest {
 	}
 
 	public static void createImage(Automaton automaton, String fileName, boolean isMirror) {
-		PrefsFileHelper prefsFileHelper;
 		try {
-			prefsFileHelper = new PrefsFileHelper();
 			ImageCreator imageCreator = new ImageCreator(automaton, fileName);
 			imageCreator.setMirror(isMirror);
 			imageCreator.createImageFile();
