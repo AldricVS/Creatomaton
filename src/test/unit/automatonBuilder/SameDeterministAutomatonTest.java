@@ -42,20 +42,20 @@ public class SameDeterministAutomatonTest {
 	@Test
 	public void areDeterminisedAutomatonEquals() {
 		AutomatonManager manager = new AutomatonManager(deterAutomaton1);
-		assertTrue(manager.isEquals(deterAutomaton2));
+		assertTrue(manager.isEqualsByMinimalism(deterAutomaton2));
 	}
 
 	@Test
 	public void areAutomatonEquals() {
 		AutomatonManager manager = new AutomatonManager(automaton1);
-		assertTrue(manager.isEquals(automaton2));
+		assertTrue(manager.isEqualsByMinimalism(automaton2));
 	}
 
 	@Test
 	public void areNormalAndDeterminisedAutomatonEquals() {
 		AutomatonManager manager = new AutomatonManager(automaton1);
-		assertTrue(manager.isEquals(automaton2));
-		assertTrue(manager.isEquals(deterAutomaton1));
-		assertTrue(manager.isEquals(deterAutomaton2));
+		assertTrue(manager.isEqualsByMinimalism(automaton2));
+		assertTrue(manager.isEqualsByMinimalism(deterAutomaton1));
+		assertTrue(manager.isEqualsByMinimalism(deterAutomaton2));
 	}
 }

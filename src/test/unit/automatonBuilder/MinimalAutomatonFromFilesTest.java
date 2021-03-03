@@ -12,7 +12,6 @@ import exceptions.FileFormatException;
 import process.AutomatonManager;
 import process.builders.AutomatonBuilder;
 import process.file.AutomatonFileHelper;
-import process.file.ImageCreator;
 
 /**
  * @author Maxence
@@ -25,7 +24,6 @@ public class MinimalAutomatonFromFilesTest {
 	private static final String AUTOMATON_EX2_2_FILENAME = "src/test/unit/automatonBuilder/testFile/MinimalAutomaton4.crea";
 	
 	private static final String AUTOMATON_EX3_FILENAME = "src/test/unit/automatonBuilder/testFile/MinimalAutomaton5.crea";
-	private static final String AUTOMATON_EX3_OUT_FILENAME = "ex3";
 
 	private static Automaton automaton1;
 	private static Automaton automaton2;
@@ -48,36 +46,20 @@ public class MinimalAutomatonFromFilesTest {
 	@Test
 	public void areAutomatonEquals() {
 		AutomatonManager manager = new AutomatonManager(automaton1);
-		assertTrue(manager.isEquals(automaton2));
+		assertTrue(manager.isEqualsByMinimalism(automaton2));
 	}
 	
 	@Test
 	public void areAutomatonEquals2() {
 		AutomatonManager manager = new AutomatonManager(automaton3);
-		assertTrue(manager.isEquals(automaton4));
+		assertTrue(manager.isEqualsByMinimalism(automaton4));
 	}
 
 	@Test
 	public void areAutomatonEquals3() {
 		//from the given exercice, the minimal automaton is the same
 		AutomatonBuilder builder = new AutomatonBuilder(automaton5);
-		
-		//TODO bug avec le determinisme, a verifier ...
-		// automaton5 a été créer sans alphabet ... je continue le debug
-		// automaton5 possède son alphabet, mais le déterminisme change l'ordre des ids, je vais voir si je peux empecher ça ...
 		Automaton miniAutomaton5 = builder.buildMinimalAutomaton();
-		/*
-		ImageCreator imageCreator;
-		try {
-			imageCreator = new ImageCreator(automaton5, AUTOMATON_EX3_OUT_FILENAME);
-			imageCreator.createImageFile();
-			
-			imageCreator.setAutomaton(miniAutomaton5);
-			imageCreator.createImageFile();
-		} catch (IllegalArgumentException | IOException e) {
-			fail();
-		}
-		*/
 		assertTrue(automaton5.isEquals(miniAutomaton5));
 	}
 	

@@ -118,7 +118,7 @@ public class AutomatonManager {
 	 * @param automatonToCompare the automaton we will be comparing to
 	 * @return true if they are equals, false otherwise
 	 */
-	public boolean isEquals(Automaton automatonToCompare) {
+	public boolean isEqualsByMinimalism(Automaton automatonToCompare) {
 		AutomatonBuilder builder;
 		Automaton firstMinimalAutomaton, secondMinimalAutomaton;
 		
@@ -126,7 +126,18 @@ public class AutomatonManager {
 		firstMinimalAutomaton = builder.buildMinimalAutomaton();
 		builder = new AutomatonBuilder(automatonToCompare);
 		secondMinimalAutomaton = builder.buildMinimalAutomaton();
-		
+		/*
+		ImageCreator imageCreator;
+		try {
+			imageCreator = new ImageCreator(firstMinimalAutomaton, "deter");
+			imageCreator.createImageFile();
+			
+			imageCreator.setAutomaton(secondMinimalAutomaton);
+			imageCreator.createImageFile();
+		} catch (IllegalArgumentException | IOException e) {
+			return false;
+		}
+		*/
 		return firstMinimalAutomaton.isEquals(secondMinimalAutomaton);
 	}
 

@@ -351,6 +351,7 @@ public class Automaton {
 		// get the list of all states
 		List<State> listStatesFirstAutomaton = this.getAllStates();
 		List<State> listStatesSecondAutomaton = automaton.getAllStates();
+
 		// Map all state that are equals
 		Map<State, State> equalsStatesMap = new HashMap<State, State>();
 		// Map all transition that are equals
@@ -360,23 +361,28 @@ public class Automaton {
 			List<Transition> listTransitions = state.getTransitions();
 
 			for (State state2 : listStatesSecondAutomaton) {
-				List<Transition> listTransitions2 = state2.getTransitions();
+				// check if the state hasn't been added to the map
+				if (! (equalsStatesMap.containsKey(state) || (equalsStatesMap.containsValue(state2))) ) {
+					List<Transition> listTransitions2 = state2.getTransitions();
 
-				for (Transition transition : listTransitions) {
-					for (Transition transition2 : listTransitions2) {
+					// compare the transition of the two states
+					for (Transition transition : listTransitions) {
+						for (Transition transition2 : listTransitions2) {
 
-						if ((transition.getDestination().getId() == transition2.getDestination().getId())
-								&& (transition.getLetter() == transition2.getLetter())) {
-							equalsTransitionsMap.put(transition, transition2);
+							if ((transition.getLetter() == transition2.getLetter())
+									&& (!equalsTransitionsMap.containsKey(transition))
+									&& (!equalsTransitionsMap.containsValue(transition2))) {
+								equalsTransitionsMap.put(transition, transition2);
+							}
 						}
 					}
-				}
 
-				if ((equalsTransitionsMap.keySet().containsAll(listTransitions))
-						&& (equalsTransitionsMap.values().containsAll(listTransitions2))) {
-					equalsStatesMap.put(state, state2);
+					if ((equalsTransitionsMap.keySet().containsAll(listTransitions))
+							&& (equalsTransitionsMap.values().containsAll(listTransitions2))) {
+						equalsStatesMap.put(state, state2);
+					}
+					equalsTransitionsMap.clear();
 				}
-				equalsTransitionsMap.clear();
 			}
 		}
 
