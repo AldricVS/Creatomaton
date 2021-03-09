@@ -1,15 +1,14 @@
-package process.moodle.questionBankGenerator.deterministic;
+package process.moodle.questionBankGenerator;
 
 import org.w3c.dom.Document;
 
 import data.Automaton;
 import process.AutomatonManager;
 import process.builders.RandomAutomatonBuilder;
-import process.moodle.questionBankGenerator.QuestionBankGenerator;
 import process.moodle.questionGenerator.QuestionGenerator;
 import process.moodle.questionGenerator.TrueOfFalseQuestionGenerator;
 
-public class IsDeterministicQuestionBankGenerator extends QuestionBankGenerator {
+class IsDeterministicQuestionBankGenerator extends QuestionBankGenerator {
 
 	public IsDeterministicQuestionBankGenerator(String title, int numberOfQuestons) {
 		super(title, numberOfQuestons);

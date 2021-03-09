@@ -5,6 +5,12 @@ import java.io.IOException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * Implementation of the QuestionGenerator class, that allows to create a
+ * question that can be answered by true or false.
+ * 
+ * @author Aldric Vitali Silvestre <aldric.vitali@outlook.fr>
+ */
 public class TrueOfFalseQuestionGenerator extends QuestionGenerator {
 
 	boolean answerValue;

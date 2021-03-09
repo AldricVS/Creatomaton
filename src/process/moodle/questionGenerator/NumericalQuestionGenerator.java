@@ -15,18 +15,19 @@ import process.file.DataFilePaths;
 import process.file.ImageCreator;
 
 /**
- * Implementation of the QuestionGenerator class, that allows to create a question 
+ * Implementation of the QuestionGenerator class, that allows to create a
+ * question that is answered with a number.
  * 
  * @author Aldric Vitali Silvestre <aldric.vitali@outlook.fr>
  */
-public class NumericalQuestionGenerator extends QuestionGenerator{
-	
+public class NumericalQuestionGenerator extends QuestionGenerator {
+
 	private int answer;
-	
+
 	public NumericalQuestionGenerator(Document document) {
 		super(document);
 	}
-	
+
 	public int getAnswer() {
 		return answer;
 	}
