@@ -109,7 +109,7 @@ public class RandomAutomatonBuilder {
 	}
 
 	public void setNumberOfFinalStates(int numberOfFinalStates) {
-		if (numberOfFinalStates > 1) {
+		if (numberOfFinalStates >= 1) {
 			this.numberOfFinalStates = numberOfFinalStates;
 		} else {
 			System.err.println("The number of final states must be equals or more than 1.");

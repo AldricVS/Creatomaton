@@ -38,7 +38,10 @@ public class GraphvizHelper {
 	public GraphvizHelper(String fileInputPath) throws IOException {
 		this.fileInputPath = fileInputPath;
 		retrieveDefaultPreferences();
+	}
 
+	public GraphvizHelper() throws IOException {
+		retrieveDefaultPreferences();
 	}
 
 	private void retrieveDefaultPreferences() throws IOException {
@@ -48,7 +51,10 @@ public class GraphvizHelper {
 		}
 		if (fileOutputPath == null) {
 			// we only have directory in the preferences
-			fileOutputPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFALUT_OUTPUT_FOLDER_KEY);
+			fileOutputPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY);
+		}
+		if (fileInputPath == null) {
+			fileInputPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_INPUT_FOLDER_KEY);
 		}
 	}
 
@@ -92,12 +98,12 @@ public class GraphvizHelper {
 	public int runCommand() {
 		// check if fileOutputPath is the entire path
 		String separator;
-		if(fileOutputPath.endsWith("/") || fileOutputPath.endsWith("\\")) {
+		if (fileOutputPath.endsWith("/") || fileOutputPath.endsWith("\\")) {
 			separator = "";
-		}else {
+		} else {
 			separator = "/";
 		}
-		
+
 		if (fileOutputName != null) {
 			fileOutputPath += separator + fileOutputName;
 		} else {
@@ -133,7 +139,4 @@ public class GraphvizHelper {
 		return res;
 	}
 
-	
-
-	
 }

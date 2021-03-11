@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 
 import data.Automaton;
-import process.builders.AutomatonBuilder;
 import process.builders.DotBuilder;
 import process.builders.RandomAutomatonBuilder;
 import process.file.PrefsFileHelper;
@@ -17,8 +16,8 @@ public class RandomAutomatonTest {
 
 	public static void main(String[] args) throws IOException {
 		prefsFileHelper = new PrefsFileHelper();
-		String defaultOutputFolderPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFALUT_OUTPUT_FOLDER_KEY);
-		String defaultInputFolderPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFALUT_INPUT_FOLDER_KEY);
+		String defaultOutputFolderPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY);
+		String defaultInputFolderPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_INPUT_FOLDER_KEY);
 
 		for (int i = 0; i < 5; i++) {
 			for (int index = 0; index < 5; index++) {

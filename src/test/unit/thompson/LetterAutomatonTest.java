@@ -3,14 +3,13 @@ package test.unit.thompson;
 import static org.junit.Assert.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import data.Automaton;
-import data.State;
 import data.Transition;
+import process.AutomatonManager;
 import process.factory.ThompsonAutomatonFactory;
 
 /**
@@ -44,6 +43,8 @@ public class LetterAutomatonTest {
 	
 	@Test
 	public void acceptAutomaton() {
-		//TODO : Ajouter des tests d'acceptation une fois que les algos seront impl�ment�s 
+		AutomatonManager manager = new AutomatonManager(automaton);
+		assertTrue(manager.validateAutomaton("a"));
+		assertFalse(manager.validateAutomaton(""));
 	}
 }

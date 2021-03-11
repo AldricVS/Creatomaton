@@ -1,6 +1,3 @@
-/**
- * 
- */
 package process.builders;
 
 import java.util.ArrayList;
@@ -20,9 +17,16 @@ import process.util.TransitionListUtility;
 
 /**
  * <p>
- * AutomatonBuilder is used to create new modified Automaton from a given
- * Automaton.
+ * AutomatonBuilder is used to create new modified {@link data.Automaton
+ * Automaton} from a given Automaton.
  * </p>
+ * <ul>
+ * List of possible modification :
+ * <li>build a {@link #buildMirrorAutomaton() mirror} Automaton</li>
+ * <li>build a {@link #buildSynchronizedAutomaton() synchronized} Automaton</li>
+ * <li>build a {@link #buildDeterministicAutomaton() determinist} Automaton</li>
+ * <li>build a {@link #buildMinimalAutomaton() minimal} Automaton</li>
+ * </ul>
  * 
  * @author Maxence
  * @author Chloé Gateau
@@ -76,9 +80,11 @@ public class AutomatonBuilder {
 			// check if the state is initial or final
 			boolean isStateInitial = listFinalState.contains(state);
 			boolean isStateFinal = listInitialState.contains(state);
+
 			// set state as initial and final
 			miroirAutomaton.setStateInitial(state, isStateInitial);
 			miroirAutomaton.setStateFinal(state, isStateFinal);
+
 			// get the list of transitions to reverse it after
 			List<Transition> listTransitions = state.getTransitions();
 			reverseTransitionMap.put(state, new ArrayList<Transition>(listTransitions));
@@ -99,6 +105,12 @@ public class AutomatonBuilder {
 	 * Build a new Automaton with all his States as determined. Calling this method
 	 * will change the given automaton and {@link #buildSynchronizedAutomaton()
 	 * synchronized} it (if it isn't already synchronized)
+	 * 
+	 * To create our new determinist Automaton, we will using a method for the
+	 * {@link #createDeterminisedState(Automaton, List) the creation of State} and
+	 * another for
+	 * {@link #addDeterminisedDestinationFromTransitionLetter(Automaton, List, State, char)
+	 * the linking with their destination}
 	 * 
 	 * @return the new Determined Automaton
 	 */
@@ -126,16 +138,13 @@ public class AutomatonBuilder {
 
 		// get the alphabet and create the new automaton
 		String alphabet = automaton.getAlphabet();
-		Automaton determinedAutomaton = new Automaton(alphabet);
+		Automaton determinedAutomaton = AutomatonFactory.createAutomaton(alphabet);
 
-		// id of the state and a boolean to determined if they are final
-		int id = 0;
-		boolean isFinal;
+		// id of the next state that will be added
+		int nextStateId = 0;
 
 		// while we have new states to add
 		while (!listDeterminedStates.isEmpty()) {
-			// reset of isFinal
-			isFinal = false;
 
 			// listState will take the first list of listDeterminedState
 			listState = listDeterminedStates.pop();
@@ -145,89 +154,100 @@ public class AutomatonBuilder {
 
 			// check if there is a epsilon transition
 			if (TransitionListUtility.isThereAnyEpsilonTransition(listState)) {
-				// add all epsilon transition coming from here
+				// add all valid state after an epsilon transition coming from here
 				List<State> listEpsilonState = TransitionListUtility.getValidDestinationFromTransition(listTransitions,
 						AutomatonConstants.EPSILON_CHAR);
 				listState.addAll(listEpsilonState);
 			}
 
-			// construct the name of our new determined state
-			String nameDeparture = "";
-			nameDeparture = StateListUtility.constructNameOfDeterminedStates(listState);
-
-			// check if there is a final state
-			if (StateListUtility.hasCommonStates(listState, automaton.getFinalStates())) {
-				isFinal = true;
-			}
-
-			// we dont have any interest in our old list
-			listState.clear();
-
-			// search the state from where we come from in the automaton's list
-			int stateStartingId = StateListUtility.getIdStateFromNameInList(determinedAutomaton.getAllStates(),
-					nameDeparture);
-
-			// verification if we find it
-			State stateDeparture;
-			if (stateStartingId < 0) {
-				// create a new state in determinedAutomaton
-				stateDeparture = new State(id, nameDeparture);
-				id++;
-				determinedAutomaton.addState(stateDeparture, true, isFinal);
-			} else {
-				// get the departure state
-				stateDeparture = determinedAutomaton.getStateFromId(stateStartingId);
+			State stateDeparture = createDeterminisedState(determinedAutomaton, listState);
+			if (stateDeparture.getId() >= nextStateId) {
+				nextStateId++;
 			}
 
 			// for each of the alphabet letter
 			for (char letter : alphabet.toCharArray()) {
-				// reset of isFinal
-				isFinal = false;
-				// get all state from valid transition
-				listNewState = TransitionListUtility.getValidDestinationFromTransition(listTransitions, letter);
-				if (StateListUtility.hasCommonStates(listNewState, automaton.getFinalStates())) {
-					isFinal = true;
-				}
+				listNewState = addDeterminisedDestinationFromTransitionLetter(determinedAutomaton, listTransitions,
+						stateDeparture, letter);
 
-				// we have gone through all transition
-				// check that we have found a destination
-				if (!listNewState.isEmpty()) {
-
-					// get a appropriate name for our new state
-					String nameDestination = "";
-					nameDestination = StateListUtility.constructNameOfDeterminedStates(listNewState);
-
-					// check that it doesn't already exist
-					// we will get the Id we need after otherwise
-					int nameId = StateListUtility.getIdStateFromNameInList(determinedAutomaton.getAllStates(),
-							nameDestination);
-
-					// if an id hasn't been found, we can create a new State
-					// creating a new state mean that it will be added to listDeterminedState
-					if (nameId < 0) {
-						// we can create our new state
-						State newState = new State(id, nameDestination);
-						id++;
-
-						// create a new state in determinedAutomaton
-						determinedAutomaton.addState(newState, false, isFinal);
-						determinedAutomaton.addTransition(stateDeparture, newState, letter);
-						// add the list of state to be search through
-						listDeterminedStates.add(listNewState);
-						listNewState = new ArrayList<State>();
-					} else {
-						// add a transition
-						determinedAutomaton.addTransition(stateDeparture, determinedAutomaton.getStateById(nameId),
-								letter);
-					}
-
-					// reset the list of added state
-					listNewState.clear();
+				if (determinedAutomaton.getStateById(nextStateId) != null) {
+					// add the list of state to be search through
+					listDeterminedStates.add(listNewState);
+					nextStateId++;
 				}
 			}
-			listTransitions.clear();
 		}
 		return determinedAutomaton;
+	}
+
+	/**
+	 * Take all destination states from the list of Transition with the given
+	 * letter, and if there is a destination, use it to create a new determined
+	 * state, in the determined automaton with the specified id, then add a
+	 * transition with the given letter from the given state to the new automaton.
+	 * 
+	 * @param determinedAutomaton the Automaton to add the new determinised state
+	 * @param listTransitions     the list of transition to form the new state
+	 * @param stateDeparture      the determinised state we come from
+	 * @param letter              the letter of the transition we will create
+	 * @return
+	 */
+	private List<State> addDeterminisedDestinationFromTransitionLetter(Automaton determinedAutomaton,
+			List<Transition> listTransitions, State stateDeparture, char letter) {
+
+		// get all state from valid transition
+		List<State> listNewState;
+		listNewState = TransitionListUtility.getValidDestinationFromTransition(listTransitions, letter);
+
+		// we have gone through all transition
+		// check that we have found a destination
+		if (!listNewState.isEmpty()) {
+			State newDeterminedState = createDeterminisedState(determinedAutomaton, listNewState);
+			determinedAutomaton.addTransition(stateDeparture, newDeterminedState, letter);
+		}
+		return listNewState;
+	}
+
+	/**
+	 * Construct a new Determined State, with his name based on a list of State
+	 * 
+	 * @param determinedAutomaton the determined automaton where the state will be
+	 *                            added
+	 * @param listState           the list of State which will be based on to create
+	 *                            the new determined State
+	 * @return the new determinised State
+	 */
+	private State createDeterminisedState(Automaton determinedAutomaton, List<State> listState) {
+		// check if the state is initial or not
+		boolean isInitial = false;
+		if (determinedAutomaton.isEmpty()) {
+			isInitial = true;
+		}
+		// check if the state is final or not
+		boolean isFinal = false;
+		if (StateListUtility.hasCommonStates(listState, automaton.getFinalStates())) {
+			isFinal = true;
+		}
+
+		// construct the name of our new determined state
+		String nameDeparture = "";
+		nameDeparture = StateListUtility.constructNameOfDeterminedStates(listState);
+
+		// search the state from where we come from in the automaton's list
+		int stateStartingId = StateListUtility.getIdStateFromNameInList(determinedAutomaton.getAllStates(),
+				nameDeparture);
+
+		// verification if we find it
+		State stateDeparture;
+		if (stateStartingId < 0) {
+			// create a new state in determinedAutomaton
+			stateDeparture = new State(0, nameDeparture);
+			determinedAutomaton.addState(stateDeparture, isInitial, isFinal);
+		} else {
+			// get the departure state
+			stateDeparture = determinedAutomaton.getStateById(stateStartingId);
+		}
+		return stateDeparture;
 	}
 
 	/**
@@ -249,29 +269,43 @@ public class AutomatonBuilder {
 		return newAutomaton;
 	}
 
-	private void removeEpsilon(Automaton automaton, State departState, Transition transition) {
-		// Automaton resultAutomaton = AutomatonFactory.createCopy(automaton);
-		State finalState = transition.getDestination();
+	/**
+	 * Remove a transition epsilon and give all his transition & status to the
+	 * departure state
+	 * 
+	 * @param automaton         the Automaton where the state is
+	 * @param departState       the state where the epsilon-transition start from
+	 * @param epsilonTransition the transition to remove
+	 */
+	private void removeEpsilon(Automaton automaton, State departState, Transition epsilonTransition) {
+		if (epsilonTransition.isEpsilon()) {
+			State destinationState = epsilonTransition.getDestination();
 
-		// verifie si l'etat d'arrive est final, si oui l'etat de départ devient final
-		if (automaton.isStateFinal(finalState.getId())) {
-			automaton.setStateFinal(departState, true);
-		}
+			// si la destination est initial, l'etat de départ devient initial
+			if (automaton.isStateInitial(destinationState)) {
+				automaton.setStateInitial(departState, true);
+			}
 
-		// verifie si l'etat d'arrive est final, si oui l'etat de départ devient final
-		if (automaton.isStateInitial(finalState.getId())) {
-			automaton.setStateInitial(departState, true);
-		}
+			// si la destination est final, l'etat de départ devient final
+			if (automaton.isStateFinal(destinationState)) {
+				automaton.setStateFinal(departState, true);
+			}
 
-		// prendre toute les transition qui parte de l'état final et les faire partir de
-		// l'état de départ
-		for (int i = 0; i < finalState.getNumberOfTransition(); i++) {
-			Transition transitionIeme = finalState.getTransitions().get(i);
-			departState.addTransition(transitionIeme);
+			// recupere toutes les transition qui partent de l'état final et les faire
+			// partir de l'état de départ
+			for (Transition transition : destinationState.getTransitions()) {
+				departState.addTransition(transition);
+			}
+			departState.removeTransition(epsilonTransition);
 		}
-		departState.removeTransition(transition);
 	}
 
+	/**
+	 * Remove all inaccessible state from an automaton
+	 * 
+	 * @param automaton the Automaton where we want to remove inaccessible state
+	 * @return
+	 */
 	private Automaton removeInaccessibleState(Automaton automaton) {
 		List<State> listStates = automaton.getAllStates();
 		for (State state : listStates) {
@@ -293,7 +327,7 @@ public class AutomatonBuilder {
 		List<State> listStates = resultAutomaton.getAllStates();
 		State state;
 
-		// parcours des etats, TANT QUE Y'A DES EPSILON-TRANSITIONS
+		// parcourir les etats tant qu'il y a des epsilon-transition
 		while (TransitionListUtility.isThereAnyEpsilonTransition(listStates)) {
 			for (int i = 0; i < resultAutomaton.getNumberOfTotalStates(); i++) {
 				state = listStates.get(i);
@@ -308,6 +342,7 @@ public class AutomatonBuilder {
 				}
 			}
 		}
-		return removeInaccessibleState(resultAutomaton);
+		resultAutomaton = removeInaccessibleState(resultAutomaton);
+		return resultAutomaton;
 	}
 }

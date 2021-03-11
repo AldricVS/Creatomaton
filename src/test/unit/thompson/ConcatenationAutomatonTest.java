@@ -7,10 +7,9 @@ import org.junit.Test;
 
 import data.Automaton;
 import data.State;
-import data.Transition;
+import process.AutomatonManager;
 import process.factory.ThompsonAutomatonFactory;
 
-// je suis pass� par la 
 /**
  * Tests to check a "concatenation Thompson" automaton. we test the automaton
  * that accepts "ab"
@@ -58,7 +57,8 @@ public class ConcatenationAutomatonTest {
 
 	@Test
 	public void acceptAutomaton() {
-		// TODO : Ajouter des tests d'acceptation une fois que les algos seront
-		// impl�ment�s
+		AutomatonManager manager = new AutomatonManager(concatAutomaton);
+		assertTrue(manager.validateAutomaton("ab"));
+		assertFalse(manager.validateAutomaton("a"));
 	}
 }
