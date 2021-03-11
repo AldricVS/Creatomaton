@@ -1,0 +1,21 @@
+" Les débuts de "chapitres" commencent par un '#'
+" Les commentaires prennent une ligne et commencent par un ' " '
+" Un '#End' est nécéssaire à chaque fin de section
+#States
+" [idEtatDepart];[estInitial (0-1)];[estFinal (0-1)];[Nom (optionnel)]
+" On peut juste mettre l'ID, créant un état ni initial ni final sans nom
+0;1;1;EIF
+1
+2;1;0
+3;0;1;normal
+#End
+#Transitions
+" [idEtatDepart];[idEtatArrivee];[caractèreTransition]
+" (seulement un caractère, sauf pour 'epsilon')
+0;1;a
+0;3;b
+1;2;epsilon
+2;3;b
+3;1;a
+3;3;a
+#End

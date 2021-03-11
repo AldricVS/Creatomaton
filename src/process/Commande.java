@@ -1,5 +1,9 @@
 package process;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -11,17 +15,19 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
 import data.Automaton;
+import exceptions.FileFormatException;
 import process.builders.AutomatonBuilder;
 import process.builders.ThompsonAutomatonBuilder;
 import process.factory.ThompsonAutomatonFactory;
+import process.file.AutomatonFileHelper;
 
 public class Commande {
 
-	private Options options = new Options();
+	private Options options;
 	
 	
 	public Commande () {
-		Options options = new Options();
+		options = new Options();
 		
 		Option load = new Option("L","load",true,"charger un fichier .crea");
 		// dire leq fichier qu'il peu prendre .crea
@@ -67,7 +73,7 @@ public class Commande {
 		
 	public void traitement (String[] argument) {		
 		
-		CommandLineParser parser = new PosixParser();
+		CommandLineParser parser = new DefaultParser();
 		Automaton automaton = null;
 		try {
             CommandLine cmd = parser.parse(options, argument, false);
@@ -78,10 +84,15 @@ public class Commande {
             	formatter.printHelp("MonServeur", options);
             	
             }
-            if(cmd.hasOption("load")){
+            if(cmd.hasOption("L")){
                 System.out.println("récupération d'un fichier");
                 String fichier =  cmd.getOptionValue("load");
-                
+                AutomatonFileHelper automatonFileHelper = new AutomatonFileHelper();
+                try {
+					automaton = automatonFileHelper.loadAutomaton(fichier);
+				} catch (IllegalArgumentException | FileFormatException | IOException e) {
+					e.printStackTrace();
+				}
                 
             }
             else if (cmd.hasOption("random")) {
@@ -124,8 +135,8 @@ public class Commande {
         } catch (ParseException e) {
             // Affichage de l'aide
         	HelpFormatter formatter = new HelpFormatter();
-        	formatter.printHelp("MonServeur", options);
-        	System.err.println("Parsing failed : " +e.getMessage());
+        	formatter.printHelp("Commandes utilisables", options);
+        	System.err.println("Parsing failed : " + e.getMessage());
         }
 	}
 	
