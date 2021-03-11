@@ -1,4 +1,4 @@
-package process.moodle.questionBankGenerator.deterministic;
+package process.moodle.questionBankGenerator;
 
 import java.util.List;
 
@@ -9,7 +9,6 @@ import data.State;
 import data.Transition;
 import process.builders.AutomatonBuilder;
 import process.builders.RandomAutomatonBuilder;
-import process.moodle.questionBankGenerator.QuestionBankGenerator;
 import process.moodle.questionGenerator.NumericalQuestionGenerator;
 import process.moodle.questionGenerator.QuestionGenerator;
 import process.util.TransitionListUtility;
@@ -20,7 +19,7 @@ import process.util.TransitionListUtility;
  * 
  * @author Aldric Vitali Silvestre <aldric.vitali@outlook.fr>
  */
-public class DeterministicTransitionsQuestionBankGenerator extends QuestionBankGenerator {
+class DeterministicTransitionsQuestionBankGenerator extends QuestionBankGenerator {
 
 	public DeterministicTransitionsQuestionBankGenerator(String title, int numberOfQuestons) {
 		super(title, numberOfQuestons);

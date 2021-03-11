@@ -1,11 +1,10 @@
-package process.moodle.questionBankGenerator.deterministic;
+package process.moodle.questionBankGenerator;
 
 import org.w3c.dom.Document;
 
 import data.Automaton;
 import process.builders.AutomatonBuilder;
 import process.builders.RandomAutomatonBuilder;
-import process.moodle.questionBankGenerator.QuestionBankGenerator;
 import process.moodle.questionGenerator.NumericalQuestionGenerator;
 import process.moodle.questionGenerator.QuestionGenerator;
 
@@ -15,7 +14,7 @@ import process.moodle.questionGenerator.QuestionGenerator;
  * 
  * @author Aldric Vitali Silvestre <aldric.vitali@outlook.fr>
  */
-public class DeterministicStatesQuestionBankGenerator extends QuestionBankGenerator {
+class DeterministicStatesQuestionBankGenerator extends QuestionBankGenerator {
 
 	public DeterministicStatesQuestionBankGenerator(String title, int numberOfQuestons) {
 		super(title, numberOfQuestons);
