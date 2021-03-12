@@ -17,6 +17,7 @@ import org.apache.commons.cli.PosixParser;
 import data.Automaton;
 import exceptions.FileFormatException;
 import process.builders.AutomatonBuilder;
+import process.builders.RandomAutomatonBuilder;
 import process.builders.ThompsonAutomatonBuilder;
 import process.factory.ThompsonAutomatonFactory;
 import process.file.AutomatonFileHelper;
@@ -74,7 +75,6 @@ public class Commande {
 	public void traitement (String[] argument) {		
 		
 		CommandLineParser parser = new DefaultParser();
-		Automaton automaton = null;
 		try {
             CommandLine cmd = parser.parse(options, argument, false);
 
@@ -84,54 +84,16 @@ public class Commande {
             	formatter.printHelp("MonServeur", options);
             	
             }
-            if(cmd.hasOption("L")){
-                System.out.println("récupération d'un fichier");
-                String fichier =  cmd.getOptionValue("load");
-                AutomatonFileHelper automatonFileHelper = new AutomatonFileHelper();
-                try {
-					automaton = automatonFileHelper.loadAutomaton(fichier);
-				} catch (IllegalArgumentException | FileFormatException | IOException e) {
-					e.printStackTrace();
-				}
-                
-            }
-            else if (cmd.hasOption("random")) {
-                System.out.println("création d'un automate aléatoire ");
-               String expression =cmd.getOptionValue("random");
-               
-         
-
-            }
-            else if (cmd.hasOption("thompson")) {
-                System.out.println("création d'un automate de thomson ");
-                String expression =cmd.getOptionValue("thompson");
-
-
-            }
-            if  (cmd.hasOption("syn")) {
-            	AutomatonBuilder builder = new AutomatonBuilder(automaton);
-            	builder.buildSynchronizedAutomaton();
-            }
-            if (cmd.hasOption("det")) {
-            	AutomatonBuilder builder = new AutomatonBuilder(automaton);
-            	builder.buildDeterministicAutomaton();
-            }
-            if (cmd.hasOption("min")) {
-            	AutomatonBuilder builder = new AutomatonBuilder(automaton);
-            	builder.buildMinimalAutomaton();
-            }
-            if (cmd.hasOption("mir")) {
-            	AutomatonBuilder builder = new AutomatonBuilder(automaton);
-            	builder.buildMirrorAutomaton();
-            }
-            if (cmd.hasOption("all")) {
-            	AutomatonBuilder builder = new AutomatonBuilder(automaton);
-            	builder.buildSynchronizedAutomaton();
-            	builder.buildDeterministicAutomaton();
-            	builder.buildMinimalAutomaton();
-            	builder.buildMirrorAutomaton();
-            }
-
+    		Automaton automaton = traitementAutomaton(cmd);
+    		
+    		if (automaton != null) {
+    			traitementAlgo(cmd, automaton);
+    		}
+    		else {
+    			System.out.println("il faut d'abord utiliser soit random soit load soit thompson");
+    		}
+            
+            
         } catch (ParseException e) {
             // Affichage de l'aide
         	HelpFormatter formatter = new HelpFormatter();
@@ -140,6 +102,116 @@ public class Commande {
         }
 	}
 	
+public Automaton traitementAutomaton( CommandLine cmd) {
+	Automaton automaton = null;
+	 if(cmd.hasOption("L")){
+         System.out.println("récupération d'un fichier");
+         String fichier =  cmd.getOptionValue("load");
+        automaton = load(fichier);
+         
+     }
+     else if (cmd.hasOption("random")) {
+         System.out.println("création d'un automate aléatoire ");
+        String expression =cmd.getOptionValue("random");
+        automaton = random(expression);
+        
+  
+
+     }
+     else if (cmd.hasOption("thompson")) {
+         System.out.println("création d'un automate de thomson ");
+         String expression =cmd.getOptionValue("thompson");
+         automaton= thompson (expression);
+
+
+     }
+	 return automaton;
+}
+
+
+
+public Void traitementAlgo(CommandLine cmd, Automaton automaton) {
+	if  (cmd.hasOption("syn")) {
+    	synchronisation(automaton);
+    }
+    if (cmd.hasOption("det")) {
+    	determinisation (automaton);
+    }
+    if (cmd.hasOption("min")) {
+    	minimisation(automaton);
+    }
+    if (cmd.hasOption("mir")) {
+    	miroir(automaton);
+    }
+    if (cmd.hasOption("all")) {
+    	synchronisation(automaton);
+    	determinisation(automaton);
+    	minimisation(automaton);
+    	miroir(automaton);
+    }
+	return null;
+
+}
+
+	public Automaton random(String expression ) {
+		RandomAutomatonBuilder automatonRandom = new RandomAutomatonBuilder();
+		Automaton automaton = null;
+		try {
+				// appelle de la methode qui renvoie un automate d'après l'expression
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		}
+		return automaton;
+	}
+	
+	public Automaton load(String fichier) {
+		 AutomatonFileHelper automatonFileHelper = new AutomatonFileHelper();
+		 Automaton automaton = null;
+         try {
+				automaton = automatonFileHelper.loadAutomaton(fichier);
+			} catch (IllegalArgumentException | FileFormatException | IOException e) {
+				e.printStackTrace();
+			}
+         return automaton;
+		
+	}
+	
+	public Automaton thompson (String expression) {
+
+		ThompsonAutomatonFactory automatonThompson = new ThompsonAutomatonFactory();
+		Automaton automaton = null;
+		try {
+			
+				// appelle de la methode qui renvoie un automate  de thompson d'après l'expression
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		}
+		return automaton;
+		
+	}
+	
+	public Automaton minimisation (Automaton automaton) {
+		AutomatonBuilder builder = new AutomatonBuilder(automaton);
+		builder.buildMinimalAutomaton();
+		return automaton;
+	}
+	
+	public Automaton determinisation (Automaton automaton) {
+		AutomatonBuilder builder = new AutomatonBuilder(automaton);
+		builder.buildDeterministicAutomaton();
+		return automaton;
+	}
+	
+	public Automaton miroir (Automaton automaton) {
+		AutomatonBuilder builder = new AutomatonBuilder(automaton);
+		builder.buildMirrorAutomaton();
+		return automaton;
+	}
+	public Automaton synchronisation (Automaton automaton) {
+		AutomatonBuilder builder = new AutomatonBuilder(automaton);
+		builder.buildSynchronizedAutomaton();
+		return automaton;
+	}
 }
 
 
