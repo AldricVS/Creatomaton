@@ -21,6 +21,14 @@ public class QuestionBankFactory {
 		return new DeterministicTransitionsQuestionBankGenerator(title, numberOfQuestions);
 	}
 	
+	public static QuestionBankGenerator createMinimalStatesGenerator(String title, int numberOfQuestions) {
+		return new MinimalStatesQuestionBankGenerator(title, numberOfQuestions);
+	}
+	
+	public static QuestionBankGenerator createMinimalTransitionsGenerator(String title, int numberOfQuestions) {
+		return new MinimalTransitionsQuestionBankGenerator(title, numberOfQuestions);
+	}
+	
 	public static QuestionBankGenerator createIsDeterministicGenerator(String title, int numberOfQuestions) {
 		return new IsDeterministicQuestionBankGenerator(title, numberOfQuestions);
 	}
