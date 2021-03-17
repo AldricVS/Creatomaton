@@ -16,7 +16,7 @@ import process.util.TransitionListUtility;
  * Main class to manage Automaton
  * </p>
  * <p>
- * Can validate and determined an Automaton
+ * Can validate an Automaton and show if two Automaton are equals
  * </p>
  * 
  * @author Maxence

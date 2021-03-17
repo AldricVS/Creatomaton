@@ -340,6 +340,18 @@ public class Automaton {
 		return false;
 	}
 
+	/**
+	 * <p>
+	 * Compare this Automaton with another to determined if they are equals.
+	 * </p>
+	 * <p>
+	 * This method compare by check if there is the all state of the Automaton have
+	 * the same destination.
+	 * </p>
+	 * 
+	 * @param automaton the Automaton to Compare to
+	 * @return true if two Automaton are equals, false otherwise
+	 */
 	public boolean isEquals(Automaton automaton) {
 		// start comparation
 		if ((this.getNumberOfTotalStates() != automaton.getNumberOfTotalStates())
@@ -362,7 +374,7 @@ public class Automaton {
 
 			for (State state2 : listStatesSecondAutomaton) {
 				// check if the state hasn't been added to the map
-				if (! (equalsStatesMap.containsKey(state) || (equalsStatesMap.containsValue(state2))) ) {
+				if (!(equalsStatesMap.containsKey(state) || (equalsStatesMap.containsValue(state2)))) {
 					List<Transition> listTransitions2 = state2.getTransitions();
 
 					// compare the transition of the two states
@@ -392,6 +404,11 @@ public class Automaton {
 		}
 
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		return "Automaton [alphabet=" + alphabet + ", states=" + states + "]";
 	}
 
 }

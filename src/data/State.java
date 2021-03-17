@@ -200,6 +200,8 @@ public class State {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
+		if (transitions.size() != other.transitions.size())
+			return false;
 		return true;
 	}
 
