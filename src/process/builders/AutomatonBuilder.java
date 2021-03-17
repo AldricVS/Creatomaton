@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import data.Automaton;
-import data.AutomatonConstants;
 import data.State;
 import data.Transition;
 import process.AutomatonManager;
@@ -153,12 +152,13 @@ public class AutomatonBuilder {
 			listTransitions = TransitionListUtility.getAllTransitionFromListStates(listState);
 
 			// check if there is a epsilon transition
-			if (TransitionListUtility.isThereAnyEpsilonTransition(listState)) {
-				// add all valid state after an epsilon transition coming from here
-				List<State> listEpsilonState = TransitionListUtility.getValidDestinationFromTransition(listTransitions,
-						AutomatonConstants.EPSILON_CHAR);
-				listState.addAll(listEpsilonState);
-			}
+			// at this moment, useless as the automaton wil be synchronised
+//			if (TransitionListUtility.isThereAnyEpsilonTransition(listState)) {
+//				// add all valid state after an epsilon transition coming from here
+//				List<State> listEpsilonState = TransitionListUtility.getValidDestinationFromTransition(listTransitions,
+//						AutomatonConstants.EPSILON_CHAR);
+//				listState.addAll(listEpsilonState);
+//			}
 
 			State stateDeparture = createDeterminisedState(determinedAutomaton, listState);
 			if (stateDeparture.getId() >= nextStateId) {

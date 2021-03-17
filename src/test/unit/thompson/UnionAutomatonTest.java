@@ -2,16 +2,10 @@ package test.unit.thompson;
 
 import static org.junit.Assert.*;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import data.Automaton;
-import data.AutomatonConstants;
-import data.State;
-import data.Transition;
 import process.AutomatonManager;
 import process.factory.ThompsonAutomatonFactory;
 

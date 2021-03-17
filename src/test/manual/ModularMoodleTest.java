@@ -1,7 +1,6 @@
 package test.manual;
 
 import process.moodle.questionBankGenerator.QuestionBankGenerator;
-import process.moodle.questionBankGenerator.deterministic.DeterministicTransitionsQuestionBankGenerator;
 import process.moodle.questionBankGenerator.deterministic.IsDeterministicQuestionBankGenerator;
 
 public class ModularMoodleTest {
