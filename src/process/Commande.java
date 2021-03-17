@@ -2,6 +2,7 @@ package process;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import org.apache.commons.cli.CommandLine;
@@ -15,12 +16,14 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
 import data.Automaton;
+import data.Transition;
 import exceptions.FileFormatException;
 import process.builders.AutomatonBuilder;
 import process.builders.RandomAutomatonBuilder;
 import process.builders.ThompsonAutomatonBuilder;
 import process.factory.ThompsonAutomatonFactory;
 import process.file.AutomatonFileHelper;
+import process.file.ImageCreator;
 
 public class Commande {
 
@@ -69,6 +72,21 @@ public class Commande {
 		
 		Option equi = new Option("E","equi",false,"vérifie l'équivalence avec un autre automate stocké dans un fichier .crea");
 		options.addOption(equi);
+		
+		
+		Option graphviz = new Option("G","graphviz",true,"export en image avec en paramètre le nom donné");
+		Option file = new Option("F","file",true,"export en fichier avec le nom du fichier passé");
+
+		// Creation du groupe d'option
+		OptionGroup group2 = new OptionGroup();
+		// Ajout des options exclusives
+		group2.addOption(graphviz) ;
+		group2.addOption(file);
+		// Possibilite de rendre un groupe obligatoire
+		group.setRequired(true);
+		// Ajout du groupe dans le conteneur Options 
+		options.addOptionGroup(group2);
+		
 
 		}
 		
@@ -77,7 +95,8 @@ public class Commande {
 		CommandLineParser parser = new DefaultParser();
 		try {
             CommandLine cmd = parser.parse(options, argument, false);
-
+            ArrayList<Automaton> listAutomaton=null;
+            
             if(cmd.hasOption("help")){
                 // Affiche l'aide
             	HelpFormatter formatter = new HelpFormatter();
@@ -85,9 +104,12 @@ public class Commande {
             	
             }
     		Automaton automaton = traitementAutomaton(cmd);
+    		listAutomaton.add(automaton);
     		
     		if (automaton != null) {
-    			traitementAlgo(cmd, automaton);
+    			automaton =traitementAlgo(cmd, automaton);
+    			listAutomaton.add(automaton);
+    			extraction(cmd,listAutomaton);
     		}
     		else {
     			System.out.println("il faut d'abord utiliser soit random soit load soit thompson");
@@ -108,48 +130,43 @@ public Automaton traitementAutomaton( CommandLine cmd) {
          System.out.println("récupération d'un fichier");
          String fichier =  cmd.getOptionValue("load");
         automaton = load(fichier);
-         
      }
      else if (cmd.hasOption("random")) {
          System.out.println("création d'un automate aléatoire ");
         String expression =cmd.getOptionValue("random");
         automaton = random(expression);
-        
-  
-
      }
      else if (cmd.hasOption("thompson")) {
          System.out.println("création d'un automate de thomson ");
          String expression =cmd.getOptionValue("thompson");
          automaton= thompson (expression);
-
-
      }
 	 return automaton;
 }
 
 
 
-public Void traitementAlgo(CommandLine cmd, Automaton automaton) {
+public Automaton traitementAlgo(CommandLine cmd, Automaton automaton) {
+	Automaton newAutomaton = null;
 	if  (cmd.hasOption("syn")) {
-    	synchronisation(automaton);
+    	newAutomaton=synchronisation(automaton);
     }
     if (cmd.hasOption("det")) {
-    	determinisation (automaton);
+    	newAutomaton=determinisation (automaton);
     }
     if (cmd.hasOption("min")) {
-    	minimisation(automaton);
+    	newAutomaton=minimisation(automaton);
     }
     if (cmd.hasOption("mir")) {
-    	miroir(automaton);
+    	newAutomaton=miroir(automaton);
     }
     if (cmd.hasOption("all")) {
-    	synchronisation(automaton);
-    	determinisation(automaton);
-    	minimisation(automaton);
-    	miroir(automaton);
+    	newAutomaton=synchronisation(automaton);
+    	newAutomaton=determinisation(automaton);
+    	newAutomaton=minimisation(automaton);
+    	newAutomaton=miroir(automaton);
     }
-	return null;
+	return newAutomaton;
 
 }
 
@@ -211,6 +228,41 @@ public Void traitementAlgo(CommandLine cmd, Automaton automaton) {
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
 		builder.buildSynchronizedAutomaton();
 		return automaton;
+	}
+	
+	public void extraction (CommandLine cmd , ArrayList<Automaton> listAutomaton) {
+		if (cmd.hasOption("graphviz")) {
+	        String name =cmd.getOptionValue("graphviz");
+			for (Automaton automaton : listAutomaton) {
+				
+				try {
+					ImageCreator picture = new ImageCreator(automaton, name);
+					picture.createImageFile();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		        // ajouter l'appel de la fonction qui permet de faire l'export avec graphviz pour automaton
+			}  
+	    }
+	    if (cmd.hasOption("file")) {
+	        String nameFile =cmd.getOptionValue("file");
+	        AutomatonFileHelper extractionFile =new AutomatonFileHelper();
+			for (Automaton automaton : listAutomaton) {
+					try {
+						extractionFile.saveAutomaton(automaton, nameFile);
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			}
+	    }
 	}
 }
 
