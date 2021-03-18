@@ -9,7 +9,7 @@ import process.file.AutomatonFileHelper;
 
 public class CustomFileTest {
 	
-	public static void main(String[] args) throws IllegalArgumentException, FileFormatException, IOException {
+	public static void main(String[] args) throws FileFormatException, IOException {
 		//charger et afficher un automate
 		AutomatonFileHelper automatonFileHelper = new AutomatonFileHelper();
 		String filename = "src/test/demo/creaFiles/automaton.crea";
