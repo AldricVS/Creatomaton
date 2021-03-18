@@ -70,6 +70,8 @@ public class Commande {
 		options.addOption(all);
 
 		Option val = new Option("V", "val", false, "vérifie si l'automate valide le mot");
+		val.setType(AutomatonManager.class);
+
 		options.addOption(val);
 
 		Option equi = new Option("E", "equi", false,"vérifie l'équivalence avec un autre automate stocké dans un fichier .crea");
@@ -175,6 +177,31 @@ public class Commande {
 
 			}
 		}
+		if (cmd.hasOption("equi")) {
+			String fichier = cmd.getOptionValue("equi");
+			Automaton automaton2 = load(fichier);
+			AutomatonManager manager =new AutomatonManager(automaton);
+			boolean isEquals = manager.isEqualsByMinimalism(automaton2);
+			if (isEquals) {
+				System.out.println("les deux automates sont équivalent");
+			}
+			else {
+				System.out.println("les deux ne automates sont pas équivalent");
+
+			}
+		}
+		if (cmd.hasOption("val")) {
+			String automate = cmd.getOptionValue("val");
+			AutomatonManager manager =new AutomatonManager(automaton);
+			boolean isValide = manager.validateAutomatonByDeterminism(automate);
+			if (isValide) {
+				System.out.println(" l'automate valide le mot " +automate);
+			}
+			else {
+				System.out.println(" l'automate ne valide pas le mot");
+			}
+				
+		}
 
 	}
 
@@ -218,26 +245,24 @@ public class Commande {
 
 	public Automaton minimisation(Automaton automaton) {
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
-		builder.buildMinimalAutomaton();
-		return automaton;
+		return builder.buildMinimalAutomaton();
+		
 	}
 
 	public Automaton determinisation(Automaton automaton) {
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
-		builder.buildDeterministicAutomaton();
-		return automaton;
+		return builder.buildDeterministicAutomaton();
+		
 	}
 
 	public Automaton miroir(Automaton automaton) {
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
-		builder.buildMirrorAutomaton();
-		return automaton;
+		return builder.buildMirrorAutomaton();
 	}
 
 	public Automaton synchronisation(Automaton automaton) {
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
-		builder.buildSynchronizedAutomaton();
-		return automaton;
+		return builder.buildSynchronizedAutomaton();
 	}
 
 	public void extraction(CommandLine cmd) {
