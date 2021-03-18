@@ -2,10 +2,13 @@ package process.file;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import data.Automaton;
 import process.builders.DotBuilder;
 import process.helpers.GraphvizHelper;
+import process.util.FileUtility;
 
 /**
  * Create an image from an automaton and some parameters, with the help of
@@ -25,8 +28,6 @@ public class ImageCreator {
 	 */
 	private String filename;
 
-	private String outputFolder = null;
-
 	/**
 	 * If the automaton is a mirror of another automaton, set this varible to true
 	 * in order to help graphviz to draw a viable image
@@ -37,6 +38,8 @@ public class ImageCreator {
 	private boolean doesTryToGetNames = true;
 
 	private boolean isInLandscapeMode = true;
+	
+	private boolean mustEraseDotFiles = true;
 
 	/**
 	 * Create an instance of ImageCreator, which also loads the GraphvizHelper and
@@ -70,6 +73,9 @@ public class ImageCreator {
 		prefsFileHelper = new PrefsFileHelper();
 		File dotFile = createDotFile();
 		File imageFile = createImage(dotFile);
+		if(mustEraseDotFiles) {
+			dotFile.delete();
+		}
 		return imageFile;
 	}
 
@@ -93,7 +99,9 @@ public class ImageCreator {
 		if (!name.endsWith(".dot")) {
 			name += ".dot";
 		}
-		File dotFile = new File(inputFile.getAbsolutePath() + "/" + name);
+		Path path = Paths.get(name);
+		String dotFilename = path.getFileName().toString();
+		File dotFile = new File(inputFile.getAbsolutePath() + "/" + dotFilename);
 		if (!dotFile.exists()) {
 			dotFile.createNewFile();
 		}
@@ -119,26 +127,19 @@ public class ImageCreator {
 		if (!filename.endsWith(".jpg")) {
 			name += ".jpg";
 		}
-		graphvizHelper.setFileOutputName(name);
-		if(outputFolder != null) {
-			graphvizHelper.setFileOutputPath(outputFolder);
+		// Split filename and folder
+		Path path = Paths.get(name);
+		String namePath = path.getFileName().toString();
+		Path parent = path.getParent();
+		if(parent != null) {
+			graphvizHelper.setFileOutputPath(parent.toString());
 		}
+		graphvizHelper.setFileOutputName(namePath);
 		graphvizHelper.runCommand();
 		// check if the file exists
-		File imageFile = new File(prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY) + "/" + name);
+		String fileOutputPath = graphvizHelper.getFileOutputPath();
+		File imageFile = new File(fileOutputPath);
 		return imageFile;
-	}
-
-	public GraphvizHelper getGraphvizHelper() {
-		return graphvizHelper;
-	}
-
-	public DotBuilder getDotBuilder() {
-		return dotBuilder;
-	}
-
-	public PrefsFileHelper getPrefsFileHelper() {
-		return prefsFileHelper;
 	}
 
 	public Automaton getAutomaton() {
@@ -147,10 +148,6 @@ public class ImageCreator {
 
 	public String getFilename() {
 		return filename;
-	}
-
-	public String getOutputFolder() {
-		return outputFolder;
 	}
 
 	public boolean isMirror() {
@@ -163,6 +160,10 @@ public class ImageCreator {
 
 	public boolean isInLandscapeMode() {
 		return isInLandscapeMode;
+	}
+
+	public boolean isMustEraseDotFiles() {
+		return mustEraseDotFiles;
 	}
 
 	public void setGraphvizHelper(GraphvizHelper graphvizHelper) {
@@ -185,10 +186,6 @@ public class ImageCreator {
 		this.filename = filename;
 	}
 
-	public void setOutputFolder(String outputFolder) {
-		this.outputFolder = outputFolder;
-	}
-
 	public void setMirror(boolean isMirror) {
 		this.isMirror = isMirror;
 	}
@@ -199,5 +196,9 @@ public class ImageCreator {
 
 	public void setInLandscapeMode(boolean isInLandscapeMode) {
 		this.isInLandscapeMode = isInLandscapeMode;
+	}
+
+	public void setMustEraseDotFiles(boolean mustEraseDotFiles) {
+		this.mustEraseDotFiles = mustEraseDotFiles;
 	}
 }

@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -135,7 +137,7 @@ public class FileUtility {
 				filename = filename.substring(0, filename.length() - 1);
 			}
 			// add the file extension
-			filename += "." + fileExtension;
+			filename += "." + extension;
 			return filename;
 		}
 
@@ -144,7 +146,7 @@ public class FileUtility {
 		} else {
 			int dotIndex = filename.lastIndexOf('.');
 			filename = filename.substring(dotIndex + 1, filename.length());
-			filename += extension;
+			filename += "." + extension;
 			return filename;
 		}
 	}
@@ -198,5 +200,21 @@ public class FileUtility {
 		reader1.close();
 		reader2.close();
 		return haveSameContent;
+	}
+	
+	/**
+	 * Given a filename with his path, retreive the name of the parent folder (with his path).<p>
+	 * For example, getParentFolderName("a/b/text.txt") will give "a/b";
+	 * @param filename the name of the file to search the parent folder
+	 * @return the name with path of the parent folder, or null if have no parent folder.
+	 */
+	public static String getParentFolderName(String filename) {
+		Path path = Paths.get(filename);
+		Path parentFolderPath = path.getParent();
+		if(parentFolderPath == null) {
+			return null;
+		}else {
+			return parentFolderPath.toString();
+		}
 	}
 }

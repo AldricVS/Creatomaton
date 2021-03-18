@@ -3,10 +3,15 @@ package process.file;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import data.Automaton;
 import data.AutomatonConstants;
@@ -31,8 +36,23 @@ public class AutomatonFileHelper {
 	public static final String STATES_COMMAND = "#States";
 	public static final String TRANSITIONS_COMMAND = "#Transitions";
 	public static final String END_COMMAND = "#End";
+	
+	private String outputFolderPath = null;
 
 	public AutomatonFileHelper() {
+	}
+	
+	public AutomatonFileHelper(String outputFolderPath) {
+		this.outputFolderPath = outputFolderPath;
+	}
+
+
+	public String getOutputFolderPath() {
+		return outputFolderPath;
+	}
+
+	public void setOutputFolderPath(String outputFolderPath) {
+		this.outputFolderPath = outputFolderPath;
 	}
 
 	/**
@@ -48,10 +68,19 @@ public class AutomatonFileHelper {
 	 *                 have the extension ".crea" no matter what
 	 * @throws IOException If any IO error occurs (such as security error)
 	 */
-	public void saveAutomaton(Automaton automaton, String filePath) throws IOException {
-		String realFilepath = FileUtility.getRightFilenameExtension(filePath, AUTOMATON_FILE_EXTENSION);
+	public File saveAutomaton(Automaton automaton, String filename) throws IOException, IllegalArgumentException {
+		String realFilepath = FileUtility.getRightFilenameExtension(filename, AUTOMATON_FILE_EXTENSION);
 		realFilepath = FileUtility.searchFileOutputName(realFilepath);
-		File outputFile = new File(realFilepath);
+		//save the file path (all folders directing to it)
+		String folderPath = FileUtility.getParentFolderName(realFilepath);
+		File outputFile;
+		if(folderPath == null) {
+			PrefsFileHelper prefsFileHelper = new PrefsFileHelper();
+			folderPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY);
+			outputFile = new File(folderPath + "/" + realFilepath);
+		}else {
+			outputFile = new File(realFilepath);
+		}
 		outputFile.createNewFile();
 
 		BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(outputFile));
@@ -61,6 +90,7 @@ public class AutomatonFileHelper {
 
 		writeTransitions(allStates, bufferedWriter);
 		bufferedWriter.close();
+		return outputFile;
 	}
 
 	/**
