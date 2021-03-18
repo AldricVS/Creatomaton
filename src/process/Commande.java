@@ -69,12 +69,12 @@ public class Commande {
 		Option all = new Option("A", "all", false, "sync det mir et mini à la fois");
 		options.addOption(all);
 
-		Option val = new Option("V", "val", false, "vérifie si l'automate valide le mot");
+		Option val = new Option("V", "val", true, "vérifie si l'automate valide le mot");
 		val.setType(AutomatonManager.class);
 
 		options.addOption(val);
 
-		Option equi = new Option("E", "equi", false,"vérifie l'équivalence avec un autre automate stocké dans un fichier .crea");
+		Option equi = new Option("E", "equi", true,"vérifie l'équivalence avec un autre automate stocké dans un fichier .crea");
 		options.addOption(equi);
 
 		Option graphviz = new Option("G", "graphviz", true, "export en image avec en paramètre le nom donné");
@@ -85,8 +85,6 @@ public class Commande {
 		// Ajout des options exclusives
 		group2.addOption(graphviz);
 		group2.addOption(file);
-		// Possibilite de rendre un groupe obligatoire
-		group.setRequired(true);
 		// Ajout du groupe dans le conteneur Options
 		options.addOptionGroup(group2);
 
@@ -183,10 +181,10 @@ public class Commande {
 			AutomatonManager manager =new AutomatonManager(automaton);
 			boolean isEquals = manager.isEqualsByMinimalism(automaton2);
 			if (isEquals) {
-				System.out.println("les deux automates sont équivalent");
+				System.out.println("les deux automates sont équivalent.");
 			}
 			else {
-				System.out.println("les deux ne automates sont pas équivalent");
+				System.out.println("les deux ne automates sont pas équivalent.");
 
 			}
 		}
@@ -198,7 +196,7 @@ public class Commande {
 				System.out.println(" l'automate valide le mot " +automate);
 			}
 			else {
-				System.out.println(" l'automate ne valide pas le mot");
+				System.out.println(" l'automate ne valide pas le mot.");
 			}
 				
 		}
