@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -45,31 +46,40 @@ public class Commande {
 
 	private static final String CMD_BASE_AUTOMATON = "base";
 
-	private Options options = new Options();;
+	private Options options = new Options();
+	
+	// Pour random automaton
+	private static final int RANDOM_PROPERTIES_MAX_COUNT = 4;
+	private static final String RANDOM_PROPERTY_NUMBER_STATES = "nStates"; 
+	private static final String RANDOM_PROPERTY_NUMBER_FINAL_STATES = "nFinalStates"; 
+	private static final String RANDOM_PROPERTY_NUMBER_EPSILON = "nEpsilonTrans"; 
+	private static final String RANDOM_PROPERTY_ALPAHBET = "alphabet";
+	
 	private HashMap<String, Automaton> mapAutomaton = new HashMap<>();
 
 	/**
 	 * Add all defined argument that can be read from the Command Line.
 	 */
 	public Commande() {
+		createLoadOptionGroup();
+		createOperationOptions();
+		createExtractionOptionGroup();
+
+	}
+
+	private void createExtractionOptionGroup() {
 		// Creation du groupe d'option
-		OptionGroup group = new OptionGroup();
-
-		Option load = new Option("L", CMD_LOAD, true, "charger un fichier .crea");
-		load.setType(AutomatonManager.class);
-		Option random = new Option("R", CMD_RANDOM, true, "creer un automate aléatoire");
-		Option thompson = new Option("T", CMD_THOMPSON, true, "creer un automate selon une expression");
-
+		OptionGroup group2 = new OptionGroup();
+		Option graphviz = new Option("G", CMD_GRAPHVIZ, true, "Export en image vers le nom du fichier donné");
+		Option file = new Option("F", CMD_FICHIER, true, "Export en fichier vers le nom du fichier donné");
 		// Ajout des options exclusives
-		group.addOption(load);
-		group.addOption(random);
-		group.addOption(thompson);
+		group2.addOption(graphviz);
+		group2.addOption(file);
+		// Ajout du groupe dans le conteneur Options
+		options.addOptionGroup(group2);
+	}
 
-		// Rends le groupe obligatoire
-		group.setRequired(true);
-		// Ajout le groupe dans le conteneur Options
-		options.addOptionGroup(group);
-
+	private void createOperationOptions() {
 		// Ajout des options complémentaires
 		Option sync = new Option("S", CMD_SYNC, false, "Créer un automate synchronisé");
 		options.addOption(sync);
@@ -93,17 +103,31 @@ public class Commande {
 		Option equi = new Option("E", CMD_EQUIVALENCE, true,
 				"Vérifie l'équivalence avec un autre automate dans un fichier .crea");
 		options.addOption(equi);
+	}
 
+	private void createLoadOptionGroup() {
 		// Creation du groupe d'option
-		OptionGroup group2 = new OptionGroup();
-		Option graphviz = new Option("G", CMD_GRAPHVIZ, true, "Export en image vers le nom du fichier donné");
-		Option file = new Option("F", CMD_FICHIER, true, "Export en fichier vers le nom du fichier donné");
-		// Ajout des options exclusives
-		group2.addOption(graphviz);
-		group2.addOption(file);
-		// Ajout du groupe dans le conteneur Options
-		options.addOptionGroup(group2);
+		OptionGroup group = new OptionGroup();
 
+		Option load = new Option("L", CMD_LOAD, true, "charger un fichier .crea");
+		load.setType(AutomatonManager.class);
+		
+		// random is special (multiple operations) and must be used like that :
+		// "-Ralphabet=abcd -RnStates=10 ..." === 1 option
+		Option random = new Option("R", CMD_RANDOM, true, "creer un automate aléatoire");
+		random.setArgName("property=value");
+		random.setArgs(RANDOM_PROPERTIES_MAX_COUNT);
+		Option thompson = new Option("T", CMD_THOMPSON, true, "creer un automate selon une expression");
+
+		// Ajout des options exclusives
+		group.addOption(load);
+		group.addOption(random);
+		group.addOption(thompson);
+
+		// Rends le groupe obligatoire
+		group.setRequired(true);
+		// Ajout le groupe dans le conteneur Options
+		options.addOptionGroup(group);
 	}
 
 	public void traitement(String[] argument) {
@@ -151,8 +175,7 @@ public class Commande {
 			String fichier = cmd.getOptionValue(CMD_LOAD);
 			automaton = load(fichier);
 		} else if (cmd.hasOption(CMD_RANDOM)) {
-			String expression = cmd.getOptionValue(CMD_RANDOM);
-			automaton = random(expression);
+			automaton = random(cmd);
 		} else if (cmd.hasOption(CMD_THOMPSON)) {
 			String expression = cmd.getOptionValue(CMD_THOMPSON);
 			automaton = thompson(expression);
@@ -243,9 +266,46 @@ public class Commande {
 	 * @param expression the expression used to create the Automaton
 	 * @return the newly generated Automaton
 	 */
-	public Automaton random(String expression) {
-		RandomAutomatonBuilder automatonRandom = new RandomAutomatonBuilder();
-		return automatonRandom.build();
+	public Automaton random(CommandLine cmd) {
+		RandomAutomatonBuilder randomAutomatonBuilder = new RandomAutomatonBuilder();
+		//retreive all properties
+		Properties optionProperties = cmd.getOptionProperties(CMD_RANDOM);
+		String alphabetProperty = optionProperties.getProperty(RANDOM_PROPERTY_ALPAHBET);
+		String numberStatesProperty = optionProperties.getProperty(RANDOM_PROPERTY_NUMBER_STATES);
+		String numberFinalStatesProperty = optionProperties.getProperty(RANDOM_PROPERTY_NUMBER_FINAL_STATES);
+		String numberEpsilonTransitionsProperty = optionProperties.getProperty(RANDOM_PROPERTY_NUMBER_EPSILON);
+		
+		// For each of them, check if they are null and / or readable
+		if(alphabetProperty != null) {
+			randomAutomatonBuilder.setAlphabet(alphabetProperty);
+		}
+		int numberOfStates = readNumber(numberStatesProperty);
+		if(numberOfStates > 0) {
+			randomAutomatonBuilder.setNumberOfStates(numberOfStates);
+		}
+		int numberOfFinalStates = readNumber(numberFinalStatesProperty);
+		if(numberOfFinalStates > 0) {
+			randomAutomatonBuilder.setNumberOfFinalStates(numberOfFinalStates);
+		}
+		int numberOfEpsilonTransitions = readNumber(numberEpsilonTransitionsProperty);
+		if(numberOfEpsilonTransitions > 0) {
+			randomAutomatonBuilder.setNumberOfEpsilonTransitions(numberOfEpsilonTransitions);;
+		}
+		
+		return randomAutomatonBuilder.build();
+	}
+	
+	private int readNumber(String numberString) {
+		if(numberString == null) {
+			return -1;
+		}
+		try {
+			int number = Integer.parseInt(numberString);
+			return number;
+		}catch (NumberFormatException e) {
+			// Number cannot be read
+			return -1;
+		}
 	}
 
 	/**
