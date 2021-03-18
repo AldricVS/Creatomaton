@@ -45,9 +45,9 @@ public abstract class QuestionBankGenerator {
 	private int numberOfEpsilonTransitions = 0;
 	private int numberOfFinalStates = 1;
 
-	public QuestionBankGenerator(String title, int numberOfQuestons) {
+	public QuestionBankGenerator(String title, int numberOfQuestions) {
 		this.title = title;
-		this.numberOfQuestions = numberOfQuestons;
+		this.numberOfQuestions = numberOfQuestions;
 	}
 
 	/**
