@@ -1,6 +1,3 @@
-/**
- * 
- */
 package process.moodle.questionBankGenerator;
 
 import process.moodle.questionGenerator.QuestionGenerator;
