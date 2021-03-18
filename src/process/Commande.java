@@ -69,10 +69,12 @@ public class Commande {
 		Option all = new Option("A", "all", false, "sync det mir et mini à la fois");
 		options.addOption(all);
 
-		Option val = new Option("V", "val", false, "vérifie si l'automate valide le mot");
+		Option val = new Option("V", "val", true, "vérifie si l'automate valide le mot");
+		val.setType(AutomatonManager.class);
+
 		options.addOption(val);
 
-		Option equi = new Option("E", "equi", false,"vérifie l'équivalence avec un autre automate stocké dans un fichier .crea");
+		Option equi = new Option("E", "equi", true,"vérifie l'équivalence avec un autre automate stocké dans un fichier .crea");
 		options.addOption(equi);
 
 		Option graphviz = new Option("G", "graphviz", true, "export en image avec en paramètre le nom donné");
@@ -83,8 +85,6 @@ public class Commande {
 		// Ajout des options exclusives
 		group2.addOption(graphviz);
 		group2.addOption(file);
-		// Possibilite de rendre un groupe obligatoire
-		group.setRequired(true);
 		// Ajout du groupe dans le conteneur Options
 		options.addOptionGroup(group2);
 
@@ -123,15 +123,12 @@ public class Commande {
 	public Automaton traitementAutomaton(CommandLine cmd) {
 		Automaton automaton = null;
 		if (cmd.hasOption("L")) {
-			System.out.println("récupération d'un fichier");
 			String fichier = cmd.getOptionValue("load");
 			automaton = load(fichier);
 		} else if (cmd.hasOption("random")) {
-			System.out.println("création d'un automate aléatoire ");
 			String expression = cmd.getOptionValue("random");
 			automaton = random(expression);
 		} else if (cmd.hasOption("thompson")) {
-			System.out.println("création d'un automate de thomson ");
 			String expression = cmd.getOptionValue("thompson");
 			automaton = thompson(expression);
 		}
@@ -174,6 +171,31 @@ public class Commande {
 				listAutomaton.put("mir", newAutomaton);
 
 			}
+		}
+		if (cmd.hasOption("equi")) {
+			String fichier = cmd.getOptionValue("equi");
+			Automaton automaton2 = load(fichier);
+			AutomatonManager manager =new AutomatonManager(automaton);
+			boolean isEquals = manager.isEqualsByMinimalism(automaton2);
+			if (isEquals) {
+				System.out.println("les deux automates sont équivalent.");
+			}
+			else {
+				System.out.println("les deux ne automates sont pas équivalent.");
+
+			}
+		}
+		if (cmd.hasOption("val")) {
+			String automate = cmd.getOptionValue("val");
+			AutomatonManager manager =new AutomatonManager(automaton);
+			boolean isValide = manager.validateAutomatonByDeterminism(automate);
+			if (isValide) {
+				System.out.println(" l'automate valide le mot " +automate);
+			}
+			else {
+				System.out.println(" l'automate ne valide pas le mot.");
+			}
+				
 		}
 
 	}
@@ -218,26 +240,24 @@ public class Commande {
 
 	public Automaton minimisation(Automaton automaton) {
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
-		builder.buildMinimalAutomaton();
-		return automaton;
+		return builder.buildMinimalAutomaton();
+		
 	}
 
 	public Automaton determinisation(Automaton automaton) {
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
-		builder.buildDeterministicAutomaton();
-		return automaton;
+		return builder.buildDeterministicAutomaton();
+		
 	}
 
 	public Automaton miroir(Automaton automaton) {
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
-		builder.buildMirrorAutomaton();
-		return automaton;
+		return builder.buildMirrorAutomaton();
 	}
 
 	public Automaton synchronisation(Automaton automaton) {
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
-		builder.buildSynchronizedAutomaton();
-		return automaton;
+		return builder.buildSynchronizedAutomaton();
 	}
 
 	public void extraction(CommandLine cmd) {
