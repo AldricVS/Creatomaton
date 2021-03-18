@@ -1,5 +1,6 @@
 package process;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -340,9 +341,12 @@ public class Commande {
 			for (Entry<String, Automaton> entry : mapAutomaton.entrySet()) {
 				String key = entry.getKey();
 				Automaton automaton = entry.getValue();
+				
 				try {
-					ImageCreator picture = new ImageCreator(automaton, nameFile + "_" + key);
-					picture.createImageFile();
+					String finalName = nameFile + "_" + key;
+					ImageCreator picture = new ImageCreator(automaton, finalName);
+					File outputFile = picture.createImageFile();
+					System.out.println(String.format("Image \"%s\" enregistrée à \"%s\"", finalName, outputFile.getAbsolutePath()));
 				} catch (IllegalArgumentException e) {
 					System.err.println(e.getMessage());
 				} catch (IOException e) {
@@ -352,12 +356,17 @@ public class Commande {
 		}
 		if (cmd.hasOption(CMD_FICHIER)) {
 			String nameFile = cmd.getOptionValue(CMD_FICHIER);
+			if(nameFile.endsWith(".crea")) {
+				nameFile = nameFile.substring(0, nameFile.lastIndexOf(".crea"));
+			}
 			AutomatonFileHelper extractionFile = new AutomatonFileHelper();
 			for (Entry<String, Automaton> entry : mapAutomaton.entrySet()) {
 				String key = entry.getKey();
 				Automaton automaton = entry.getValue();
 				try {
-					extractionFile.saveAutomaton(automaton, nameFile + "_" + key);
+					String finalName = nameFile + "_" + key;
+					File outputFile = extractionFile.saveAutomaton(automaton, nameFile + "_" + key);
+					System.out.println(String.format("Image \"%s\" enregistrée à \"%s\"", finalName, outputFile.getAbsolutePath()));
 				} catch (IOException e) {
 					System.err.println("Couldn't create the image at path : " + nameFile);
 				}

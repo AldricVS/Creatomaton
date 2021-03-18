@@ -183,7 +183,6 @@ public abstract class QuestionGenerator {
 			imageCreator.setAutomaton(automaton);
 			imageCreator.setFilename(autoImageName);
 		}
-		imageCreator.setOutputFolder(DataFilePaths.TEMP_PATH);
 		imageCreator.createImageFile();
 	}
 
