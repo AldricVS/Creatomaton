@@ -123,15 +123,12 @@ public class Commande {
 	public Automaton traitementAutomaton(CommandLine cmd) {
 		Automaton automaton = null;
 		if (cmd.hasOption("L")) {
-			System.out.println("récupération d'un fichier");
 			String fichier = cmd.getOptionValue("load");
 			automaton = load(fichier);
 		} else if (cmd.hasOption("random")) {
-			System.out.println("création d'un automate aléatoire ");
 			String expression = cmd.getOptionValue("random");
 			automaton = random(expression);
 		} else if (cmd.hasOption("thompson")) {
-			System.out.println("création d'un automate de thomson ");
 			String expression = cmd.getOptionValue("thompson");
 			automaton = thompson(expression);
 		}
