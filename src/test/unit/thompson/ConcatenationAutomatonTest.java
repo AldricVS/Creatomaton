@@ -39,12 +39,11 @@ public class ConcatenationAutomatonTest {
 
 	@Test
 	public void testIsRealCopy() {
-		// just check if letterAutomaton1 and concatAutomaton references are not the
-		// same
+		// just check if letterAutomaton1 and concatAutomaton references are not the same
 		State originalInitialState = letterAutomaton1.getInitialStates().get(0);
-		assertFalse(originalInitialState == concatAutomaton.getInitialStates().get(0));
-		assertTrue(originalInitialState.findNextState('a') != concatAutomaton.getInitialStates().get(0)
-				.findNextState('a'));
+		State concantInitialState = concatAutomaton.getInitialStates().get(0);
+		assertEquals(originalInitialState, concantInitialState);
+		assertNotEquals(originalInitialState.findNextState('a'), concantInitialState.findNextState('a'));
 	}
 
 	@Test
@@ -52,7 +51,7 @@ public class ConcatenationAutomatonTest {
 		State initialState = concatAutomaton.getInitialStates().get(0);
 		// check if the word "ab" is accepted
 		State finalState = concatAutomaton.getFinalStates().get(0);
-		assertTrue(initialState.findNextState('a').findNextState('b') == finalState);
+		assertEquals(initialState.findNextState('a').findNextState('b'), finalState);
 	}
 
 	@Test

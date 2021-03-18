@@ -3,13 +3,10 @@ package process.file;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import data.Automaton;
 import data.AutomatonConstants;
@@ -51,7 +48,7 @@ public class AutomatonFileHelper {
 	 *                 have the extension ".crea" no matter what
 	 * @throws IOException If any IO error occurs (such as security error)
 	 */
-	public void saveAutomaton(Automaton automaton, String filePath) throws IOException, IllegalArgumentException {
+	public void saveAutomaton(Automaton automaton, String filePath) throws IOException {
 		String realFilepath = FileUtility.getRightFilenameExtension(filePath, AUTOMATON_FILE_EXTENSION);
 		realFilepath = FileUtility.searchFileOutputName(realFilepath);
 		File outputFile = new File(realFilepath);

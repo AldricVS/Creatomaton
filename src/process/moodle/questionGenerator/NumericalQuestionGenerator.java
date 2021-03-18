@@ -1,18 +1,11 @@
 package process.moodle.questionGenerator;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Base64;
-import java.util.Locale;
 
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import data.Automaton;
 import process.file.DataFilePaths;
-import process.file.ImageCreator;
 
 /**
  * Implementation of the QuestionGenerator class, that allows to create a

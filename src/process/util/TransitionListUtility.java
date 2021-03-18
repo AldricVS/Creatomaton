@@ -120,9 +120,6 @@ public class TransitionListUtility {
 						}
 					}
 					listState.remove(destinationStateEpsilon);
-//					if (listState.isEmpty()) {
-//						listState.add(destinationStateEpsilon);
-//					}
 				}
 				// the state from epsilon has already been visited
 			} else if (transition.getLetter() == letter) {

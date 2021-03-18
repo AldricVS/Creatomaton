@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Stack;
 
 import data.State;
-import data.Transition;
 
 /**
  * @author Maxence
