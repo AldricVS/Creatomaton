@@ -337,7 +337,7 @@ public class Commande {
 		Automaton automaton = null;
 		try {
 			automaton = automatonThompson.build();
-		} catch (java.text.ParseException e) {
+		}catch (java.text.ParseException e) {
 			System.err.println(e.getMessage());
 		}
 		return automaton;

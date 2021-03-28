@@ -50,6 +50,6 @@ public class ParseAutomatonTest {
 
 	private Automaton automatonFromExpression(String expression) throws ParseException {
 		ThompsonAutomatonBuilder builder = new ThompsonAutomatonBuilder(expression);
-		return builder.build();
+		return builder.buildOld();
 	}
 }
