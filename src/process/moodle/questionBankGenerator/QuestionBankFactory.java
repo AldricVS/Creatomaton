@@ -1,7 +1,5 @@
 package process.moodle.questionBankGenerator;
 
-import process.moodle.questionGenerator.QuestionGenerator;
-
 /**
  * Factory pattern that allows user to create questions banks generator's
  * implementations without letting them modifying anything.

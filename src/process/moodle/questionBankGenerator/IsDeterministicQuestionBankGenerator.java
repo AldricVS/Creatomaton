@@ -24,7 +24,7 @@ class IsDeterministicQuestionBankGenerator extends QuestionBankGenerator {
 		QuestionGenerator questionGenerator = getQuestionGenerator();
 		questionGenerator.setQuestionTitle("Déterministe ?");
 		questionGenerator.setQuestionTopText("Soit l'automate suivant :");
-		questionGenerator.setQuestionBottomText("Est-t'il déterministe ?");
+		questionGenerator.setQuestionBottomText("Est-il déterministe ?");
 	}
 
 	@Override

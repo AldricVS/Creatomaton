@@ -53,7 +53,7 @@ class MinimalStatesQuestionBankGenerator extends QuestionBankGenerator {
 	protected void initSpecificQuestionGenerator() {
 		QuestionGenerator questionGenerator = getQuestionGenerator();
 		questionGenerator.setQuestionTopText("Soit l'automate suivant :");
-		questionGenerator.setQuestionBottomText("Après minimalisation, combien d'états aura-t'il ?");
+		questionGenerator.setQuestionBottomText("Après minimalisation, combien d'états y aura-t-il ?");
 		questionGenerator.setAnswerTopText("Voici l'automate après minimalisation : ");
 	}
 }

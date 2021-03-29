@@ -61,7 +61,7 @@ class DeterministicTransitionsQuestionBankGenerator extends QuestionBankGenerato
 		QuestionGenerator questionGenerator = getQuestionGenerator();
 		questionGenerator.setQuestionTitle("Déterminisation - Transitions");
 		questionGenerator.setQuestionTopText("Soit l'automate suivant :");
-		questionGenerator.setQuestionBottomText("Après déterminisation, combien de transitions aura-t'il ?");
+		questionGenerator.setQuestionBottomText("Après déterminisation, combien de transitions y aura-t-il ?");
 		questionGenerator.setAnswerTopText("Voici l'automate après déterminisation : ");
 	}
 
