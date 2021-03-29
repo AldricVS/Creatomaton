@@ -58,6 +58,18 @@ public abstract class QuestionGenerator {
 	}
 
 	/**
+	 * Define the answer to the Question.
+	 * @param obj the Object to define as an answer. Each question should have is own type, so beware
+	 */
+	public abstract void setAnswer(Object obj);
+	
+	/**
+	 * Get the answer of the question.
+	 * @return object which is the answer. Can differ depending on the question.
+	 */
+	public abstract Object getAnswer();
+	
+	/**
 	 * Create the question xml tree with all data gathered
 	 * 
 	 * @param questionNumber the number of the question, useful when want to create

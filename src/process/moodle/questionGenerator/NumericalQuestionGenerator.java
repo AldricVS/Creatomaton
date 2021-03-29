@@ -21,12 +21,16 @@ public class NumericalQuestionGenerator extends QuestionGenerator {
 		super(document);
 	}
 
-	public int getAnswer() {
+	@Override
+	public Object getAnswer() {
 		return answer;
 	}
 
-	public void setAnswer(int answer) {
-		this.answer = answer;
+	@Override
+	public void setAnswer(Object obj) {
+		if (obj.getClass() == int.class) {
+			this.answer = (int) obj;
+		}
 	}
 
 	@Override
@@ -42,7 +46,8 @@ public class NumericalQuestionGenerator extends QuestionGenerator {
 	 */
 	protected void appendAnswer(Element questionNode, Element generalFeedbackNode) throws IOException {
 		// image answer
-		Element imageAnswerNode = createImageFileNode(answerImageName + ".jpg", DataFilePaths.TEMP_PATH + "/" + answerImageName + ".jpg", document);
+		Element imageAnswerNode = createImageFileNode(answerImageName + ".jpg",
+				DataFilePaths.TEMP_PATH + "/" + answerImageName + ".jpg", document);
 		generalFeedbackNode.appendChild(imageAnswerNode);
 
 		// data for the question
@@ -69,4 +74,5 @@ public class NumericalQuestionGenerator extends QuestionGenerator {
 		appendElementToNode("showunits", "3", questionNode, document);
 		appendElementToNode("unitsleft", "0", questionNode, document);
 	}
+
 }

@@ -40,7 +40,7 @@ class IsDeterministicQuestionBankGenerator extends QuestionBankGenerator {
 
 		TrueOfFalseQuestionGenerator questionGenerator = (TrueOfFalseQuestionGenerator) getQuestionGenerator();
 		questionGenerator.setQuestionAutomaton(automaton);
-		questionGenerator.setAnswerValue(manager.isDeterministic());
+		questionGenerator.setAnswer(manager.isDeterministic());
 	}
 
 }

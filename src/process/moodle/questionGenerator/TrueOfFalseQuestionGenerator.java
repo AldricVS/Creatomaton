@@ -19,8 +19,16 @@ public class TrueOfFalseQuestionGenerator extends QuestionGenerator {
 		return answerValue;
 	}
 
-	public void setAnswerValue(boolean answerValue) {
-		this.answerValue = answerValue;
+	@Override
+	public void setAnswer(Object obj) {
+		if (obj.getClass() == boolean.class) {
+			this.answerValue = (boolean) obj;
+		}
+	}
+
+	@Override
+	public Object getAnswer() {
+		return answerValue;
 	}
 
 	public TrueOfFalseQuestionGenerator(Document document) {
@@ -37,7 +45,7 @@ public class TrueOfFalseQuestionGenerator extends QuestionGenerator {
 	@Override
 	protected void appendAnswer(Element questionNode, Element generalFeedbackNode) throws IOException {
 		// two "answers" for the question : true or false
-		
+
 		// "true" node
 		String trueValue = answerValue ? "100" : "0";
 		String falseValue = answerValue ? "0" : "100";
@@ -46,7 +54,7 @@ public class TrueOfFalseQuestionGenerator extends QuestionGenerator {
 		trueDataNode.setAttribute("fraction", trueValue);
 		trueDataNode.setAttribute("format", "moodle_auto_format");
 		appendElementToNode("text", "true", trueDataNode, document);
-		
+
 		Element falseDataNode = document.createElement("answer");
 		questionNode.appendChild(falseDataNode);
 		falseDataNode.setAttribute("fraction", falseValue);
