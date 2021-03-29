@@ -13,7 +13,7 @@ public class ThompsonAutomatonTest {
 //		String expression = "((a*)+(bc))";
 		String expression = "((a*)+(b.c))";
 		ThompsonAutomatonBuilder thompsonAutomatonBuilder = new ThompsonAutomatonBuilder(expression);
-		Automaton automaton = thompsonAutomatonBuilder.build();
+		Automaton automaton = thompsonAutomatonBuilder.buildOld();
 		BuilderTest.createImage(automaton, "ThompsonAutomaton", false);
 		
 		AutomatonBuilder automatonBuilder = new AutomatonBuilder(automaton);

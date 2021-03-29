@@ -17,7 +17,7 @@ public class TestDot {
 
 	public static void main(String[] args) {
 		try {
-			Automaton automaton = new ThompsonAutomatonBuilder("(((a*)(b*))+(e(a+b)))").build();
+			Automaton automaton = new ThompsonAutomatonBuilder("(((a*)(b*))+(e(a+b)))").buildOld();
 			AutomatonBuilder automatonBuilder = new AutomatonBuilder(automaton);
 			automaton = automatonBuilder.buildMirrorAutomaton();
 			DotBuilder builder = new DotBuilder(automaton);

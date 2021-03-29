@@ -20,7 +20,7 @@ public class ParseAutomatonTest {
 
 	@Test
 	public void testAutomaton1() throws ParseException {
-		final String INPUT_EXPRESSION = "(((a*)(b*))+(c(a+b)))";
+		final String INPUT_EXPRESSION = "(a*.b*)+(c.(a+b))";
 		Automaton automaton = automatonFromExpression(INPUT_EXPRESSION);
 
 		int numberOfStates = automaton.getNumberOfTotalStates();
@@ -35,7 +35,7 @@ public class ParseAutomatonTest {
 
 	@Test
 	public void testAutomaton2() throws ParseException {
-		final String INPUT_EXPRESSION = "(((a*).(b*))+(c(d*)))";
+		final String INPUT_EXPRESSION = "(a*.b*)+(c.d*)";
 		Automaton automaton = automatonFromExpression(INPUT_EXPRESSION);
 
 		int numberOfStates = automaton.getNumberOfTotalStates();
