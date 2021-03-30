@@ -17,7 +17,7 @@ import data.Transition;
  * @author Aldric Vitali Silvestre <aldric.vitali@outlook.fr>
  */
 public class RandomAutomatonBuilder {
-	public static final int DEFAULT_NUMBER_OF_STATES = 3;
+	public static final int DEFAULT_NUMBER_OF_STATES = 5;
 	public static final int DEFAULT_NUMBER_OF_TRANSITIONS = 5;
 	public static final String DEFAULT_ALPHABET = "abc";
 
