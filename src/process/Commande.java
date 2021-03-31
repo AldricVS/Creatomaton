@@ -47,14 +47,14 @@ public class Commande {
 	private static final String CMD_BASE_AUTOMATON = "base";
 
 	private Options options = new Options();
-	
+
 	// Pour random automaton
 	private static final int RANDOM_PROPERTIES_MAX_COUNT = 4;
-	private static final String RANDOM_PROPERTY_NUMBER_STATES = "nStates"; 
-	private static final String RANDOM_PROPERTY_NUMBER_FINAL_STATES = "nFinalStates"; 
-	private static final String RANDOM_PROPERTY_NUMBER_EPSILON = "nEpsilonTrans"; 
+	private static final String RANDOM_PROPERTY_NUMBER_STATES = "nStates";
+	private static final String RANDOM_PROPERTY_NUMBER_FINAL_STATES = "nFinalStates";
+	private static final String RANDOM_PROPERTY_NUMBER_EPSILON = "nEpsilonTrans";
 	private static final String RANDOM_PROPERTY_ALPAHBET = "alphabet";
-	
+
 	private HashMap<String, Automaton> mapAutomaton = new HashMap<>();
 
 	/**
@@ -100,8 +100,7 @@ public class Commande {
 		val.setType(AutomatonManager.class);
 		options.addOption(val);
 
-		Option equi = new Option("E", CMD_EQUIVALENCE, true,
-				"Vérifie l'équivalence avec un autre automate dans un fichier .crea");
+		Option equi = new Option("E", CMD_EQUIVALENCE, true, "Vérifie l'équivalence avec un autre automate dans un fichier .crea");
 		options.addOption(equi);
 	}
 
@@ -111,10 +110,19 @@ public class Commande {
 
 		Option load = new Option("L", CMD_LOAD, true, "charger un fichier .crea");
 		load.setType(AutomatonManager.class);
-		
+
 		// random is special (multiple operations) and must be used like that :
 		// "-Ralphabet=abcd -RnStates=10 ..." === 1 option
-		Option random = new Option("R", CMD_RANDOM, true, "creer un automate aléatoire");
+		String randomOptionHelp = "Crée un automate aléatoirement. Plusieurs propriétés : "
+				+ System.lineSeparator()
+				+ "-RnStates=x ==> l'automate aura x états (par défaut 5)"
+				+ System.lineSeparator()
+				+ "-RnFinalStates=x ==> l'automate aura x états finaux (par défaut 1)"
+				+ System.lineSeparator()
+				+ "-RnEspilonTrans=x ==> l'automate aura x epsilon-transitions (par défaut 0)"
+				+ System.lineSeparator()
+				+ "-Ralphabet=s ==> l'automate pourra avoir des transitions contenant n'importe quel caractère dans la chaine s";
+		Option random = new Option("R", CMD_RANDOM, true, randomOptionHelp);
 		random.setArgName("property=value");
 		random.setArgs(RANDOM_PROPERTIES_MAX_COUNT);
 		Option thompson = new Option("T", CMD_THOMPSON, true, "creer un automate selon une expression");
@@ -130,7 +138,7 @@ public class Commande {
 		options.addOptionGroup(group);
 	}
 
-	public void traitement(String[] argument) {
+	public void parseArguments(String[] argument) {
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmd = null;
 		try {
@@ -151,11 +159,11 @@ public class Commande {
 			return;
 		}
 
-		Automaton automaton = traitementAutomaton(cmd);
+		Automaton automaton = parseLoadArguments(cmd);
 		if (automaton != null) {
 			mapAutomaton.put(CMD_BASE_AUTOMATON, automaton);
-			traitementAlgo(cmd, automaton);
-			extraction(cmd);
+			parseTreatmentArguments(cmd, automaton);
+			extractAutomatons(cmd);
 		} else {
 			System.err.println("L'automate n'a pas pu etre chargé.");
 			System.out.println("il faut d'abord utiliser soit random soit load soit thompson");
@@ -169,16 +177,16 @@ public class Commande {
 	 * @param cmd CommandLine Argument that specifie the method to use
 	 * @return the newly formed Automaton, or null if no method has been selected
 	 */
-	public Automaton traitementAutomaton(CommandLine cmd) {
+	public Automaton parseLoadArguments(CommandLine cmd) {
 		Automaton automaton = null;
 		if (cmd.hasOption(CMD_LOAD)) {
 			String fichier = cmd.getOptionValue(CMD_LOAD);
-			automaton = load(fichier);
+			automaton = loadFromFile(fichier);
 		} else if (cmd.hasOption(CMD_RANDOM)) {
-			automaton = random(cmd);
+			automaton = loadRandom(cmd);
 		} else if (cmd.hasOption(CMD_THOMPSON)) {
 			String expression = cmd.getOptionValue(CMD_THOMPSON);
-			automaton = thompson(expression);
+			automaton = loadThompsonExpression(expression);
 		}
 		return automaton;
 	}
@@ -190,45 +198,45 @@ public class Commande {
 	 * @param cmd       CommandLine that will given all argument.
 	 * @param automaton the base Automaton to apply change
 	 */
-	public void traitementAlgo(CommandLine cmd, Automaton automaton) {
+	public void parseTreatmentArguments(CommandLine cmd, Automaton automaton) {
 		// newAutomaton that will receive all generated Automaton
 		Automaton newAutomaton = null;
 		// Check argument ALL
 		if (cmd.hasOption(CMD_ALL)) {
-			newAutomaton = synchronisation(automaton);
+			newAutomaton = treatSynchronisation(automaton);
 			mapAutomaton.put(CMD_SYNC, newAutomaton);
 
-			newAutomaton = determinisation(automaton);
+			newAutomaton = treatDeterminisation(automaton);
 			mapAutomaton.put(CMD_DETER, newAutomaton);
 
-			newAutomaton = minimisation(automaton);
+			newAutomaton = treatMinimisation(automaton);
 			mapAutomaton.put(CMD_MINI, newAutomaton);
 
-			newAutomaton = miroir(automaton);
+			newAutomaton = treatMiroir(automaton);
 			mapAutomaton.put(CMD_MIRROR, newAutomaton);
 
 		} else {
 			// check argument SYNC
 			if (cmd.hasOption(CMD_SYNC)) {
-				newAutomaton = synchronisation(automaton);
+				newAutomaton = treatSynchronisation(automaton);
 				mapAutomaton.put(CMD_SYNC, newAutomaton);
 				System.out.println("Création de l'automate synchronisé terminé");
 			}
 			// check argument DET
 			if (cmd.hasOption(CMD_DETER)) {
-				newAutomaton = determinisation(automaton);
+				newAutomaton = treatDeterminisation(automaton);
 				mapAutomaton.put(CMD_DETER, newAutomaton);
 				System.out.println("Création de l'automate déterministe terminé");
 			}
 			// check argument MINI
 			if (cmd.hasOption(CMD_MINI)) {
-				newAutomaton = minimisation(automaton);
+				newAutomaton = treatMinimisation(automaton);
 				mapAutomaton.put(CMD_MINI, newAutomaton);
 				System.out.println("Création de l'automate minimal terminé");
 			}
 			// check argument MIR
 			if (cmd.hasOption(CMD_MIRROR)) {
-				newAutomaton = miroir(automaton);
+				newAutomaton = treatMiroir(automaton);
 				mapAutomaton.put(CMD_MIRROR, newAutomaton);
 				System.out.println("Création de l'automate miroir terminé");
 			}
@@ -236,7 +244,7 @@ public class Commande {
 		// check argument EQUI
 		if (cmd.hasOption(CMD_EQUIVALENCE)) {
 			String fileName = cmd.getOptionValue(CMD_EQUIVALENCE);
-			Automaton automatonFromFile = load(fileName);
+			Automaton automatonFromFile = loadFromFile(fileName);
 			AutomatonManager manager = new AutomatonManager(automaton);
 			boolean isEquals = manager.isEqualsByMinimalism(automatonFromFile);
 			if (isEquals) {
@@ -266,43 +274,44 @@ public class Commande {
 	 * @param expression the expression used to create the Automaton
 	 * @return the newly generated Automaton
 	 */
-	public Automaton random(CommandLine cmd) {
+	public Automaton loadRandom(CommandLine cmd) {
 		RandomAutomatonBuilder randomAutomatonBuilder = new RandomAutomatonBuilder();
-		//retreive all properties
+		// retreive all properties
 		Properties optionProperties = cmd.getOptionProperties(CMD_RANDOM);
 		String alphabetProperty = optionProperties.getProperty(RANDOM_PROPERTY_ALPAHBET);
 		String numberStatesProperty = optionProperties.getProperty(RANDOM_PROPERTY_NUMBER_STATES);
 		String numberFinalStatesProperty = optionProperties.getProperty(RANDOM_PROPERTY_NUMBER_FINAL_STATES);
 		String numberEpsilonTransitionsProperty = optionProperties.getProperty(RANDOM_PROPERTY_NUMBER_EPSILON);
-		
+
 		// For each of them, check if they are null and / or readable
-		if(alphabetProperty != null) {
+		if (alphabetProperty != null) {
 			randomAutomatonBuilder.setAlphabet(alphabetProperty);
 		}
 		int numberOfStates = readNumber(numberStatesProperty);
-		if(numberOfStates > 0) {
+		if (numberOfStates > 0) {
 			randomAutomatonBuilder.setNumberOfStates(numberOfStates);
 		}
 		int numberOfFinalStates = readNumber(numberFinalStatesProperty);
-		if(numberOfFinalStates > 0) {
+		if (numberOfFinalStates > 0) {
 			randomAutomatonBuilder.setNumberOfFinalStates(numberOfFinalStates);
 		}
 		int numberOfEpsilonTransitions = readNumber(numberEpsilonTransitionsProperty);
-		if(numberOfEpsilonTransitions > 0) {
-			randomAutomatonBuilder.setNumberOfEpsilonTransitions(numberOfEpsilonTransitions);;
+		if (numberOfEpsilonTransitions > 0) {
+			randomAutomatonBuilder.setNumberOfEpsilonTransitions(numberOfEpsilonTransitions);
+			;
 		}
-		
+
 		return randomAutomatonBuilder.build();
 	}
-	
+
 	private int readNumber(String numberString) {
-		if(numberString == null) {
+		if (numberString == null) {
 			return -1;
 		}
 		try {
 			int number = Integer.parseInt(numberString);
 			return number;
-		}catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			// Number cannot be read
 			return -1;
 		}
@@ -314,7 +323,7 @@ public class Commande {
 	 * @param fileName the path to the file
 	 * @return the Automaton created based on the given file
 	 */
-	public Automaton load(String fileName) {
+	public Automaton loadFromFile(String fileName) {
 		AutomatonFileHelper automatonFileHelper = new AutomatonFileHelper();
 		Automaton automaton = null;
 		try {
@@ -332,12 +341,12 @@ public class Commande {
 	 * @param expression the expression to parse
 	 * @return the newly created Automaton that will accept word from the expression
 	 */
-	public Automaton thompson(String expression) {
+	public Automaton loadThompsonExpression(String expression) {
 		ThompsonAutomatonBuilder automatonThompson = new ThompsonAutomatonBuilder(expression);
 		Automaton automaton = null;
 		try {
 			automaton = automatonThompson.build();
-		}catch (java.text.ParseException e) {
+		} catch (java.text.ParseException e) {
 			System.err.println(e.getMessage());
 		}
 		return automaton;
@@ -349,7 +358,7 @@ public class Commande {
 	 * @param automaton Automaton to be minimised
 	 * @return the minimal Automaton
 	 */
-	public Automaton minimisation(Automaton automaton) {
+	public Automaton treatMinimisation(Automaton automaton) {
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
 		return builder.buildMinimalAutomaton();
 
@@ -361,7 +370,7 @@ public class Commande {
 	 * @param automaton Automaton to be determinised
 	 * @return the determinist Automaton
 	 */
-	public Automaton determinisation(Automaton automaton) {
+	public Automaton treatDeterminisation(Automaton automaton) {
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
 		return builder.buildDeterministicAutomaton();
 
@@ -373,7 +382,7 @@ public class Commande {
 	 * @param automaton Automaton to be reversed
 	 * @return the mirror Automaton
 	 */
-	public Automaton miroir(Automaton automaton) {
+	public Automaton treatMiroir(Automaton automaton) {
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
 		return builder.buildMirrorAutomaton();
 	}
@@ -384,7 +393,7 @@ public class Commande {
 	 * @param automaton Automaton to be synchronised
 	 * @return the synchronised Automaton
 	 */
-	public Automaton synchronisation(Automaton automaton) {
+	public Automaton treatSynchronisation(Automaton automaton) {
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
 		return builder.buildSynchronizedAutomaton();
 	}
@@ -395,13 +404,13 @@ public class Commande {
 	 * 
 	 * @param cmd CommandLine that will check which argument has been given
 	 */
-	public void extraction(CommandLine cmd) {
+	public void extractAutomatons(CommandLine cmd) {
 		if (cmd.hasOption(CMD_GRAPHVIZ)) {
 			String nameFile = cmd.getOptionValue(CMD_GRAPHVIZ);
 			for (Entry<String, Automaton> entry : mapAutomaton.entrySet()) {
 				String key = entry.getKey();
 				Automaton automaton = entry.getValue();
-				
+
 				try {
 					String finalName = nameFile + "_" + key;
 					ImageCreator picture = new ImageCreator(automaton, finalName);
@@ -416,7 +425,7 @@ public class Commande {
 		}
 		if (cmd.hasOption(CMD_FICHIER)) {
 			String nameFile = cmd.getOptionValue(CMD_FICHIER);
-			if(nameFile.endsWith(".crea")) {
+			if (nameFile.endsWith(".crea")) {
 				nameFile = nameFile.substring(0, nameFile.lastIndexOf(".crea"));
 			}
 			AutomatonFileHelper extractionFile = new AutomatonFileHelper();
