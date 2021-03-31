@@ -37,7 +37,8 @@ public class WriteSynchronisedStatesQuestionBankGenerator extends QuestionBankGe
 		RandomAutomatonBuilder randomAutomatonBuilder = new RandomAutomatonBuilder();
 		randomAutomatonBuilder.setAlphabet(getAlphabet());
 		randomAutomatonBuilder.setNumberOfStates(getNumberOfStates());
-		randomAutomatonBuilder.setNumberOfEpsilonTransitions(getNumberOfStates()/2);
+		randomAutomatonBuilder.setNumberOfTransitions(3*getNumberOfStates()/5);
+		randomAutomatonBuilder.setNumberOfEpsilonTransitions(2*getNumberOfStates()/5);
 		Automaton automaton = randomAutomatonBuilder.build();
 
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
