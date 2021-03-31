@@ -8,7 +8,6 @@ import java.nio.file.Paths;
 import data.Automaton;
 import process.builders.DotBuilder;
 import process.helpers.GraphvizHelper;
-import process.util.FileUtility;
 
 /**
  * Create an image from an automaton and some parameters, with the help of
@@ -17,7 +16,6 @@ import process.util.FileUtility;
  * @author Aldric Vitali Silvestre <aldric.vitali@outlook.fr>
  */
 public class ImageCreator {
-	private GraphvizHelper graphvizHelper;
 	private DotBuilder dotBuilder;
 	private PrefsFileHelper prefsFileHelper;
 
@@ -28,17 +26,21 @@ public class ImageCreator {
 	 */
 	private String filename;
 
+	/** GRAPHVIZ PARAMETERS **/
 	/**
 	 * If the automaton is a mirror of another automaton, set this varible to true
 	 * in order to help graphviz to draw a viable image
-	 * 
 	 */
 	private boolean isMirror = false;
-
+	/**
+	 * Try to get the name of states rather than their id
+	 */
 	private boolean doesTryToGetNames = true;
 
 	private boolean isInLandscapeMode = true;
-	
+	/**
+	 * Will erase any generated .dot file
+	 */
 	private boolean mustEraseDotFiles = true;
 
 	/**
@@ -56,7 +58,6 @@ public class ImageCreator {
 		}
 		this.automaton = automaton;
 		this.filename = filename;
-		graphvizHelper = new GraphvizHelper();
 		dotBuilder = new DotBuilder(automaton);
 	}
 
@@ -164,10 +165,6 @@ public class ImageCreator {
 
 	public boolean isMustEraseDotFiles() {
 		return mustEraseDotFiles;
-	}
-
-	public void setGraphvizHelper(GraphvizHelper graphvizHelper) {
-		this.graphvizHelper = graphvizHelper;
 	}
 
 	public void setDotBuilder(DotBuilder dotBuilder) {
