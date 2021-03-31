@@ -10,7 +10,7 @@ public class CommandParseTest {
 		String randomAutomatonArgs[] = {"-T", "(a*.b*)+(c.(a+b))","-G", "random"};
 		
 		Commande commande = new Commande();
-		commande.traitement(randomAutomatonArgs);
+		commande.parseArguments(randomAutomatonArgs);
 	}
 	
 }
