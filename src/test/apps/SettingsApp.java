@@ -40,6 +40,13 @@ public class SettingsApp extends JFrame {
 	private PrefsFileHelper prefsFileHelper;
 
 	private boolean isAllChangesSaved = true;
+	
+	/* =======MAIN======= */
+
+	public static void main(String[] args) {
+		new SettingsApp();
+	}
+
 
 	public SettingsApp() {
 		super("Graphviz location manager");
@@ -237,11 +244,4 @@ public class SettingsApp extends JFrame {
 			System.exit(0);
 		}
 	}
-
-	/* =======MAIN======= */
-
-	public static void main(String[] args) {
-		new SettingsApp();
-	}
-
 }
