@@ -1,7 +1,6 @@
 package test.apps;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -9,12 +8,15 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.Border;
@@ -24,11 +26,12 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import process.file.PrefsFileHelper;
 
-import javax.swing.BoxLayout;
-import javax.swing.JTextField;
-import java.awt.Component;
-import javax.swing.Box;
-
+/**
+ * A simple Gui app that will allow user to set the path where the graphiz's
+ * dot.exe file is located.
+ * 
+ * @author Aldric Vitali Silvestre <aldric.vitali@outlook.fr>
+ */
 public class SettingsApp extends JFrame {
 	private final JPanel graphvizPanel = new JPanel();
 	private JFrame context = this;
@@ -82,27 +85,27 @@ public class SettingsApp extends JFrame {
 		graphvizPanel.add(graphvizTextField);
 		graphvizTextField.setColumns(10);
 
-		JPanel outputPanel = new JPanel();
-		getContentPane().add(outputPanel);
-		outputPanel.setBorder(border);
-		outputPanel.setLayout(new BoxLayout(outputPanel, BoxLayout.Y_AXIS));
-
-		JPanel panel_4 = new JPanel();
-		outputPanel.add(panel_4);
-
-		JLabel lblNewLabel_1 = new JLabel("Dossier résultat par défaut : ");
-		panel_4.add(lblNewLabel_1);
-
-		JButton defaultOutputButton = new JButton("Parcourir");
-		defaultOutputButton.addActionListener(new ActionSearchDefaultOutput());
-		panel_4.add(defaultOutputButton);
-
-		defaultOutputTextField = new JTextField();
-		defaultOutputTextField.setEditable(false);
-		defaultOutputTextField.setText("Aucun fichier sélectionné");
-		outputPanel.add(defaultOutputTextField);
-		defaultOutputTextField.setColumns(10);
-
+//		JPanel outputPanel = new JPanel();
+//		getContentPane().add(outputPanel);
+//		outputPanel.setBorder(border);
+//		outputPanel.setLayout(new BoxLayout(outputPanel, BoxLayout.Y_AXIS));
+//
+//		JPanel panel_4 = new JPanel();
+//		outputPanel.add(panel_4);
+//
+//		JLabel lblNewLabel_1 = new JLabel("Dossier résultat par défaut : ");
+//		panel_4.add(lblNewLabel_1);
+//
+//		JButton defaultOutputButton = new JButton("Parcourir");
+//		defaultOutputButton.addActionListener(new ActionSearchDefaultOutput());
+//		panel_4.add(defaultOutputButton);
+//
+//		defaultOutputTextField = new JTextField();
+//		defaultOutputTextField.setEditable(false);
+//		defaultOutputTextField.setText("Aucun fichier sélectionné");
+//		outputPanel.add(defaultOutputTextField);
+//		defaultOutputTextField.setColumns(10);
+//
 		JPanel buttonsPanel = new JPanel();
 		getContentPane().add(buttonsPanel);
 		buttonsPanel.setBorder(border);
@@ -110,11 +113,11 @@ public class SettingsApp extends JFrame {
 
 		Component horizontalGlue_2 = Box.createHorizontalGlue();
 		buttonsPanel.add(horizontalGlue_2);
-
+//
 		JButton saveButton = new JButton("Sauvegarder");
 		saveButton.addActionListener(new ActionSavePreferences());
 		buttonsPanel.add(saveButton);
-
+//
 		Component horizontalGlue = Box.createHorizontalGlue();
 		buttonsPanel.add(horizontalGlue);
 
@@ -133,10 +136,10 @@ public class SettingsApp extends JFrame {
 	private void tryLoadIni() {
 		try {
 			prefsFileHelper = new PrefsFileHelper();
-			String defaultOutputPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY);
+//			String defaultOutputPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY);
 			String graphvizPath = prefsFileHelper.getPreference(PrefsFileHelper.GRAPHVIZ_PATH_KEY);
 			graphvizTextField.setText(graphvizPath);
-			defaultOutputTextField.setText(defaultOutputPath);
+//			defaultOutputTextField.setText(defaultOutputPath);
 		} catch (IOException e) {
 			e.printStackTrace();
 			// cannot run the programm if file could not be created or parsed
@@ -192,13 +195,15 @@ public class SettingsApp extends JFrame {
 			String graphvizNewPath = graphvizTextField.getText();
 			prefsFileHelper.changePreference(PrefsFileHelper.GRAPHVIZ_PATH_KEY, graphvizNewPath);
 
-			String defaultOutputNewPath = defaultOutputTextField.getText();
-			prefsFileHelper.changePreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY, defaultOutputNewPath);
+//			String defaultOutputNewPath = defaultOutputTextField.getText();
+//			prefsFileHelper.changePreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY, defaultOutputNewPath);
 
 			try {
 				prefsFileHelper.saveInFile();
 				isAllChangesSaved = true;
+				JOptionPane.showMessageDialog(SettingsApp.this, "Sauvegarde effectuée avec succès", "", JOptionPane.INFORMATION_MESSAGE);
 			} catch (IOException exception) {
+				JOptionPane.showMessageDialog(SettingsApp.this, "Erreur lors de la sauvegarde : " + exception.getMessage(), "", JOptionPane.ERROR_MESSAGE);
 				System.err.println("Could not save the preferences : " + exception.getMessage());
 			}
 		}
