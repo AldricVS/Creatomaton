@@ -178,10 +178,10 @@ public abstract class QuestionGenerator {
 
 	private void createImage(Automaton automaton, String autoImageName) throws IOException {
 		if (imageCreator == null) {
-			imageCreator = new ImageCreator(automaton, autoImageName);
+			imageCreator = new ImageCreator(automaton, DataFilePaths.TEMP_PATH + "/" + autoImageName);
 		} else {
 			imageCreator.setAutomaton(automaton);
-			imageCreator.setFilename(autoImageName);
+			imageCreator.setFilename(DataFilePaths.TEMP_PATH + "/" + autoImageName);
 		}
 		imageCreator.createImageFile();
 	}

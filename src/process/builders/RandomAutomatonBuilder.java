@@ -191,7 +191,7 @@ public class RandomAutomatonBuilder {
 			automaton.addTransition(lastEncounteredState, endingPathState, randomCharFromAlphabet());
 			numberOfTries++;
 		}
-		System.out.println("path ended");
+//		System.out.println("path ended");
 		// each state much have at least one transition to another one
 		repairUselessStates();
 

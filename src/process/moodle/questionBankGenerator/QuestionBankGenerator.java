@@ -68,6 +68,7 @@ public abstract class QuestionBankGenerator {
 			document.appendChild(rootNode);
 
 			for (int index = 0; index < numberOfQuestions; index++) {
+				System.out.println("Création de la question " + (index + 1));
 				defineQuestion();
 				Element generatedQuestion = questionGenerator.generateQuestion(index);
 				rootNode.appendChild(generatedQuestion);
@@ -79,6 +80,8 @@ public abstract class QuestionBankGenerator {
 			DOMSource domSource = new DOMSource(document);
 			StreamResult streamResult = new StreamResult(new File(DataFilePaths.XML_PATH + "/" + title + ".xml"));
 			transformer.transform(domSource, streamResult);
+			
+			System.out.println(String.format("Fichier \"%s.xml\" créé avec succès.", getTitle()));
 
 			// And clear temp folder
 			FileUtility.clearFolder(DataFilePaths.TEMP_PATH);
