@@ -156,7 +156,7 @@ public abstract class QuestionGenerator {
 		textNode.appendChild(document.createCDATASection(questionContent));
 
 		// image question
-		Element imageQuestionNode = createImageFileNode(imageQuestionName, DataFilePaths.OUTPUT_PATH + "/" + imageQuestionName, document);
+		Element imageQuestionNode = createImageFileNode(imageQuestionName, DataFilePaths.TEMP_PATH + "/" + imageQuestionName, document);
 		questionTextNode.appendChild(imageQuestionNode);
 	}
 

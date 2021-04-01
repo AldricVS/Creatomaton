@@ -42,7 +42,7 @@ public class StringQuestionGenerator extends QuestionGenerator {
 	protected void appendAnswer(Element questionNode, Element generalFeedbackNode) throws IOException {
 		// image answer
 		Element imageAnswerNode = createImageFileNode(answerImageName + ".jpg",
-				DataFilePaths.OUTPUT_PATH + "/" + answerImageName + ".jpg", document);
+				DataFilePaths.TEMP_PATH + "/" + answerImageName + ".jpg", document);
 		generalFeedbackNode.appendChild(imageAnswerNode);
 
 		// answer node
