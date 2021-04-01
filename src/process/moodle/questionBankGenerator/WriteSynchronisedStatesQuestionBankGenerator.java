@@ -10,6 +10,17 @@ import process.moodle.questionGenerator.StringQuestionGenerator;
 import process.util.StateListUtility;
 
 /**
+ * <p>
+ * Exercice about finding which states will stay after a synchronisation.
+ * </p>
+ * <p>
+ * Meaning all states that won't become inaccessible.
+ * </p>
+ * <p>
+ * This Question is preferable with a low number of states and a higher number
+ * of epsilon transition
+ * </p>
+ * 
  * @author Maxence
  */
 public class WriteSynchronisedStatesQuestionBankGenerator extends QuestionBankGenerator {
@@ -37,14 +48,16 @@ public class WriteSynchronisedStatesQuestionBankGenerator extends QuestionBankGe
 		RandomAutomatonBuilder randomAutomatonBuilder = new RandomAutomatonBuilder();
 		randomAutomatonBuilder.setAlphabet(getAlphabet());
 		randomAutomatonBuilder.setNumberOfStates(getNumberOfStates());
-		randomAutomatonBuilder.setNumberOfTransitions(6*getNumberOfStates()/5);
-		randomAutomatonBuilder.setNumberOfEpsilonTransitions(5*getNumberOfStates()/5);
+		randomAutomatonBuilder.setNumberOfTransitions(4 * getNumberOfStates() / 4);
+		randomAutomatonBuilder.setNumberOfEpsilonTransitions(3 * getNumberOfStates() / 4);
 		Automaton automaton = randomAutomatonBuilder.build();
 
+		// build the synchronised version
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
 		Automaton automatonSynch = builder.buildSynchronizedAutomaton();
 		String nameListOfStates = StateListUtility.constructNameOfDeterminedStates(automatonSynch.getAllStates());
 
+		// generate the question
 		StringQuestionGenerator questionGenerator = (StringQuestionGenerator) getQuestionGenerator();
 		questionGenerator.setQuestionAutomaton(automaton);
 		questionGenerator.setAnswerAutomaton(automatonSynch);

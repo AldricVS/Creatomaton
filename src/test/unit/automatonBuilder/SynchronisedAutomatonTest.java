@@ -2,15 +2,12 @@ package test.unit.automatonBuilder;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import data.Automaton;
 import data.State;
 import process.builders.AutomatonBuilder;
-import process.file.ImageCreator;
 
 /**
  * @author Maxence
@@ -52,22 +49,12 @@ public class SynchronisedAutomatonTest {
 
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
 		automatonSynch = builder.buildSynchronizedAutomaton();
-		ImageCreator imageCreator;
-		try {
-			imageCreator = new ImageCreator(automaton, "test");
-			imageCreator.createImageFile();
-			imageCreator = new ImageCreator(automatonSynch, "testSynch");
-			imageCreator.createImageFile();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	@Test
 	public void test() {
-		assertEquals(3, automatonSynch.getNumberOfTotalStates());
+		// TODO ptet développer le test
+		assertEquals(5, automatonSynch.getNumberOfTotalStates());
 	}
 
 }
