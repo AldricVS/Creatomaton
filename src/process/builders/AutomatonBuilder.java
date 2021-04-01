@@ -270,6 +270,37 @@ public class AutomatonBuilder {
 	}
 
 	/**
+	 * Transform the automaton by synchronising it, meaning that there will no
+	 * longer have epsilon transition
+	 * 
+	 * @return the synchronized automaton
+	 */
+	public Automaton buildSynchronizedAutomaton() {
+		Automaton resultAutomaton = AutomatonFactory.createCopy(automaton);
+		List<State> listStates = resultAutomaton.getAllStates();
+
+		// parcourir les etats tant qu'il y a des epsilon-transition
+		while (TransitionListUtility.isThereAnyEpsilonTransition(listStates)) {
+			for (State state : listStates) {
+				// recupere les transitions epsilon a supprimer
+				List<Transition> listTransitionsEpsilon = new ArrayList<Transition>();
+				// parcours des transitions de l'etat en court
+				for (Transition transition : state.getTransitions()) {
+					if (transition.isEpsilon()) {
+						listTransitionsEpsilon.add(transition);
+					}
+				}
+				// suppression des transitions
+				for (Transition transition : listTransitionsEpsilon) {
+					removeEpsilon(resultAutomaton, state, transition);
+				}
+			}
+		}
+		resultAutomaton = removeInaccessibleState(resultAutomaton);
+		return resultAutomaton;
+	}
+
+	/**
 	 * Remove a transition epsilon and give all his transition & status to the
 	 * departure state
 	 * 
@@ -280,11 +311,6 @@ public class AutomatonBuilder {
 	private void removeEpsilon(Automaton automaton, State departState, Transition epsilonTransition) {
 		if (epsilonTransition.isEpsilon()) {
 			State destinationState = epsilonTransition.getDestination();
-
-			// si la destination est initial, l'etat de départ devient initial
-			if (automaton.isStateInitial(destinationState)) {
-				automaton.setStateInitial(departState, true);
-			}
 
 			// si la destination est final, l'etat de départ devient final
 			if (automaton.isStateFinal(destinationState)) {
@@ -316,33 +342,4 @@ public class AutomatonBuilder {
 		return automaton;
 	}
 
-	/**
-	 * Transform the automaton by synchronising it, meaning that there will no
-	 * longer have epsilon transition
-	 * 
-	 * @return the synchronized automaton
-	 */
-	public Automaton buildSynchronizedAutomaton() {
-		Automaton resultAutomaton = AutomatonFactory.createCopy(automaton);
-		List<State> listStates = resultAutomaton.getAllStates();
-		State state;
-
-		// parcourir les etats tant qu'il y a des epsilon-transition
-		while (TransitionListUtility.isThereAnyEpsilonTransition(listStates)) {
-			for (int i = 0; i < resultAutomaton.getNumberOfTotalStates(); i++) {
-				state = listStates.get(i);
-
-				// parcours des transitions de l'etat en court
-				for (int j = 0; j < state.getNumberOfTransition(); j++) {
-					Transition transition = state.getTransitions().get(j);
-
-					if (transition.isEpsilon()) {
-						removeEpsilon(resultAutomaton, state, transition);
-					}
-				}
-			}
-		}
-		resultAutomaton = removeInaccessibleState(resultAutomaton);
-		return resultAutomaton;
-	}
 }
