@@ -91,9 +91,9 @@ public class RandomAutomatonBuilder {
 		return alphabet;
 	}
 
-//	public boolean containsEpsilonTransitions() {
-//		return containsEpsilonTransitions;
-//	}
+	public boolean containsEpsilonTransitions() {
+		return numberOfEpsilonTransitions > 0;
+	}
 
 	public void setNumberOfStates(int numberOfStates) {
 		this.numberOfStates = numberOfStates;
@@ -123,10 +123,6 @@ public class RandomAutomatonBuilder {
 		this.alphabet = alphabet;
 	}
 
-//	public void setContainsEpsilonTransitions(boolean containsEpsilonTransitions) {
-//		this.containsEpsilonTransitions = containsEpsilonTransitions;
-//	}
-
 	/**
 	 * Build the random automaton with the help of all parameters set by user.
 	 * WARNING ! This method cannot produce automatons with multiple initial states.
@@ -140,11 +136,13 @@ public class RandomAutomatonBuilder {
 		}
 
 		automaton = new Automaton(alphabet);
-		numberOfTransitions = numberOfStates + random.nextInt(numberOfStates / 2);
+		if (numberOfTransitions <= 0) {
+			numberOfTransitions = numberOfStates + random.nextInt(numberOfStates / 2);
+		}
 
 		// check some other oddities, such as the number of epsilon transitions
 		if (numberOfTransitions < numberOfEpsilonTransitions) {
-			numberOfEpsilonTransitions += numberOfEpsilonTransitions + numberOfTransitions / 2;
+			numberOfTransitions += numberOfEpsilonTransitions;
 		}
 
 		createAllStatesNeeded();
@@ -185,7 +183,6 @@ public class RandomAutomatonBuilder {
 			}
 			// last state encountered must go to another state
 
-//			System.out.println("path nearly ended");
 			State endingPathState;
 			endingPathState = searchStateNotEncountered(lastEncounteredState);
 			automaton.addTransition(lastEncounteredState, endingPathState, randomCharFromAlphabet());
@@ -244,7 +241,9 @@ public class RandomAutomatonBuilder {
 	}
 
 	/**
-	 * 
+	 * Change transition to epsilon specified by the number
+	 * {@link process.builders.RandomAutomatonBuilder#setNumberOfEpsilonTransitions(int) 
+	 * numberOfEpsilonTransitions}
 	 */
 	private void modifySomeTransitions() {
 		int epsilonTransitionCount = 0;
@@ -370,7 +369,8 @@ public class RandomAutomatonBuilder {
 					currentEpsilonTransitionsCount++;
 				}
 			} else {
-				isTransitionAdded = automaton.addTransition(startingState, destinationState, alphabet.charAt(characterIndex));
+				isTransitionAdded = automaton.addTransition(startingState, destinationState,
+						alphabet.charAt(characterIndex));
 			}
 
 			if (isTransitionAdded) {

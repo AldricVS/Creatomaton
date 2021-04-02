@@ -27,4 +27,8 @@ public class QuestionBankFactory {
 	public static QuestionBankGenerator createIsDeterministicGenerator(String title, int numberOfQuestions) {
 		return new IsDeterministicQuestionBankGenerator(title, numberOfQuestions);
 	}
+	
+	public static QuestionBankGenerator createWriteSynchronisedStatesGenerator(String title, int numberOfQuestions) {
+		return new WriteSynchronisedStatesQuestionBankGenerator(title, numberOfQuestions);
+	}
 }

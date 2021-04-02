@@ -14,7 +14,8 @@ import org.junit.runners.Suite;
 	SameAutomatonFromFilesTest.class,
 	SameDeterministAutomatonTest.class,
 	SimpleDeterministicAutomatonTest.class,
-	SynchronizedAutomatonTest.class,
+	SynchronizedEpsilonAutomatonTest.class,
+	SynchronisedAutomatonTest.class,
 	})
 public class AutomatonBuilderTestSuite {
 	

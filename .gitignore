@@ -1,9 +1,3 @@
 /bin/
-/Automate_BASE.dot
-/Automate_DETER.dot
-/Automate_MINI.dot
-/Automate_MIROIR.dot
-/Automate_SYNCHRO.dot
-/ThompsonAutomaton.dot
-/ThompsonAutomatonSync.dot
-/ThompsonAutomatonDeterm.dot
+/data/
+/*.dot

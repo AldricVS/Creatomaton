@@ -61,10 +61,9 @@ class MinimalTransitionsQuestionBankGenerator extends QuestionBankGenerator {
 		QuestionGenerator questionGenerator = getQuestionGenerator();
 		questionGenerator.setQuestionTitle("Automate minimal - Transitions");
 		questionGenerator.setQuestionTopText("Soit l'automate suivant :");
-		questionGenerator.setQuestionBottomText("Après minimalisation, combien de transitions aura-t'il ?");
+		questionGenerator.setQuestionBottomText("Après minimalisation, combien de transitions y aura-t-il ?");
 		questionGenerator.setAnswerTopText("Voici l'automate après minimalisation : ");
 	}
 
-	
 
 }

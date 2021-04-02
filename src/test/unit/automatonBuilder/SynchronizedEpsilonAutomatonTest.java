@@ -13,11 +13,9 @@ import data.State;
 import process.AutomatonManager;
 import process.builders.AutomatonBuilder;
 
-public class SynchronizedAutomatonTest {
+public class SynchronizedEpsilonAutomatonTest {
 
 	private static Automaton automaton;
-	private static AutomatonBuilder builder;
-	private static AutomatonManager manager;
 	private static State state0;
 	private static State state1;
 	private static State state2;
@@ -25,7 +23,6 @@ public class SynchronizedAutomatonTest {
 
 	@BeforeClass
 	public static void prepareAutomaton() {
-
 		automaton = new Automaton("abc");
 		state0 = new State(0);
 		state1 = new State(1);
@@ -46,11 +43,8 @@ public class SynchronizedAutomatonTest {
 		automaton.addEpsilonTransition(state2, state3);
 		automaton.addTransition(state3, state3, 'c');
 
-		builder = new AutomatonBuilder(automaton);
+		AutomatonBuilder builder = new AutomatonBuilder(automaton);
 		automaton = builder.buildSynchronizedAutomaton();
-		
-		manager = new AutomatonManager(automaton);
-
 	}
 
 	@Test
@@ -79,7 +73,8 @@ public class SynchronizedAutomatonTest {
 
 	@Test
 	public void synchronisationOfSynchronized() {
-		builder.setAutomaton(automaton);
+		AutomatonManager manager = new AutomatonManager(automaton);
+		AutomatonBuilder builder = new AutomatonBuilder(automaton);
 		Automaton automatonCopy = builder.buildSynchronizedAutomaton();
 		assertTrue(manager.isEqualsByMinimalism(automatonCopy));
 	}

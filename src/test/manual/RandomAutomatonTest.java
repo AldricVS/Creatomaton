@@ -19,27 +19,25 @@ public class RandomAutomatonTest {
 		String defaultOutputFolderPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY);
 		String defaultInputFolderPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_INPUT_FOLDER_KEY);
 
-		for (int i = 0; i < 5; i++) {
-			for (int index = 0; index < 5; index++) {
-				RandomAutomatonBuilder randomAutomatonBuilder = new RandomAutomatonBuilder(3 + index, index);
-				randomAutomatonBuilder.setAlphabet("abc");
-				randomAutomatonBuilder.setNumberOfFinalStates(index + 1);
-				Automaton automaton;
-				try {
-					automaton = randomAutomatonBuilder.build();
-					DotBuilder dotBuilder = new DotBuilder(automaton);
+		for (int index = 0; index < 5; index++) {
+			RandomAutomatonBuilder randomAutomatonBuilder = new RandomAutomatonBuilder(3 + index, index);
+			randomAutomatonBuilder.setAlphabet("abc");
+			randomAutomatonBuilder.setNumberOfFinalStates(index + 1);
+			Automaton automaton;
+			try {
+				automaton = randomAutomatonBuilder.build();
+				DotBuilder dotBuilder = new DotBuilder(automaton);
 
-					File file = new File(defaultInputFolderPath + "result.dot");
-					dotBuilder.buildDotFile(file);
+				File file = new File(defaultInputFolderPath + "result.dot");
+				dotBuilder.buildDotFile(file);
 
-					graphvizHelper = new GraphvizHelper(file.getAbsolutePath(), defaultOutputFolderPath);
-					graphvizHelper.setFileOutputName("result" + index + ".jpg");
-					graphvizHelper.runCommand();
-				} catch (Exception e) {
-					System.out.println(e.getMessage());
-				}
-
+				graphvizHelper = new GraphvizHelper(file.getAbsolutePath(), defaultOutputFolderPath);
+				graphvizHelper.setFileOutputName("result" + index + ".jpg");
+				graphvizHelper.runCommand();
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
 			}
+
 		}
 
 	}

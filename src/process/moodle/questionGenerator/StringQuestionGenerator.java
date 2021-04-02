@@ -17,6 +17,18 @@ public class StringQuestionGenerator extends QuestionGenerator {
 
 	private String answer;
 
+	@Override
+	public void setAnswer(Object obj) {
+		if (obj.getClass() == String.class) {
+			answer = (String) obj;
+		}
+	}
+
+	@Override
+	public Object getAnswer() {
+		return answer;
+	}
+
 	public StringQuestionGenerator(Document document) {
 		super(document);
 	}
@@ -29,7 +41,8 @@ public class StringQuestionGenerator extends QuestionGenerator {
 	@Override
 	protected void appendAnswer(Element questionNode, Element generalFeedbackNode) throws IOException {
 		// image answer
-		Element imageAnswerNode = createImageFileNode(answerImageName + ".jpg", DataFilePaths.TEMP_PATH + "/" + answerImageName + ".jpg", document);
+		Element imageAnswerNode = createImageFileNode(answerImageName + ".jpg",
+				DataFilePaths.TEMP_PATH + "/" + answerImageName + ".jpg", document);
 		generalFeedbackNode.appendChild(imageAnswerNode);
 
 		// answer node
