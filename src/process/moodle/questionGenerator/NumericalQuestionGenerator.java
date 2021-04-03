@@ -28,9 +28,7 @@ public class NumericalQuestionGenerator extends QuestionGenerator {
 
 	@Override
 	public void setAnswer(Object obj) {
-		if (obj.getClass() == int.class) {
-			this.answer = (int) obj;
-		}
+		this.answer = (int) obj;
 	}
 
 	@Override

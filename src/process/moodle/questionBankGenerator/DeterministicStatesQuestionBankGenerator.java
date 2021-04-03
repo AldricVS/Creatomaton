@@ -52,6 +52,7 @@ class DeterministicStatesQuestionBankGenerator extends QuestionBankGenerator {
 	@Override
 	protected void initSpecificQuestionGenerator() {
 		QuestionGenerator questionGenerator = getQuestionGenerator();
+		questionGenerator.setQuestionTitle("Déterminisation - États");
 		questionGenerator.setQuestionTopText("Soit l'automate suivant :");
 		questionGenerator.setQuestionBottomText("Après déterminisation, combien d'états y aura-t-il ?");
 		questionGenerator.setAnswerTopText("Voici l'automate après déterminisation : ");

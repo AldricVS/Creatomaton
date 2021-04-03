@@ -6,11 +6,11 @@ import process.moodle.questionBankGenerator.QuestionBankGenerator;
 public class ModularMoodleTest {
 
 	public static void main(String[] args) {
-		// Change only the first line in order to change the question type
-		QuestionBankGenerator questionBankGenerator = QuestionBankFactory.createWriteSynchronisedStatesGenerator("MoodleTest", 5);
-		questionBankGenerator.setNumberOfStates(4);
-		questionBankGenerator.setAlphabet("abc");
-		questionBankGenerator.setQuestionPoints(1.0);
+		QuestionBankGenerator questionBankGenerator = QuestionBankFactory.createDeterministicStatesGenerator("nb états deterministe", 50);
+		questionBankGenerator.setNumberOfStates(5);
+		questionBankGenerator.setNumberOfFinalStates(2);
+		questionBankGenerator.setNumberOfEpsilonTransitions(2);
+		questionBankGenerator.setQuestionPoints(2.0);
 		questionBankGenerator.generateBankFile();
 	}
 

@@ -21,9 +21,7 @@ public class TrueOfFalseQuestionGenerator extends QuestionGenerator {
 
 	@Override
 	public void setAnswer(Object obj) {
-		if (obj.getClass() == boolean.class) {
-			this.answerValue = (boolean) obj;
-		}
+		this.answerValue = (boolean) obj;
 	}
 
 	@Override
