@@ -23,7 +23,7 @@ import process.util.StateListUtility;
  * 
  * @author Maxence
  */
-public class WriteSynchronisedStatesQuestionBankGenerator extends QuestionBankGenerator {
+class WriteSynchronisedStatesQuestionBankGenerator extends QuestionBankGenerator {
 
 	public WriteSynchronisedStatesQuestionBankGenerator(String title, int numberOfQuestions) {
 		super(title, numberOfQuestions);
@@ -38,8 +38,8 @@ public class WriteSynchronisedStatesQuestionBankGenerator extends QuestionBankGe
 	protected void initSpecificQuestionGenerator() {
 		QuestionGenerator questionGenerator = getQuestionGenerator();
 		questionGenerator.setQuestionTitle("Trouver les états après synchronisation");
-		questionGenerator.setQuestionTopText("Écrivez les états restants après synchronisation ? Écrivez les dans l'ordre croissant");
-		questionGenerator.setQuestionBottomText("Exemple de notation avec e1 e2 et e3 : {e1;e2;e3}");
+		questionGenerator.setQuestionTopText("Écrivez les états restants après synchronisation ?");
+		questionGenerator.setQuestionBottomText(" Écrivez les dans l'ordre croissant. Exemple de notation avec 1, 2 et 3 => {1;2;3}");
 	}
 
 	@Override
