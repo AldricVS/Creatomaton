@@ -248,9 +248,9 @@ public class Commande {
 			AutomatonManager manager = new AutomatonManager(automaton);
 			boolean isEquals = manager.isEqualsByMinimalism(automatonFromFile);
 			if (isEquals) {
-				System.out.println("Les deux automates sont équivalent.");
+				System.out.println("Les deux automates sont équivalents.");
 			} else {
-				System.out.println("Les deux ne automates sont pas équivalent.");
+				System.out.println("Les deux ne automates sont pas équivalents.");
 
 			}
 		}
