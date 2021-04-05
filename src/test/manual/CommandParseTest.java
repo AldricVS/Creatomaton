@@ -7,7 +7,7 @@ public class CommandParseTest {
 	public static void main(String[] args) {
 		//String arg[] = {"-L","src/test/manual/creaFiles/automaton.crea","-V","a","-F","data/input/test.crea"};
 		
-		String randomAutomatonArgs[] = {"-H", "-Ralphabet=ab", "-RnStates=3", "-RnEpsilonTrans=1", "-G", "random", "-A"};
+		String randomAutomatonArgs[] = {"-T", "a.(epsilon+b)*", "-G", "thomp"};
 		
 		Commande commande = new Commande();
 		commande.parseArguments(randomAutomatonArgs);
