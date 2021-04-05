@@ -26,7 +26,7 @@ import process.file.ImageCreator;
 /**
  * Main class used for handling Command Line Argument
  * 
- * @author Chloé Gateau 
+ * @author Chloé Gateau
  */
 public class Commande {
 
@@ -43,12 +43,12 @@ public class Commande {
 	private static final String CMD_SYNC = "sync";
 	private static final String CMD_THOMPSON = "thompson";
 	private static final String CMD_VALIDATION = "val";
-	private static final String CMD_COPIE ="copie";
+	private static final String CMD_OVERWRITE_FILES = "copie";
 
 	private static final String CMD_BASE_AUTOMATON = "base";
 
 	private Options options = new Options();
-	private boolean doCopie = false;
+	private boolean mustCopyFiles = false;
 
 	// Pour random automaton
 	private static final int RANDOM_PROPERTIES_MAX_COUNT = 4;
@@ -79,7 +79,7 @@ public class Commande {
 		group2.addOption(file);
 		// Ajout du groupe dans le conteneur Options
 		options.addOptionGroup(group2);
-		Option copie = new Option("C",CMD_COPIE,false,"créer un copie de l'extraction si un fichier existe déjà avec ce nom");
+		Option copie = new Option("C", CMD_OVERWRITE_FILES, false, "créer un copie de l'extraction si un fichier existe déjà avec ce nom");
 		options.addOption(copie);
 	}
 
@@ -163,6 +163,11 @@ public class Commande {
 			return;
 		}
 
+		// Must check if need to overwrite before anything
+		if (cmd.hasOption(CMD_OVERWRITE_FILES)) {
+			mustCopyFiles = true;
+		}
+
 		Automaton automaton = parseLoadArguments(cmd);
 		if (automaton != null) {
 			mapAutomaton.put(CMD_BASE_AUTOMATON, automaton);
@@ -170,7 +175,7 @@ public class Commande {
 			extractAutomatons(cmd);
 		} else {
 			System.err.println("L'automate n'a pas pu etre chargé.");
-			System.out.println("il faut d'abord utiliser soit random soit load soit thompson");
+			System.out.println("Veuillez d'abord utiliser soit \"random\", soit \"load\", soit \"Thompson\"");
 		}
 
 	}
@@ -409,9 +414,6 @@ public class Commande {
 	 * @param cmd CommandLine that will check which argument has been given
 	 */
 	public void extractAutomatons(CommandLine cmd) {
-		if (cmd.hasOption(CMD_COPIE)) {
-			doCopie=true;
-		}
 		if (cmd.hasOption(CMD_GRAPHVIZ)) {
 			String nameFile = cmd.getOptionValue(CMD_GRAPHVIZ);
 			for (Entry<String, Automaton> entry : mapAutomaton.entrySet()) {
@@ -420,8 +422,9 @@ public class Commande {
 
 				try {
 					String finalName = nameFile + "_" + key;
-					ImageCreator picture = new ImageCreator(automaton, finalName);
-					File outputFile = picture.createImageFile();
+					ImageCreator imageCreator = new ImageCreator(automaton, finalName);
+					imageCreator.setMustEraseDotFiles(!mustCopyFiles);
+					File outputFile = imageCreator.createImageFile();
 					System.out.println(String.format("Image \"%s\" enregistrée à \"%s\"", finalName, outputFile.getAbsolutePath()));
 				} catch (IllegalArgumentException e) {
 					System.err.println(e.getMessage());
@@ -435,13 +438,14 @@ public class Commande {
 			if (nameFile.endsWith(".crea")) {
 				nameFile = nameFile.substring(0, nameFile.lastIndexOf(".crea"));
 			}
-			AutomatonFileHelper extractionFile = new AutomatonFileHelper();
+			AutomatonFileHelper automatonFileHelper = new AutomatonFileHelper();
+			automatonFileHelper.setMustOverwriteFiles(!mustCopyFiles);
 			for (Entry<String, Automaton> entry : mapAutomaton.entrySet()) {
 				String key = entry.getKey();
 				Automaton automaton = entry.getValue();
 				try {
 					String finalName = nameFile + "_" + key;
-					File outputFile = extractionFile.saveAutomaton(automaton, nameFile + "_" + key);
+					File outputFile = automatonFileHelper.saveAutomaton(automaton, nameFile + "_" + key);
 					System.out.println(String.format("Image \"%s\" enregistrée à \"%s\"", finalName, outputFile.getAbsolutePath()));
 				} catch (IOException e) {
 					System.err.println("Couldn't create the image at path : " + nameFile);
