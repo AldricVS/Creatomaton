@@ -26,7 +26,7 @@ import process.file.ImageCreator;
 /**
  * Main class used for handling Command Line Argument
  * 
- * @author Cholé Gateau
+ * @author Chloé Gateau
  */
 public class Commande {
 
@@ -43,10 +43,12 @@ public class Commande {
 	private static final String CMD_SYNC = "sync";
 	private static final String CMD_THOMPSON = "thompson";
 	private static final String CMD_VALIDATION = "val";
+	private static final String CMD_COPIE ="copie";
 
 	private static final String CMD_BASE_AUTOMATON = "base";
 
 	private Options options = new Options();
+	private boolean doCopie = false;
 
 	// Pour random automaton
 	private static final int RANDOM_PROPERTIES_MAX_COUNT = 4;
@@ -77,6 +79,8 @@ public class Commande {
 		group2.addOption(file);
 		// Ajout du groupe dans le conteneur Options
 		options.addOptionGroup(group2);
+		Option copie = new Option("C",CMD_COPIE,false,"créer un copie de l'extraction si un fichier existe déjà avec ce nom");
+		options.addOption(copie);
 	}
 
 	private void createOperationOptions() {
@@ -405,6 +409,9 @@ public class Commande {
 	 * @param cmd CommandLine that will check which argument has been given
 	 */
 	public void extractAutomatons(CommandLine cmd) {
+		if (cmd.hasOption(CMD_COPIE)) {
+			doCopie=true;
+		}
 		if (cmd.hasOption(CMD_GRAPHVIZ)) {
 			String nameFile = cmd.getOptionValue(CMD_GRAPHVIZ);
 			for (Entry<String, Automaton> entry : mapAutomaton.entrySet()) {
