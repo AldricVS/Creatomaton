@@ -102,8 +102,15 @@ public class ThompsonAutomatonBuilder {
 					operator = operatorStack.pop();
 				}
 			} else {
-				// Treat the character as a simple letter automaton
-				Automaton letterAutomaton = ThompsonAutomatonFactory.createLetterAutomaton(character);
+				Automaton letterAutomaton;
+				// Create a letter automaton with the epsilon character if we can read "epsilon"
+				if(expression.indexOf("epsilon", i) == i) {
+					letterAutomaton = ThompsonAutomatonFactory.createLetterAutomaton(AutomatonConstants.EPSILON_CHAR);
+					i += 6;
+				}else {
+					// Treat the character as a simple letter automaton
+					letterAutomaton = ThompsonAutomatonFactory.createLetterAutomaton(character);
+				}
 				automatonStack.push(letterAutomaton);
 			}
 		}
