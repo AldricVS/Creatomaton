@@ -26,7 +26,7 @@ import process.file.ImageCreator;
 /**
  * Main class used for handling Command Line Argument
  * 
- * @author Chloé Gateau
+ * @author Chloé Gateau 
  */
 public class Commande {
 
