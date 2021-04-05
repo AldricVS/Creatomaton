@@ -106,6 +106,9 @@ public class Commande {
 
 		Option equi = new Option("E", CMD_EQUIVALENCE, true, "Vérifie l'équivalence avec un autre automate dans un fichier .crea");
 		options.addOption(equi);
+		
+		Option help = new Option("H", CMD_HELP, false, "affiche l'aide");
+		options.addOption(help);
 	}
 
 	private void createLoadOptionGroup() {
