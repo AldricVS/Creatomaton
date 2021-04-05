@@ -19,6 +19,8 @@ public class GraphvizHelper {
 	private String fileInputPath = null;
 
 	private String fileOutputName = null;
+	
+	private boolean mustOverwriteFiles = true;
 
 	public GraphvizHelper(String graphvizPath, String fileInputPath, String fileOutputPath) {
 		this.graphvizPath = graphvizPath;
@@ -87,6 +89,14 @@ public class GraphvizHelper {
 		this.fileInputPath = fileInputPath;
 	}
 
+	public boolean isMustOverwriteFiles() {
+		return mustOverwriteFiles;
+	}
+
+	public void setMustOverwriteFiles(boolean mustOverwriteFiles) {
+		this.mustOverwriteFiles = mustOverwriteFiles;
+	}
+
 	/**
 	 * Run the command and wait for the end of it
 	 * 
@@ -109,8 +119,10 @@ public class GraphvizHelper {
 			}
 		}
 
-		fileOutputPath = FileUtility.searchFileOutputName(fileOutputPath);
-
+		if(!mustOverwriteFiles) {
+			fileOutputPath = FileUtility.searchFileOutputName(fileOutputPath);
+		}
+		
 		// in order to allow spaces in file path
 		fileOutputPath = encapsulateFilePath(fileOutputPath);
 		fileInputPath = encapsulateFilePath(fileInputPath);

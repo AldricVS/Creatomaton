@@ -1,41 +1,33 @@
 package test.manual;
 
-import java.io.File;
 import java.io.IOException;
 
 import data.Automaton;
-import process.builders.DotBuilder;
 import process.builders.RandomAutomatonBuilder;
-import process.file.PrefsFileHelper;
-import process.helpers.GraphvizHelper;
+import process.file.AutomatonFileHelper;
+import process.file.ImageCreator;
 
 public class RandomAutomatonTest {
-
-	private static PrefsFileHelper prefsFileHelper;
-	private static GraphvizHelper graphvizHelper;
+	
+	private static boolean mustOverwrite = false;
 
 	public static void main(String[] args) throws IOException {
-		prefsFileHelper = new PrefsFileHelper();
-		String defaultOutputFolderPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY);
-		String defaultInputFolderPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_INPUT_FOLDER_KEY);
-
 		for (int index = 0; index < 5; index++) {
 			RandomAutomatonBuilder randomAutomatonBuilder = new RandomAutomatonBuilder(3 + index, index);
 			randomAutomatonBuilder.setAlphabet("abc");
 			randomAutomatonBuilder.setNumberOfFinalStates(index + 1);
-			Automaton automaton;
+			Automaton automaton = null;
+			ImageCreator imageCreator = new ImageCreator(automaton, "test");
+			imageCreator.setMustEraseDotFiles(mustOverwrite);
+			AutomatonFileHelper automatonFileHelper = new AutomatonFileHelper();
+			automatonFileHelper.setMustOverwriteFiles(mustOverwrite);
 			try {
 				automaton = randomAutomatonBuilder.build();
-				DotBuilder dotBuilder = new DotBuilder(automaton);
-
-				File file = new File(defaultInputFolderPath + "result.dot");
-				dotBuilder.buildDotFile(file);
-
-				graphvizHelper = new GraphvizHelper(file.getAbsolutePath(), defaultOutputFolderPath);
-				graphvizHelper.setFileOutputName("result" + index + ".jpg");
-				graphvizHelper.runCommand();
+				imageCreator.setAutomaton(automaton);
+				imageCreator.createImageFile();
+				automatonFileHelper.saveAutomaton(automaton, "test");
 			} catch (Exception e) {
-				System.out.println(e.getMessage());
+				e.printStackTrace();
 			}
 
 		}

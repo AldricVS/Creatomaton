@@ -37,6 +37,8 @@ public class AutomatonFileHelper {
 	public static final String TRANSITIONS_COMMAND = "#Transitions";
 	public static final String END_COMMAND = "#End";
 	
+	private boolean mustOverwriteFiles = true;
+	
 	private String outputFolderPath = null;
 
 	public AutomatonFileHelper() {
@@ -46,6 +48,13 @@ public class AutomatonFileHelper {
 		this.outputFolderPath = outputFolderPath;
 	}
 
+	public boolean isMustOverwriteFiles() {
+		return mustOverwriteFiles;
+	}
+
+	public void setMustOverwriteFiles(boolean mustOverwriteFiles) {
+		this.mustOverwriteFiles = mustOverwriteFiles;
+	}
 
 	public String getOutputFolderPath() {
 		return outputFolderPath;
@@ -70,15 +79,23 @@ public class AutomatonFileHelper {
 	 */
 	public File saveAutomaton(Automaton automaton, String filename) throws IOException, IllegalArgumentException {
 		String realFilepath = FileUtility.getRightFilenameExtension(filename, AUTOMATON_FILE_EXTENSION);
-		realFilepath = FileUtility.searchFileOutputName(realFilepath);
+		
 		//save the file path (all folders directing to it)
 		String folderPath = FileUtility.getParentFolderName(realFilepath);
 		File outputFile;
 		if(folderPath == null) {
 			PrefsFileHelper prefsFileHelper = new PrefsFileHelper();
 			folderPath = prefsFileHelper.getPreference(PrefsFileHelper.DEFAULT_OUTPUT_FOLDER_KEY);
-			outputFile = new File(folderPath + "/" + realFilepath);
+			if(!mustOverwriteFiles) {
+				realFilepath = FileUtility.searchFileOutputName(folderPath + "/" + realFilepath);
+			}else {
+				realFilepath = folderPath + "/" + realFilepath;
+			}
+			outputFile = new File(realFilepath);
 		}else {
+			if(!mustOverwriteFiles) {
+				realFilepath = FileUtility.searchFileOutputName(realFilepath);
+			}
 			outputFile = new File(realFilepath);
 		}
 		outputFile.createNewFile();
