@@ -79,7 +79,7 @@ public class Commande {
 		group2.addOption(file);
 		// Ajout du groupe dans le conteneur Options
 		options.addOptionGroup(group2);
-		Option copie = new Option("C", CMD_COPY_FILES, false, "créer un copie de l'extraction si un fichier existe déjà avec ce nom");
+		Option copie = new Option("C", CMD_COPY_FILES, false, "Si besoin de ne pas devoir écraser les anciens fichiers lors de l'export (image ou .crea)");
 		options.addOption(copie);
 	}
 
