@@ -256,7 +256,7 @@ public class AutomatonBuilder {
 		if (StateListUtility.getIdStateFromNameInList(automaton.getAllStates(), WELL_STATE_NAME) > 0) {
 			return automaton;
 		}
-		Automaton wellAutomaton = AutomatonFactory.createCopy(automaton);
+		Automaton wellAutomaton = buildSynchronizedAutomaton();
 		// create the new state and add it to the automaton
 		// (dont worry about the id, it will be modified accordingly
 		State wellState = new State(0, WELL_STATE_NAME);
