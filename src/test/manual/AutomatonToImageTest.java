@@ -31,8 +31,18 @@ public class AutomatonToImageTest {
 		}
 		
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
-//		automaton = builder.buildDeterministicAutomaton();
-//		builder.setAutomaton(automaton);
+		automaton = builder.buildDeterministicAutomaton();
+		builder.setAutomaton(automaton);
+		automaton = builder.addWellState();
+		builder.setAutomaton(automaton);
+		automaton = builder.addWellState();
+		builder.setAutomaton(automaton);
+		automaton = builder.addWellState();
+		builder.setAutomaton(automaton);
+		automaton = builder.addWellState();
+		builder.setAutomaton(automaton);
+		automaton = builder.addWellState();
+		builder.setAutomaton(automaton);
 		automaton = builder.addWellState();
 		
 		try {
