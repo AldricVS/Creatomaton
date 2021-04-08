@@ -28,18 +28,6 @@ public class WellStateAutomatonTest {
 		Automaton randomAutomaton = builderRandom.build();
 		AutomatonBuilder builder = new AutomatonBuilder(randomAutomaton);
 		automaton = builder.addWellState();
-		
-		ImageCreator image;
-		try {
-			image = new ImageCreator(automaton, "wellAutomatonWell");
-			image.createImageFile();
-			image = new ImageCreator(randomAutomaton, "wellAutomatonRand");
-			image.createImageFile();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	@Test
