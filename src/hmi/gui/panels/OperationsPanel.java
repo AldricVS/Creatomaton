@@ -5,13 +5,12 @@ import java.awt.Color;
 import javax.swing.JPanel;
 
 import hmi.gui.MainWindow;
+import hmi.gui.management.TitledPanel;
 
-public class OperationsPanel extends JPanel {
-	
-	private MainWindow context;
+public class OperationsPanel extends TitledPanel {
 
 	public OperationsPanel(MainWindow mainWindow) {
-		this.context = mainWindow;
-		setBackground(Color.RED);
+		super(mainWindow);
+		initPanel("Opérations", new JPanel());
 	}
 }

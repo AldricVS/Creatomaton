@@ -1,17 +1,14 @@
 package hmi.gui.panels;
 
-import java.awt.Color;
-
 import javax.swing.JPanel;
 
 import hmi.gui.MainWindow;
+import hmi.gui.management.TitledPanel;
 
-public class ExportPanel extends JPanel {
+public class ExportPanel extends TitledPanel {
 	
-	private MainWindow context;
-
 	public ExportPanel(MainWindow mainWindow) {
-		this.context = mainWindow;
-		setBackground(Color.BLUE);
+		super(mainWindow);
+		initPanel("Export", new JPanel());
 	}
 }
