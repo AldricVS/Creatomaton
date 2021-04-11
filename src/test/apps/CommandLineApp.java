@@ -1,6 +1,6 @@
 package test.apps;
 
-import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
 
 import hmi.cli.CommandParser;
 import hmi.gui.MainWindow;
@@ -9,7 +9,7 @@ public class CommandLineApp {
 
 	public static void main(String[] args) {
 		if(args.length == 0) {
-			FlatLightLaf.install();
+			FlatDarkLaf.install();
 			new MainWindow();
 		}else {
 			CommandParser commandParser = new CommandParser();
