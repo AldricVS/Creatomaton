@@ -1,4 +1,4 @@
-package process;
+package hmi.cli;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +17,7 @@ import org.apache.commons.cli.ParseException;
 
 import data.Automaton;
 import exceptions.FileFormatException;
+import process.AutomatonManager;
 import process.builders.AutomatonBuilder;
 import process.builders.RandomAutomatonBuilder;
 import process.builders.ThompsonAutomatonBuilder;
@@ -28,7 +29,7 @@ import process.file.ImageCreator;
  * 
  * @author Chloé Gateau 
  */
-public class Commande {
+public class CommandParser {
 
 	private static final String CMD_ALL = "all";
 	private static final String CMD_DETER = "det";
@@ -62,7 +63,7 @@ public class Commande {
 	/**
 	 * Add all defined argument that can be read from the Command Line.
 	 */
-	public Commande() {
+	public CommandParser() {
 		createLoadOptionGroup();
 		createOperationOptions();
 		createExtractionOptionGroup();

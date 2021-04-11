@@ -1,11 +1,16 @@
 package test.apps;
 
-import process.Commande;
+import hmi.cli.CommandParser;
+import hmi.gui.MainWindow;
 
 public class CommandLineApp {
 
 	public static void main(String[] args) {
-		Commande commande = new Commande();
-		commande.parseArguments(args);
+		if(args.length == 0) {
+			new MainWindow();
+		}else {
+			CommandParser commandParser = new CommandParser();
+			commandParser.parseArguments(args);
+		}
 	}
 }
