@@ -57,7 +57,7 @@ public class MainWindow extends JFrame {
 	class ResizeListener extends ComponentAdapter{
 		@Override
 		public void componentResized(ComponentEvent componentEvent) {
-			changeDimensions(getWidth(), getHeight());
+			changeDimensions(getContentPane().getWidth(), getContentPane().getHeight());
 		}
 	}
 }

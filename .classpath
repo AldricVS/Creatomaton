@@ -11,5 +11,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/Creatomaton/libraries/commons-cli-1.4-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="libraries/flatlaf-1.1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
