@@ -68,13 +68,13 @@ public class RandomInitPanel extends JPanel {
 	private JPanel createLabelsPanel() {
 		JPanel labelsPanel = new JPanel();
 		labelsPanel.setLayout(new GridLayout(0, 1));
-		labelsPanel.add(new JLabel("Nombre d'états"));
+		labelsPanel.add(new JLabel("Nombre d'états :"));
 		labelsPanel.add(createVerticalStrut());
-		labelsPanel.add(new JLabel("Nombre d'états finaux"));
+		labelsPanel.add(new JLabel("Nombre d'états finaux :"));
 		labelsPanel.add(createVerticalStrut());
-		labelsPanel.add(new JLabel("Nombre d'epsilon-transitions"));
+		labelsPanel.add(new JLabel("Nombre d'epsilon-transitions :"));
 		labelsPanel.add(createVerticalStrut());
-		labelsPanel.add(new JLabel("Alphabet"));
+		labelsPanel.add(new JLabel("Alphabet :"));
 		return labelsPanel;
 	}
 

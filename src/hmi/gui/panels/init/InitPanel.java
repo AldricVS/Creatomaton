@@ -1,5 +1,6 @@
 package hmi.gui.panels.init;
 
+import java.awt.CardLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,7 +25,9 @@ public class InitPanel extends TitledPanel {
 	
 	
 	private JPanel contentPanel;
+	private CardLayout cardLayout = new CardLayout();
 	private RandomInitPanel randomInitPanel = new RandomInitPanel();
+	private ThompsonInitPanel thompsonInitPanel = new ThompsonInitPanel();
 
 	public InitPanel(MainWindow mainWindow) {
 		super(mainWindow);
@@ -38,8 +41,17 @@ public class InitPanel extends TitledPanel {
 		JPanel radioPanel = createRadioPanel();
 		specificPanel.add(radioPanel);
 		
+		contentPanel = new JPanel();
+		contentPanel.setLayout(cardLayout);
+		contentPanel.add(randomInitPanel, InitModes.RANDOM.name());
+		contentPanel.add(thompsonInitPanel, InitModes.THOMPSON.name());
+		showSubPanel(InitModes.RANDOM);
 		
-		specificPanel.add(randomInitPanel);
+		specificPanel.add(contentPanel);
+	}
+
+	private void showSubPanel(InitModes mode) {
+		cardLayout.show(contentPanel, mode.name());
 	}
 
 	private JPanel createRadioPanel() {
@@ -73,9 +85,9 @@ public class InitPanel extends TitledPanel {
 			if(buttonSelected != radioButton) {
 				buttonSelected = radioButton;
 				if(radioButton == randomRadioButton) {
-					System.out.println("Random");
+					showSubPanel(InitModes.RANDOM);
 				}else if(radioButton == thompsonRadioButton) {
-					System.out.println("Thomson");
+					showSubPanel(InitModes.THOMPSON);
 				}else if(radioButton == fileRadioButton){
 					System.out.println("File");
 				}

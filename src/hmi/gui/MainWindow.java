@@ -1,6 +1,7 @@
 package hmi.gui;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
@@ -53,9 +54,6 @@ public class MainWindow extends JFrame {
 		setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		setPreferredSize(WINDOW_DIMENSION);
 		setMinimumSize(WINDOW_MIN_DIMENSION);
-//		getContentPane().add(initPanel, BorderLayout.NORTH);
-//		getContentPane().add(operationsPanel, BorderLayout.CENTER);
-//		getContentPane().add(exportPanel, BorderLayout.SOUTH);
 		getContentPane().add(initPanel);
 		getContentPane().add(operationsPanel);
 		getContentPane().add(exportPanel);
