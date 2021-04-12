@@ -1,4 +1,4 @@
-package hmi.gui.management;
+package hmi.gui.reusable_elements;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

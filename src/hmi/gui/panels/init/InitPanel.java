@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 import hmi.gui.MainWindow;
-import hmi.gui.management.TitledPanel;
+import hmi.gui.reusable_elements.TitledPanel;
 
 public class InitPanel extends TitledPanel {
 	

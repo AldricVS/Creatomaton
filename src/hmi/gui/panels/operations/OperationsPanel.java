@@ -3,7 +3,7 @@ package hmi.gui.panels.operations;
 import javax.swing.JPanel;
 
 import hmi.gui.MainWindow;
-import hmi.gui.management.TitledPanel;
+import hmi.gui.reusable_elements.TitledPanel;
 
 public class OperationsPanel extends TitledPanel {
 	
