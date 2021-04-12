@@ -5,11 +5,12 @@ import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 
 import hmi.gui.panels.ExportPanel;
-import hmi.gui.panels.InitPanel;
-import hmi.gui.panels.OperationsPanel;
+import hmi.gui.panels.init.InitPanel;
+import hmi.gui.panels.operations.OperationsPanel;
 
 public class MainWindow extends JFrame {
 	
@@ -43,21 +44,31 @@ public class MainWindow extends JFrame {
 		initPanel.setPreferredSize(initPanelDimension);
 		operationsPanel.setPreferredSize(operationsPanelDimension);
 		exportPanel.setPreferredSize(exportPanelDimension);
+		
+		initPanel.revalidate();
+		operationsPanel.revalidate();
+		exportPanel.revalidate();
 	}
 
 	private void initLayout() {
-		setLayout(new BorderLayout());
+		setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		setPreferredSize(WINDOW_DIMENSION);
 		setMinimumSize(WINDOW_MIN_DIMENSION);
-		getContentPane().add(initPanel, BorderLayout.NORTH);
-		getContentPane().add(operationsPanel, BorderLayout.CENTER);
-		getContentPane().add(exportPanel, BorderLayout.SOUTH);
+//		getContentPane().add(initPanel, BorderLayout.NORTH);
+//		getContentPane().add(operationsPanel, BorderLayout.CENTER);
+//		getContentPane().add(exportPanel, BorderLayout.SOUTH);
+		getContentPane().add(initPanel);
+		getContentPane().add(operationsPanel);
+		getContentPane().add(exportPanel);
 	}
 	
 	class ResizeListener extends ComponentAdapter{
 		@Override
 		public void componentResized(ComponentEvent componentEvent) {
-			changeDimensions(getContentPane().getWidth(), getContentPane().getHeight());
+			super.componentMoved(componentEvent);
+			int frameWidth = getContentPane().getWidth();
+			int frameHeight = getContentPane().getHeight();
+			changeDimensions(frameWidth, frameHeight);
 		}
 	}
 }
