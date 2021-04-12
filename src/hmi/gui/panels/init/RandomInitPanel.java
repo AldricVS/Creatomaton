@@ -8,12 +8,14 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import hmi.gui.management.TextFieldLabel;
+
 public class RandomInitPanel extends JPanel {
 
-	JTextField numberStatesTextField = new JTextField();
-	JTextField numberFinalStatesTextField = new JTextField();
-	JTextField numberEpsilonTransTextField = new JTextField();
-	JTextField alphabetTextField = new JTextField();
+	TextFieldLabel numberStatesTextField = new TextFieldLabel("Nombre d'états");
+	TextFieldLabel numberFinalStatesTextField = new TextFieldLabel("Nombre d'états finaux");
+	TextFieldLabel numberEpsilonTransTextField = new TextFieldLabel("Nombre d'epsilon transitions");
+	TextFieldLabel alphabetTextField = new TextFieldLabel("Alphabet");
 	
 	public RandomInitPanel() {
 		initTextFields();
@@ -28,25 +30,6 @@ public class RandomInitPanel extends JPanel {
 	}
 
 	private void initTextFields() {
-		numberEpsilonTransTextField.setInputVerifier(new NumberVerifier());
-		numberStatesTextField.setInputVerifier(new NumberVerifier());
-		numberFinalStatesTextField.setInputVerifier(new NumberVerifier());
-	}
-
-	/**
-	 * An input is valid if it is a strictly positive integer.
-	 */
-	class NumberVerifier extends InputVerifier {
-		@Override
-		public boolean verify(JComponent input) {
-			JTextField textField = (JTextField) input;
-			String text = textField.getText().trim();
-			try {
-				int value = Integer.parseInt(text);
-				return value > 0;
-			} catch (NumberFormatException e) {
-				return false;
-			}
-		}
+		// In order to have 
 	}
 }
