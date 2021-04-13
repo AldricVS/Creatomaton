@@ -7,18 +7,13 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 
 import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.InputVerifier;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.text.AbstractDocument;
-import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 
 import hmi.gui.management.IntegerDocumentFilter;
-import hmi.gui.reusable_elements.TextFieldLabel;
 import process.builders.RandomAutomatonBuilder;
 
 public class RandomInitPanel extends JPanel {

@@ -28,6 +28,7 @@ public class InitPanel extends TitledPanel {
 	private CardLayout cardLayout = new CardLayout();
 	private RandomInitPanel randomInitPanel = new RandomInitPanel();
 	private ThompsonInitPanel thompsonInitPanel = new ThompsonInitPanel();
+	private FileInitPanel fileInitPanel = new FileInitPanel();
 
 	public InitPanel(MainWindow mainWindow) {
 		super(mainWindow);
@@ -45,6 +46,7 @@ public class InitPanel extends TitledPanel {
 		contentPanel.setLayout(cardLayout);
 		contentPanel.add(randomInitPanel, InitModes.RANDOM.name());
 		contentPanel.add(thompsonInitPanel, InitModes.THOMPSON.name());
+		contentPanel.add(fileInitPanel, InitModes.FILE.name());
 		showSubPanel(InitModes.RANDOM);
 		
 		specificPanel.add(contentPanel);
@@ -89,7 +91,7 @@ public class InitPanel extends TitledPanel {
 				}else if(radioButton == thompsonRadioButton) {
 					showSubPanel(InitModes.THOMPSON);
 				}else if(radioButton == fileRadioButton){
-					System.out.println("File");
+					showSubPanel(InitModes.FILE);
 				}
 			}
 		}
