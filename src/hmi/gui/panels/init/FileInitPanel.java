@@ -31,6 +31,14 @@ public class FileInitPanel extends JPanel {
 		initLayout();
 	}
 
+	public File getSelectedFile() {
+		return selectedFile;
+	}
+
+	public void setSelectedFile(File selectedFile) {
+		this.selectedFile = selectedFile;
+	}
+
 	private void initLayout() {
 		setLayout(new GridLayout(0, 1));
 		JPanel panel = new JPanel();
@@ -66,7 +74,7 @@ public class FileInitPanel extends JPanel {
 			FileFilter fileFilter = new FileNameExtensionFilter("fichier .crea", "crea");
 			fileChooser.setFileFilter(fileFilter);
 			int answer = fileChooser.showOpenDialog(FileInitPanel.this);
-			if(answer == JFileChooser.APPROVE_OPTION) {
+			if (answer == JFileChooser.APPROVE_OPTION) {
 				selectedFile = fileChooser.getSelectedFile();
 				updateTextField();
 			}
@@ -84,7 +92,7 @@ public class FileInitPanel extends JPanel {
 			updateTextField();
 		}
 	}
-	
+
 	private void updateTextField() {
 		filenameField.setText(selectedFile.getAbsolutePath());
 	}
