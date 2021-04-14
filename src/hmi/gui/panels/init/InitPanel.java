@@ -23,9 +23,10 @@ public class InitPanel extends TitledPanel {
 	
 	private JPanel specificPanel;
 	
-	
 	private JPanel contentPanel;
+	private InitModes currentMode = InitModes.RANDOM;
 	private CardLayout cardLayout = new CardLayout();
+	
 	private RandomInitPanel randomInitPanel = new RandomInitPanel();
 	private ThompsonInitPanel thompsonInitPanel = new ThompsonInitPanel();
 	private FileInitPanel fileInitPanel = new FileInitPanel();
@@ -36,6 +37,10 @@ public class InitPanel extends TitledPanel {
 		super.initPanel("Initialisation", specificPanel);
 	}
 	
+	public InitModes getCurrentMode() {
+		return currentMode;
+	}
+
 	private void initSpecificPanel() {
 		specificPanel = new JPanel();
 		specificPanel.setLayout(new GridLayout(1, 1));
@@ -47,13 +52,14 @@ public class InitPanel extends TitledPanel {
 		contentPanel.add(randomInitPanel, InitModes.RANDOM.name());
 		contentPanel.add(thompsonInitPanel, InitModes.THOMPSON.name());
 		contentPanel.add(fileInitPanel, InitModes.FILE.name());
-		showSubPanel(InitModes.RANDOM);
+		changeContentPanel(currentMode);
 		
 		specificPanel.add(contentPanel);
 	}
 
-	private void showSubPanel(InitModes mode) {
+	private void changeContentPanel(InitModes mode) {
 		cardLayout.show(contentPanel, mode.name());
+		currentMode = mode;
 	}
 
 	private JPanel createRadioPanel() {
@@ -87,11 +93,11 @@ public class InitPanel extends TitledPanel {
 			if(buttonSelected != radioButton) {
 				buttonSelected = radioButton;
 				if(radioButton == randomRadioButton) {
-					showSubPanel(InitModes.RANDOM);
+					changeContentPanel(InitModes.RANDOM);
 				}else if(radioButton == thompsonRadioButton) {
-					showSubPanel(InitModes.THOMPSON);
+					changeContentPanel(InitModes.THOMPSON);
 				}else if(radioButton == fileRadioButton){
-					showSubPanel(InitModes.FILE);
+					changeContentPanel(InitModes.FILE);
 				}
 			}
 		}
