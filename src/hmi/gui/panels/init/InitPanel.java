@@ -41,6 +41,18 @@ public class InitPanel extends TitledPanel {
 		return currentMode;
 	}
 
+	public RandomInitPanel getRandomInitPanel() {
+		return randomInitPanel;
+	}
+
+	public ThompsonInitPanel getThompsonInitPanel() {
+		return thompsonInitPanel;
+	}
+
+	public FileInitPanel getFileInitPanel() {
+		return fileInitPanel;
+	}
+
 	private void initSpecificPanel() {
 		specificPanel = new JPanel();
 		specificPanel.setLayout(new GridLayout(1, 1));

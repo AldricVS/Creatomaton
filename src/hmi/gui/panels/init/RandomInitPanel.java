@@ -28,7 +28,18 @@ public class RandomInitPanel extends JPanel {
 		initLayout();
 		initTextFields();
 	}
-	
+
+	public boolean areFieldsValid() {
+		try {
+			return getNumberOfStates() > 0 
+					&& getNumberOfFinalStates() > 0
+					&& getNumberOfEpsilonTransitions() >= 0 
+					&& getAlphabet().length() > 0;
+		} catch (IllegalArgumentException exception) {
+			return false;
+		}
+	}
+
 	public String getAlphabet() {
 		return alphabetTextField.getText();
 	}
@@ -36,15 +47,15 @@ public class RandomInitPanel extends JPanel {
 	public int getNumberOfStates() {
 		return Integer.parseInt(numberStatesTextField.getText().trim());
 	}
-	
+
 	public int getNumberOfFinalStates() {
 		return Integer.parseInt(numberFinalStatesTextField.getText().trim());
 	}
-	
+
 	public int getNumberOfEpsilonTransitions() {
 		return Integer.parseInt(numberEpsilonTransTextField.getText().trim());
 	}
-	
+
 	private void initLayout() {
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.insets = new Insets(5, 5, 5, 5);
@@ -94,7 +105,7 @@ public class RandomInitPanel extends JPanel {
 		addDocumentFilter(numberStatesTextField, new IntegerDocumentFilter());
 		addDocumentFilter(numberFinalStatesTextField, new IntegerDocumentFilter());
 		addDocumentFilter(numberEpsilonTransTextField, new IntegerDocumentFilter());
-		
+
 		// Retrieve values by default from the RandomAutomatonBuilder itself
 		RandomAutomatonBuilder randomAutomatonBuilder = new RandomAutomatonBuilder();
 		numberStatesTextField.setText(String.valueOf(randomAutomatonBuilder.getNumberOfInitialStates()));
