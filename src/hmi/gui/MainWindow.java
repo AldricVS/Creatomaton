@@ -7,7 +7,7 @@ import java.awt.event.ComponentEvent;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 
-import hmi.gui.panels.ExportPanel;
+import hmi.gui.panels.export.ExportPanel;
 import hmi.gui.panels.init.InitPanel;
 import hmi.gui.panels.operations.OperationsPanel;
 
