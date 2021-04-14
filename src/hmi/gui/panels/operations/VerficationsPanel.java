@@ -25,15 +25,31 @@ public class VerficationsPanel extends JPanel {
 	private JPanel filePanel = new JPanel();
 
 	private JCheckBox checkWordCheckBox = new JCheckBox("Vérifier un mot");
-	JCheckBox equivalentCheckBox = new JCheckBox("Équivalent ?");
+	private JCheckBox equivalentCheckBox = new JCheckBox("Équivalent ?");
 
-	JTextField wordTextField = new JTextField();
-	JTextField filenameTextField = new JTextField();
+	private JTextField wordTextField = new JTextField();
+	private JTextField filenameTextField = new JTextField();
 
 	public VerficationsPanel() {
 		initLayout();
 		setComponentEnabled(wordTextField, false);
 		setComponentEnabled(filePanel, false);
+	}
+	
+	public boolean isCheckWordBoxChecked() {
+		return checkWordCheckBox.isSelected();
+	}
+	
+	public boolean isEquivalentBoxChecked() {
+		return equivalentCheckBox.isSelected();
+	}
+	
+	public String getWordText() {
+		return wordTextField.getText();
+	}
+	
+	public String getFilenameText() {
+		return filenameTextField.getText();
 	}
 	
 	private void initLayout() {

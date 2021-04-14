@@ -13,11 +13,11 @@ import process.builders.AutomatonBuilder;
  */
 public class AutomatonContainer {
 
-	private static final String DETER = "det";
-	private static final String MINI = "mini";
-	private static final String MIRROR = "mir";
-	private static final String SYNC = "sync";
-	private static final String BASE_AUTOMATON = "base";
+	public static final String DETER_AUTOMATON = "det";
+	public static final String MINI_AUTOMATON = "mini";
+	public static final String MIRROR_AUTOMATON = "mir";
+	public static final String SYNC_AUTOMATON = "sync";
+	public static final String BASE_AUTOMATON = "base";
 
 	private AutomatonBuilder automatonBuilder;
 
@@ -27,6 +27,10 @@ public class AutomatonContainer {
 		automatonBuilder = new AutomatonBuilder(baseAutomaton);
 		automatonsMap.put(BASE_AUTOMATON, baseAutomaton);
 	}
+	
+	public Automaton getBaseAutomaton() {
+		return automatonsMap.get(BASE_AUTOMATON);
+	}
 
 	public Map<String, Automaton> getAutomatons() {
 		return automatonsMap;
@@ -34,21 +38,21 @@ public class AutomatonContainer {
 	
 	public void appendSynchronizedAutomaton() {
 		Automaton automaton = automatonBuilder.buildSynchronizedAutomaton();
-		automatonsMap.put(SYNC, automaton);
+		automatonsMap.put(SYNC_AUTOMATON, automaton);
 	}
 
 	public void appendDeterministicAutomaton() {
 		Automaton automaton = automatonBuilder.buildDeterministicAutomaton();
-		automatonsMap.put(DETER, automaton);
+		automatonsMap.put(DETER_AUTOMATON, automaton);
 	}
 
 	public void appendMirrorAutomaton() {
 		Automaton automaton = automatonBuilder.buildMirrorAutomaton();
-		automatonsMap.put(MIRROR, automaton);
+		automatonsMap.put(MIRROR_AUTOMATON, automaton);
 	}
 
 	public void appendMinimalAutomaton() {
 		Automaton automaton = automatonBuilder.buildMinimalAutomaton();
-		automatonsMap.put(MINI, automaton);
+		automatonsMap.put(MINI_AUTOMATON, automaton);
 	}
 }

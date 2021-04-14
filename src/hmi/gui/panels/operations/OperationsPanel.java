@@ -13,6 +13,14 @@ public class OperationsPanel extends TitledPanel {
 	ModificationsPanel modificationsPanel = new ModificationsPanel();
 	VerficationsPanel verificationsPanel = new VerficationsPanel();
 	
+	public ModificationsPanel getModificationsPanel() {
+		return modificationsPanel;
+	}
+
+	public VerficationsPanel getVerificationsPanel() {
+		return verificationsPanel;
+	}
+
 	public OperationsPanel(MainWindow mainWindow) {
 		super(mainWindow);
 		initSpecificPanel();

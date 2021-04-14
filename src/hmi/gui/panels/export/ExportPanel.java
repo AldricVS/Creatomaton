@@ -1,6 +1,7 @@
 package hmi.gui.panels.export;
 
 import java.awt.GridLayout;
+import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -27,6 +28,26 @@ public class ExportPanel extends TitledPanel {
 		initPanel("Export", specificPanel);
 	}
 
+	public ExportFieldsPanel getExportFieldsPanel() {
+		return exportFieldsPanel;
+	}
+
+	public boolean isImageButtonChecked() {
+		return imageRadioButton.isSelected();
+	}
+	
+	public boolean isFileButtonChecked() {
+		return fileRadioButton.isSelected();
+	}
+	
+	public File getSelectedFolder() {
+		return exportFieldsPanel.getSelectedFolder();
+	}
+	
+	public String getNameText() {
+		return exportFieldsPanel.getNameText();
+	}
+	
 	private void initButtonGroup() {
 		radioButtonGroup.add(imageRadioButton);
 		radioButtonGroup.add(fileRadioButton);

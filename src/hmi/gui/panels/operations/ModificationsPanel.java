@@ -1,6 +1,5 @@
 package hmi.gui.panels.operations;
 
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -15,13 +14,29 @@ public class ModificationsPanel extends JPanel{
 	
 	private JCheckBox deterministicCheckBox = new JCheckBox("Déterminisation");
 	private JCheckBox synchronizedCheckBox = new JCheckBox("Synchronisation");
-	private JCheckBox mirorCheckBox = new JCheckBox("Miroir");
+	private JCheckBox mirrorCheckBox = new JCheckBox("Miroir");
 	private JCheckBox minimalisticCheckBox = new JCheckBox("Minimalisation");
 	
 	public ModificationsPanel() {
 		initLayout();
 	}
 
+	public boolean isDeterministicCheckBoxChecked() {
+		return deterministicCheckBox.isSelected();
+	}
+	
+	public boolean isSynchronizedCheckBoxChecked() {
+		return synchronizedCheckBox.isSelected();
+	}
+	
+	public boolean isMirrorCheckBoxChecked() {
+		return mirrorCheckBox.isSelected();
+	}
+	
+	public boolean isMinimalCheckBoxChecked() {
+		return minimalisticCheckBox.isSelected();
+	}
+	
 	private void initLayout() {
 		setLayout(new GridBagLayout());
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
@@ -44,7 +59,7 @@ public class ModificationsPanel extends JPanel{
 		checkboxPanel.setLayout(new GridLayout(0, 2));
 		checkboxPanel.add(deterministicCheckBox);
 		checkboxPanel.add(synchronizedCheckBox);
-		checkboxPanel.add(mirorCheckBox);
+		checkboxPanel.add(mirrorCheckBox);
 		checkboxPanel.add(minimalisticCheckBox);
 		checkboxPanel.setBorder(BorderFactory.createTitledBorder("            "));
 		return checkboxPanel;
@@ -56,7 +71,7 @@ public class ModificationsPanel extends JPanel{
 		checkAllButton.addActionListener((actionEvent) -> {
 			deterministicCheckBox.setSelected(true);
 			synchronizedCheckBox.setSelected(true);
-			mirorCheckBox.setSelected(true);
+			mirrorCheckBox.setSelected(true);
 			minimalisticCheckBox.setSelected(true);
 		}); 
 		buttonPanel.add(checkAllButton);

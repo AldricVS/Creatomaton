@@ -32,6 +32,10 @@ public class ExportFieldsPanel extends JPanel {
 	public File getSelectedFolder() {
 		return selectedFolder;
 	}
+	
+	public String getNameText() {
+		return nameTextField.getText();
+	}
 
 	private void initLayout() {
 		setLayout(new GridBagLayout());
