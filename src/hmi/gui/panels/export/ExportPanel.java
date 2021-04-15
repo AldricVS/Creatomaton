@@ -16,6 +16,7 @@ public class ExportPanel extends TitledPanel {
 	private JPanel specificPanel = new JPanel();
 	
 	private ButtonGroup radioButtonGroup = new ButtonGroup();
+	private JRadioButton noExportRadioButton = new JRadioButton("Pas d'export");
 	private JRadioButton imageRadioButton = new JRadioButton("Image (.jpg)");
 	private JRadioButton fileRadioButton = new JRadioButton("Fichier (.crea)");
 	
@@ -40,6 +41,10 @@ public class ExportPanel extends TitledPanel {
 		return fileRadioButton.isSelected();
 	}
 	
+	public boolean isNoExportButtonChecked() {
+		return noExportRadioButton.isSelected();
+	}
+	
 	public File getSelectedFolder() {
 		return exportFieldsPanel.getSelectedFolder();
 	}
@@ -51,6 +56,7 @@ public class ExportPanel extends TitledPanel {
 	private void initButtonGroup() {
 		radioButtonGroup.add(imageRadioButton);
 		radioButtonGroup.add(fileRadioButton);
+		radioButtonGroup.add(noExportRadioButton);
 		imageRadioButton.setSelected(true);
 	}
 
@@ -67,6 +73,7 @@ public class ExportPanel extends TitledPanel {
 		radioPanel.setLayout(new GridLayout(0, 1));
 		radioPanel.add(imageRadioButton);
 		radioPanel.add(fileRadioButton);
+		radioPanel.add(noExportRadioButton);
 		return radioPanel;
 	}
 }

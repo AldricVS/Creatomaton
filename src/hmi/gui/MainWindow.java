@@ -5,12 +5,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.Optional;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import hmi.gui.management.VerificationResult;
+import hmi.gui.management.gui_scanner.GuiScanner;
 import hmi.gui.panels.export.ExportPanel;
 import hmi.gui.panels.init.InitModes;
 import hmi.gui.panels.init.InitPanel;
@@ -72,6 +76,7 @@ public class MainWindow extends JFrame {
 
 	private void initValidatePanel() {
 		JButton validateButton = new JButton("Valider");
+		validateButton.addActionListener(new ActionValidate());
 		validatePanel.add(validateButton);
 	}
 
@@ -88,8 +93,61 @@ public class MainWindow extends JFrame {
 	class ActionValidate implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO : recupérer les éléments, construire la commande
-			InitModes initMode = initPanel.getCurrentMode();
+			GuiScanner guiScanner = new GuiScanner();
+			boolean isInitCompleted = handleInitPart(guiScanner);
+
+			if (isInitCompleted) {
+				handleOperationsPart(guiScanner);
+				handleExportPart(guiScanner);
+			}
+
+		}
+
+		/**
+		 * @param guiScanner
+		 * @return
+		 */
+		private boolean handleInitPart(GuiScanner guiScanner) {
+			try {
+				guiScanner.scanInitPanel(initPanel);
+				return true;
+			} catch (IllegalArgumentException exception) {
+				JOptionPane.showMessageDialog(MainWindow.this, exception.getMessage(), "Initialisation : erreur", JOptionPane.ERROR_MESSAGE);
+				return false;
+			}
+		}
+
+		/**
+		 * @param guiScanner
+		 */
+		private void handleOperationsPart(GuiScanner guiScanner) {
+			VerificationResult verifData = guiScanner.scanOperationsPanel(operationsPanel);
+			Optional<String> resultEquals = verifData.getResultEquals();
+			Optional<String> resultWord = verifData.getResultWord();
+			if (resultEquals.isPresent() || resultWord.isPresent()) {
+				String message = "";
+				if (resultWord.isPresent()) {
+					message += resultWord.get() + "\n";
+				}
+				if (resultEquals.isPresent()) {
+					message += resultEquals.get() + "\n";
+				}
+				JOptionPane.showMessageDialog(MainWindow.this, message, "Résultat", JOptionPane.INFORMATION_MESSAGE);
+			}
+		}
+
+		/**
+		 * @param guiScanner
+		 */
+		private void handleExportPart(GuiScanner guiScanner) {
+			if (!exportPanel.isNoExportButtonChecked()) {
+				try {
+					guiScanner.scanExportPanel(exportPanel);
+					JOptionPane.showMessageDialog(MainWindow.this, "Exportation effectuée avec succès", "", JOptionPane.INFORMATION_MESSAGE);
+				} catch (IllegalArgumentException exception) {
+					JOptionPane.showMessageDialog(MainWindow.this, exception.getMessage(), "Exportation : erreur", JOptionPane.ERROR_MESSAGE);
+				}
+			}
 		}
 	}
 }

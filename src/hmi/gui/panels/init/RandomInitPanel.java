@@ -31,7 +31,7 @@ public class RandomInitPanel extends JPanel {
 
 	public boolean areFieldsValid() {
 		try {
-			return getNumberOfStates() > 0 
+			return getNumberOfStates() > 1 
 					&& getNumberOfFinalStates() > 0
 					&& getNumberOfEpsilonTransitions() >= 0 
 					&& getAlphabet().length() > 0;
@@ -108,7 +108,7 @@ public class RandomInitPanel extends JPanel {
 
 		// Retrieve values by default from the RandomAutomatonBuilder itself
 		RandomAutomatonBuilder randomAutomatonBuilder = new RandomAutomatonBuilder();
-		numberStatesTextField.setText(String.valueOf(randomAutomatonBuilder.getNumberOfInitialStates()));
+		numberStatesTextField.setText(String.valueOf(randomAutomatonBuilder.getNumberOfStates()));
 		numberFinalStatesTextField.setText(String.valueOf(randomAutomatonBuilder.getNumberOfFinalStates()));
 		numberEpsilonTransTextField.setText(String.valueOf(randomAutomatonBuilder.getNumberOfEpsilonTransitions()));
 		alphabetTextField.setText(randomAutomatonBuilder.getAlphabet());
