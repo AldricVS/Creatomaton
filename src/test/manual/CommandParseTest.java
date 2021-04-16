@@ -1,6 +1,6 @@
 package test.manual;
 
-import process.Commande;
+import hmi.cli.CommandParser;
 
 public class CommandParseTest {
 	
@@ -9,7 +9,7 @@ public class CommandParseTest {
 		
 		String randomAutomatonArgs[] = {"-T", "a.(epsilon+b)*", "-G", "thomp"};
 		
-		Commande commande = new Commande();
+		CommandParser commande = new CommandParser();
 		commande.parseArguments(randomAutomatonArgs);
 	}
 	
