@@ -32,6 +32,9 @@ import process.util.TransitionListUtility;
  */
 public class AutomatonBuilder {
 
+	/**
+	 * 
+	 */
 	private Automaton automaton;
 
 	public AutomatonBuilder(Automaton automaton) {
@@ -151,15 +154,6 @@ public class AutomatonBuilder {
 			// we add all transition from all the state we are coming from
 			listTransitions = TransitionListUtility.getAllTransitionFromListStates(listState);
 
-			// check if there is a epsilon transition
-			// at this moment, useless as the automaton wil be synchronised
-//			if (TransitionListUtility.isThereAnyEpsilonTransition(listState)) {
-//				// add all valid state after an epsilon transition coming from here
-//				List<State> listEpsilonState = TransitionListUtility.getValidDestinationFromTransition(listTransitions,
-//						AutomatonConstants.EPSILON_CHAR);
-//				listState.addAll(listEpsilonState);
-//			}
-
 			State stateDeparture = createDeterminisedState(determinedAutomaton, listState);
 			if (stateDeparture.getId() >= nextStateId) {
 				nextStateId++;
@@ -248,6 +242,45 @@ public class AutomatonBuilder {
 			stateDeparture = determinedAutomaton.getStateById(stateStartingId);
 		}
 		return stateDeparture;
+	}
+
+	private static final String WELL_STATE_NAME = "Well";
+	
+	/**
+	 * Add a new state that will be redirect to anytime a state doesn't have a
+	 * transition for each character in the alphabet of the automaton
+	 * 
+	 * @return the newly modified Automaton
+	 */
+	public Automaton addWellState() {
+		if (StateListUtility.getIdStateFromNameInList(automaton.getAllStates(), WELL_STATE_NAME) > 0) {
+			return automaton;
+		}
+		Automaton wellAutomaton = buildSynchronizedAutomaton();
+		// create the new state and add it to the automaton
+		// (dont worry about the id, it will be modified accordingly
+		State wellState = new State(0, WELL_STATE_NAME);
+		wellAutomaton.addState(wellState);
+		// get the alphabet
+		String alphabet = wellAutomaton.getAlphabet();
+		// search for all state
+		for (State state : wellAutomaton.getAllStates()) {
+			// if they have all letters
+			for (char letter : alphabet.toCharArray()) {
+				boolean hasLetter = false;
+				// check all transition of the state
+				for (Transition transition : state.getTransitions()) {
+					if (transition.getLetter() == letter) {
+						hasLetter = true;
+					}
+				}
+				// if the letter has been found
+				if (!hasLetter) {
+					wellAutomaton.addTransition(state, wellState, letter);
+				}
+			}
+		}
+		return wellAutomaton;
 	}
 
 	/**

@@ -16,6 +16,7 @@ import org.junit.runners.Suite;
 	SimpleDeterministicAutomatonTest.class,
 	SynchronizedEpsilonAutomatonTest.class,
 	SynchronisedAutomatonTest.class,
+	WellStateAutomatonTest.class,
 	})
 public class AutomatonBuilderTestSuite {
 	
