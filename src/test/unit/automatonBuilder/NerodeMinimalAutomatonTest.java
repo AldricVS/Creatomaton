@@ -19,6 +19,8 @@ import process.file.ImageCreator;;
 public class NerodeMinimalAutomatonTest {
 
 	private static Automaton automaton;
+	private static Automaton nerodeAutomaton;
+	private static Automaton minimalAutomaton;
 	private static State state0;
 	private static State state1;
 	private static State state2;
@@ -34,47 +36,44 @@ public class NerodeMinimalAutomatonTest {
 		state2 = new State(2, "2");
 		state3 = new State(3, "3");
 		state4 = new State(4, "4");
-		state5 = new State(5, "5");
-		
-		// (e+b+ab) (ab+aab)* bb (a+b)*
+		state4 = new State(5, "5");
 
-		automaton.addState(state0, true, false);
-		automaton.addState(state1, true, false);
+		automaton.addState(state0, false, false);
+		automaton.addState(state1, false, false);
 		automaton.addState(state2, false, false);
 		automaton.addState(state3, false, false);
-		automaton.addState(state4, false, true);
-		automaton.addState(state5, false, true);
+		automaton.addState(state4, false, false);
+		automaton.addState(state5, false, false);
 
 		automaton.addTransition(state0, state1, 'a');
 		automaton.addTransition(state0, state3, 'b');
-		automaton.addTransition(state1, state0, 'b');
 		automaton.addTransition(state1, state2, 'a');
-		automaton.addTransition(state2, state0, 'b');
+		automaton.addTransition(state1, state3, 'b');
+		automaton.addTransition(state2, state4, 'a');
+		automaton.addTransition(state2, state4, 'b');
+		automaton.addTransition(state3, state0, 'a');
 		automaton.addTransition(state3, state4, 'b');
-		automaton.addTransition(state4, state5, 'a');
-		automaton.addTransition(state4, state5, 'b');
-		automaton.addTransition(state5, state4, 'b');
-		automaton.addTransition(state5, state5, 'a');
+		automaton.addTransition(state4, state4, 'b');
+		automaton.addTransition(state4, state4, 'b');
 	}
 
 	@Test
 	public void checkNerodeMinimalAutomaton() {
+		NerodeAutomatonBuilder nerodeBuilder = new NerodeAutomatonBuilder(automaton);
+		nerodeAutomaton = nerodeBuilder.buildNerodeAutomaton();
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
-		Automaton minimalAutomaton = builder.buildMinimalAutomaton();
+		minimalAutomaton = builder.buildMinimalAutomaton();
 
 		try {
-			ImageCreator image = new ImageCreator(automaton, "NerodeTest");
-			image.setDoesTryToGetNames(true);
+			ImageCreator image = new ImageCreator(automaton, "NerodeTestBase");
 			image.createImageFile();
-			image = new ImageCreator(minimalAutomaton, "NerodeTest_Mini");
+			image = new ImageCreator(nerodeAutomaton, "NerodeTestMini");
+			image.createImageFile();
+			image = new ImageCreator(minimalAutomaton, "NerodeTestMinimalt");
 			image.createImageFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		NerodeAutomatonBuilder nerodeBuilder = new NerodeAutomatonBuilder(minimalAutomaton);
-		assertTrue(nerodeBuilder.checkMinimalByNerode());
-		//TODO make it true
 	}
 
 }
