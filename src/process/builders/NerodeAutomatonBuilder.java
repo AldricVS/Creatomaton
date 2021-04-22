@@ -91,6 +91,8 @@ public class NerodeAutomatonBuilder {
 	 */
 	private void buildCompleteAutomaton() {
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
+		Automaton automaton = builder.buildDeterministicAutomaton();
+		builder.setAutomaton(automaton);
 		setAutomaton(builder.addWellState());
 	}
 
@@ -194,7 +196,9 @@ public class NerodeAutomatonBuilder {
 		stepStatesList = new LinkedList<ArrayList<State>>(nerodeStatesList.getLast());
 		List<ArrayList<State>> newSubGroupStatesList = new LinkedList<ArrayList<State>>();
 
-		for (List<State> groupList : stepStatesList) {
+		for (List<State> groupOldList : stepStatesList) {
+			ArrayList<State> groupList = new ArrayList<State>(groupOldList);
+			newSubGroupStatesList.add(groupList);
 			// create a map with the alphabet
 			Map<Character, List<State>> mapLetter = initializeAlphabetMap();
 			// check that the destination of each State is only directed to one group
@@ -206,7 +210,7 @@ public class NerodeAutomatonBuilder {
 				groupList.remove(state);
 			}
 		}
-		stepStatesList.addAll(newSubGroupStatesList);
+		stepStatesList = new LinkedList<ArrayList<State>>(newSubGroupStatesList);
 		nerodeStatesList.addLast(stepStatesList);
 	}
 
