@@ -20,6 +20,11 @@ public class TransitionListUtility {
 	// A static list of State used when using a recursive method, to avoid double
 	private static List<State> listState = new ArrayList<State>();
 
+	/**
+	 * Return all transition departing from all states given
+	 * @param listStates a list of State
+	 * @return the list of all transition contained in all States
+	 */
 	public static List<Transition> getAllTransitionFromListStates(List<State> listStates) {
 		List<Transition> listTransition = new ArrayList<Transition>();
 		for (State state : listStates) {

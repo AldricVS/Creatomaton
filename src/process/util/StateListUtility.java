@@ -3,7 +3,9 @@
  */
 package process.util;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import data.State;
@@ -42,11 +44,16 @@ public class StateListUtility {
 	 */
 	public static String constructNameOfDeterminedStates(List<State> listStates) {
 		List<Integer> listStateId = new Stack<Integer>();
-		// get a appropriate name for our new state
-		String nameDestination = "";
+		Map<Integer, String> mapStateName = new HashMap<Integer, String>();
+		
+		// lets get a appropriate name for our new state
+		StringBuilder nameBuilder = new StringBuilder(listStates.size());
 
 		for (State state : listStates) {
 			listStateId.add(state.getId());
+			if (state.hasName()) {
+				mapStateName.put(state.getId(), state.getName());
+			}
 		}
 
 		// sort the id
@@ -54,14 +61,15 @@ public class StateListUtility {
 
 		// construct the name
 		for (int id : listStateId) {
-			if (nameDestination.isEmpty()) {
-				nameDestination = String.valueOf(id);
+			if (mapStateName.containsKey(id)) {
+				nameBuilder.append(mapStateName.get(id));
 			} else {
-				nameDestination = nameDestination + ";" + id;
+				nameBuilder.append(id);
 			}
+			nameBuilder.append(";");
 		}
-
-		return "{" + nameDestination + "}";
+		nameBuilder.deleteCharAt(nameBuilder.length()-1);
+		return "{" + nameBuilder.toString() + "}";
 	}
 
 	/**

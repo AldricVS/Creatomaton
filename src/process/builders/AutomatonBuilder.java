@@ -249,10 +249,12 @@ public class AutomatonBuilder {
 	/**
 	 * Add a new state that will be redirect to anytime a state doesn't have a
 	 * transition for each character in the alphabet of the automaton
-	 * 
+	 * <p>To avoid any epsilon problem, the automaton will also be synchronised</p>
 	 * @return the newly modified Automaton
 	 */
 	public Automaton addWellState() {
+		// search for an already named "Well" State,
+		//if that's the case, maybe it has already been added
 		if (StateListUtility.getIdStateFromNameInList(automaton.getAllStates(), WELL_STATE_NAME) > 0) {
 			return automaton;
 		}
