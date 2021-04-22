@@ -31,4 +31,8 @@ public class QuestionBankFactory {
 	public static QuestionBankGenerator createWriteSynchronisedStatesGenerator(String title, int numberOfQuestions) {
 		return new WriteSynchronisedStatesQuestionBankGenerator(title, numberOfQuestions);
 	}
+	
+	public static QuestionBankGenerator createNerodeGenerator(String title, int numberOfQuestions) {
+		return new NerodeQuestionBankGenerator(title, numberOfQuestions);
+	}
 }

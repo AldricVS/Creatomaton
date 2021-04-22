@@ -36,25 +36,27 @@ public class NerodeMinimalAutomatonTest {
 		state2 = new State(2, "2");
 		state3 = new State(3, "3");
 		state4 = new State(4, "4");
-		state4 = new State(5, "5");
+		state5 = new State(5, "5");
 
 		automaton.addState(state0, false, false);
 		automaton.addState(state1, false, false);
 		automaton.addState(state2, false, false);
-		automaton.addState(state3, false, false);
-		automaton.addState(state4, false, false);
-		automaton.addState(state5, false, false);
+		automaton.addState(state3, false, true);
+		automaton.addState(state4, false, true);
+		automaton.addState(state5, true, false);
 
-		automaton.addTransition(state0, state1, 'a');
+		automaton.addTransition(state0, state2, 'a');
 		automaton.addTransition(state0, state3, 'b');
-		automaton.addTransition(state1, state2, 'a');
+		automaton.addTransition(state1, state3, 'a');
 		automaton.addTransition(state1, state3, 'b');
-		automaton.addTransition(state2, state4, 'a');
-		automaton.addTransition(state2, state4, 'b');
-		automaton.addTransition(state3, state0, 'a');
-		automaton.addTransition(state3, state4, 'b');
-		automaton.addTransition(state4, state4, 'b');
-		automaton.addTransition(state4, state4, 'b');
+		automaton.addTransition(state2, state0, 'a');
+		automaton.addTransition(state2, state3, 'b');
+		automaton.addTransition(state3, state1, 'a');
+		automaton.addTransition(state3, state3, 'b');
+		automaton.addTransition(state4, state2, 'a');
+		automaton.addTransition(state4, state5, 'b');
+		automaton.addTransition(state5, state2, 'b');
+		automaton.addTransition(state5, state4, 'a');
 	}
 
 	@Test
@@ -69,11 +71,13 @@ public class NerodeMinimalAutomatonTest {
 			image.createImageFile();
 			image = new ImageCreator(nerodeAutomaton, "NerodeTestMini");
 			image.createImageFile();
-			image = new ImageCreator(minimalAutomaton, "NerodeTestMinimalt");
+			image = new ImageCreator(minimalAutomaton, "NerodeTestMinimal");
 			image.createImageFile();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		assertTrue(nerodeAutomaton.isEquals(minimalAutomaton));
 	}
 
 }

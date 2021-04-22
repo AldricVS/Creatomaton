@@ -5,6 +5,7 @@ import java.text.ParseException;
 
 import data.Automaton;
 import process.builders.AutomatonBuilder;
+import process.builders.NerodeAutomatonBuilder;
 import process.builders.ThompsonAutomatonBuilder;
 import process.file.ImageCreator;
 
@@ -31,19 +32,10 @@ public class AutomatonToImageTest {
 		}
 		
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
-		automaton = builder.buildDeterministicAutomaton();
-		builder.setAutomaton(automaton);
-		automaton = builder.addWellState();
-		builder.setAutomaton(automaton);
-		automaton = builder.addWellState();
-		builder.setAutomaton(automaton);
-		automaton = builder.addWellState();
-		builder.setAutomaton(automaton);
-		automaton = builder.addWellState();
-		builder.setAutomaton(automaton);
-		automaton = builder.addWellState();
-		builder.setAutomaton(automaton);
-		automaton = builder.addWellState();
+		automaton = builder.buildSynchronizedAutomaton();
+		
+		NerodeAutomatonBuilder builderNerode = new NerodeAutomatonBuilder(automaton);
+		automaton = builderNerode.buildNerodeAutomaton();
 		
 		try {
 			ImageCreator imageCreator = new ImageCreator(automaton, "wellThompsonAfter");

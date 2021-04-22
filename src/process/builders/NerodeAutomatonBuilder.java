@@ -10,6 +10,7 @@ import data.Automaton;
 import data.State;
 import data.Transition;
 import process.util.StateListUtility;
+import process.util.TransitionListUtility;
 
 /**
  * A Builder made for the minimalism by Nerode (or something like that idk)
@@ -61,13 +62,36 @@ public class NerodeAutomatonBuilder {
 	}
 
 	public Automaton buildNerodeAutomaton() {
+		buildCompleteAutomaton();
+		System.out.println("Initialisation des listes");
 		initListStates();
+		System.out.println("Vérification du tableau");
+
+		int indexOfError = 0;
+		int nbErrorLimit = automaton.getNumberOfTotalStates() * 2;
 		while (!checkMinimalByNerode()) {
+			System.out.println("Construction d'une nouvelle ligne");
 			buildNextNerodeState();
+			indexOfError++;
+			if (indexOfError > nbErrorLimit) {
+				System.err.println("Nerode Automaton run for too many iteration - an error must have occured");
+				System.exit(-1);
+			}
 		}
+		System.out.println("Fin de la création du tableau");
 		isListReady = true;
+		System.out.println("Début de construction de l'automate");
 		Automaton nerodeAutomaton = buildAutomaton();
 		return nerodeAutomaton;
+	}
+
+	/**
+	 * Use {@link process.builders.AutomatonBuilder AutomatonBuilder}
+	 * to add a well state
+	 */
+	private void buildCompleteAutomaton() {
+		AutomatonBuilder builder = new AutomatonBuilder(automaton);
+		setAutomaton(builder.addWellState());
 	}
 
 	/**
@@ -76,47 +100,68 @@ public class NerodeAutomatonBuilder {
 	private Automaton buildAutomaton() {
 		Automaton minimalAutomaton = new Automaton(getAutomaton().getAlphabet());
 		if (isListReady) {
-			stepStatesList = nerodeStatesList.getLast();
 			Map<State, List<Transition>> transitionDestinationMap = new HashMap<State, List<Transition>>();
-			Map<List<State>, State> groupListStatesMap = new HashMap< List<State>, State>();
+			Map<List<State>, State> groupListStatesMap = new HashMap<List<State>, State>();
 
-			for (ArrayList<State> groupList : stepStatesList) {
-				// a new appropriate name for our grouped state
-				String name = StateListUtility.constructNameOfDeterminedStates(groupList);
-				State groupState = new State(0, name);
-				List<Transition> transitionList = new LinkedList<Transition>();
-				// check if initial or final
-				boolean isInitial = false, isFinal = false;
-				for (State state : groupList) {
-					if (getAutomaton().isStateInitial(state)) {
-						isInitial = true;
-					}
-					if (getAutomaton().isStateFinal(state)) {
-						isFinal = true;
-					}
-					transitionList.addAll(state.getTransitions());
-				}
-				minimalAutomaton.addState(groupState, isInitial, isFinal);
-				transitionDestinationMap.put(groupState, transitionList);
-				groupListStatesMap.put(groupList, groupState);
-			}
+			System.out.println("Création des états minimaux");
+			createAllMinimalState(minimalAutomaton, groupListStatesMap, transitionDestinationMap);
 			// now that we have added all state, let's add those transition
-			for (State state : transitionDestinationMap.keySet()) {
-				// we have our list of transition based for our new state
-				List<Transition> transitionList = transitionDestinationMap.get(state);
-				// lets search for our new destination
-				for (Transition transition : transitionList) {
-					// search among existing group if the state can be found
-					for (List<State> groupState : groupListStatesMap.keySet()) {
-						if (groupState.contains(transition.getDestination())) {
-							State destination = groupListStatesMap.get(groupState);
-							minimalAutomaton.addTransition(state, destination, transition.getLetter());
-						}
+			System.out.println("Liaison des transitions");
+			mapAllTransition(minimalAutomaton, transitionDestinationMap, groupListStatesMap);
+		}
+		return minimalAutomaton;
+	}
+
+	/**
+	 * @param automaton
+	 * @param groupListStatesMap
+	 * @param transitionMap
+	 */
+	private void createAllMinimalState(Automaton automaton, Map<List<State>, State> groupListStatesMap,
+			Map<State, List<Transition>> transitionMap) {
+		stepStatesList = nerodeStatesList.getLast();
+		for (ArrayList<State> groupList : stepStatesList) {
+			// a new appropriate name for our grouped state
+			String name = StateListUtility.constructNameOfDeterminedStates(groupList);
+			State groupState = new State(0, name);
+			// check if initial or final
+			boolean isInitial = false, isFinal = false;
+			for (State state : groupList) {
+				if (getAutomaton().isStateInitial(state)) {
+					isInitial = true;
+				}
+				if (getAutomaton().isStateFinal(state)) {
+					isFinal = true;
+				}
+			}
+			automaton.addState(groupState, isInitial, isFinal);
+			List<Transition> transitionList = TransitionListUtility.getAllTransitionFromListStates(groupList);
+			transitionMap.put(groupState, transitionList);
+			groupListStatesMap.put(groupList, groupState);
+		}
+	}
+
+	/**
+	 * @param automaton
+	 * @param transitionDestinationMap
+	 * @param groupListStatesMap
+	 */
+	private void mapAllTransition(Automaton automaton, Map<State, List<Transition>> transitionDestinationMap,
+			Map<List<State>, State> groupListStatesMap) {
+		for (State state : transitionDestinationMap.keySet()) {
+			// we have our list of transition based for our new state
+			List<Transition> transitionList = transitionDestinationMap.get(state);
+			// lets search for our new destination
+			for (Transition transition : transitionList) {
+				// search among existing group if the state can be found
+				for (List<State> groupState : groupListStatesMap.keySet()) {
+					if (groupState.contains(transition.getDestination())) {
+						State destination = groupListStatesMap.get(groupState);
+						automaton.addTransition(state, destination, transition.getLetter());
 					}
 				}
 			}
 		}
-		return minimalAutomaton;
 	}
 
 	/**
@@ -129,43 +174,11 @@ public class NerodeAutomatonBuilder {
 		// for each List of State
 		for (List<State> stateList : stepStatesList) {
 			// create a map with the alphabet
-			Map<Character, List<State>> mapLetter = new HashMap<Character, List<State>>();
-			for (char letter : automaton.getAlphabet().toCharArray()) {
-				mapLetter.put(letter, null);
-			}
+			Map<Character, List<State>> mapLetter = initializeAlphabetMap();
 			// check that the destination of each State is only directed to one group
-			for (State state : stateList) {
-				// for that, we will see where each transition redirect to
-				for (Transition transition : state.getTransitions()) {
-					char transitionLetter = transition.getLetter();
-					State destination = transition.getDestination();
-					// check that the letter is here, otherwise there is an error
-					if (mapLetter.containsKey(transitionLetter)) {
-						// create destinationList, which consist of knowning where the transition link
-						// to
-						List<State> destinationlist;
-						if ((destinationlist = mapLetter.get(transitionLetter)) == null) {
-							// here, a list hasn't been linked yet, so we search for the original one, and
-							// add it to our map
-							for (List<State> listStates : stepStatesList) {
-								if (listStates.contains(destination)) {
-									destinationlist = listStates;
-									break;
-								}
-							}
-							mapLetter.put(transitionLetter, destinationlist);
-						} else {
-							// the destination map isn't null, so we must have setup a group, check our
-							// destination belong to the destination group
-							if (!destinationlist.contains(destination)) {
-								return false;
-							}
-						}
-					} else {
-						throw new IllegalArgumentException(
-								"The contained letter inside a transition isn't part of the alphabet");
-					}
-				}
+			List<State> listInvalidGroupStates = getListOfInvalidGroupState(stateList, mapLetter);
+			if (!listInvalidGroupStates.isEmpty()) {
+				return false;
 			}
 			// we have finish with our group, get to the next one
 		}
@@ -183,17 +196,34 @@ public class NerodeAutomatonBuilder {
 
 		for (List<State> groupList : stepStatesList) {
 			// create a map with the alphabet
-			Map<Character, List<State>> mapLetter = new HashMap<Character, List<State>>();
-			for (char letter : automaton.getAlphabet().toCharArray()) {
-				mapLetter.put(letter, null);
-			}
+			Map<Character, List<State>> mapLetter = initializeAlphabetMap();
 			// check that the destination of each State is only directed to one group
-			List<State> toRemoveInList = new LinkedList<State>();
-			for (State state : groupList) {
-				// for that, we will see where each transition redirect to
-				for (Transition transition : state.getTransitions()) {
-					char transitionLetter = transition.getLetter();
-					State destination = transition.getDestination();
+			List<State> toRemoveInList = getListOfInvalidGroupState(groupList, mapLetter);
+			for (State state : toRemoveInList) {
+				ArrayList<State> newStateGroup = new ArrayList<State>();
+				newStateGroup.add(state);
+				newSubGroupStatesList.add(newStateGroup);
+				groupList.remove(state);
+			}
+		}
+		stepStatesList.addAll(newSubGroupStatesList);
+		nerodeStatesList.addLast(stepStatesList);
+	}
+
+	/**
+	 * @param groupList
+	 * @param mapLetter
+	 * @return
+	 */
+	private List<State> getListOfInvalidGroupState(List<State> groupList, Map<Character, List<State>> mapLetter) {
+		List<State> invalidStatesList = new LinkedList<State>();
+		for (State state : groupList) {
+			// for that, we will see where each transition redirect to
+			for (Transition transition : state.getTransitions()) {
+				char transitionLetter = transition.getLetter();
+				State destination = transition.getDestination();
+				// check that the letter is here, otherwise there is an error
+				if (mapLetter.containsKey(transitionLetter)) {
 					// create destinationList, which consist of knowning where the transition link
 					List<State> destinationlist;
 					if ((destinationlist = mapLetter.get(transitionLetter)) == null) {
@@ -212,20 +242,27 @@ public class NerodeAutomatonBuilder {
 						if (!destinationlist.contains(destination)) {
 							// the destination lead to another group, so we must separe our state from his
 							// group in the next step
-							toRemoveInList.add(state);
+							invalidStatesList.add(state);
 						}
 					}
+				} else {
+					throw new IllegalArgumentException(
+							"The contained letter inside a transition isn't part of the alphabet");
 				}
 			}
-			for (State state : toRemoveInList) {
-				ArrayList<State> newStateGroup = new ArrayList<State>();
-				newStateGroup.add(state);
-				newSubGroupStatesList.add(newStateGroup);
-				groupList.remove(state);
-			}
 		}
-		stepStatesList.addAll(newSubGroupStatesList);
-		nerodeStatesList.addLast(stepStatesList);
+		return invalidStatesList;
+	}
+
+	/**
+	 * @return a Map containing a key of all letter of the automaton's alphabet
+	 */
+	private Map<Character, List<State>> initializeAlphabetMap() {
+		Map<Character, List<State>> mapLetter = new HashMap<Character, List<State>>();
+		for (char letter : automaton.getAlphabet().toCharArray()) {
+			mapLetter.put(letter, null);
+		}
+		return mapLetter;
 	}
 
 	/**

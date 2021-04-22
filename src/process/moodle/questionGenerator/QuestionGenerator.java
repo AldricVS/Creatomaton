@@ -170,8 +170,8 @@ public abstract class QuestionGenerator {
 		generalFeedbackNode.setAttribute("format", "html");
 		questionNode.appendChild(generalFeedbackNode);
 
-		Element generalFeedbackTextNode = document.createElement("text");
 		if(mustShowAnswerImage) {
+			Element generalFeedbackTextNode = document.createElement("text");
 			generalFeedbackNode.appendChild(generalFeedbackTextNode);
 			// String answerBegin = "Voici l'automate après déterminisation : ";
 			String imageAnswerName = answerImageName + ".jpg";
