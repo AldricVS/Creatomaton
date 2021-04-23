@@ -274,9 +274,10 @@ public class AutomatonBuilder {
 				for (Transition transition : state.getTransitions()) {
 					if (transition.getLetter() == letter) {
 						hasLetter = true;
+						break;
 					}
 				}
-				// if the letter has been found
+				// check if the letter has been found
 				if (!hasLetter) {
 					wellAutomaton.addTransition(state, wellState, letter);
 				}
