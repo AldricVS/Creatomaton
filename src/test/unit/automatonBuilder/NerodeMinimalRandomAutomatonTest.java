@@ -42,7 +42,8 @@ public class NerodeMinimalRandomAutomatonTest {
 		}
 		
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
-		minimalAutomaton = builder.buildMinimalAutomaton();
+		builder.setAutomaton(builder.buildMinimalAutomaton());
+		minimalAutomaton = builder.addWellState();
 
 		NerodeAutomatonBuilder nerodeBuilder = new NerodeAutomatonBuilder(automaton);
 		nerodeAutomaton = nerodeBuilder.buildNerodeAutomaton();
