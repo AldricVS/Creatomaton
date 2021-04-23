@@ -63,31 +63,18 @@ public class NerodeAutomatonBuilder {
 
 	public Automaton buildNerodeAutomaton() {
 		buildCompleteAutomaton();
-		System.out.println("Initialisation des listes");
 		initListStates();
-		System.out.println("Vérification du tableau");
-
-		int indexOfError = 0;
-		int nbErrorLimit = automaton.getNumberOfTotalStates() * 2;
 		while (!checkMinimalByNerode()) {
-			System.out.println("Construction d'une nouvelle ligne");
 			buildNextNerodeState();
-			indexOfError++;
-			if (indexOfError > nbErrorLimit) {
-				System.err.println("Nerode Automaton run for too many iteration - an error must have occured");
-				System.exit(-1);
-			}
 		}
-		System.out.println("Fin de la création du tableau");
 		isListReady = true;
-		System.out.println("Début de construction de l'automate");
 		Automaton nerodeAutomaton = buildAutomaton();
 		return nerodeAutomaton;
 	}
 
 	/**
-	 * Use {@link process.builders.AutomatonBuilder AutomatonBuilder}
-	 * to add a well state
+	 * Use {@link process.builders.AutomatonBuilder AutomatonBuilder} to add a well
+	 * state
 	 */
 	private void buildCompleteAutomaton() {
 		AutomatonBuilder builder = new AutomatonBuilder(automaton);
@@ -105,10 +92,8 @@ public class NerodeAutomatonBuilder {
 			Map<State, List<Transition>> transitionDestinationMap = new HashMap<State, List<Transition>>();
 			Map<List<State>, State> groupListStatesMap = new HashMap<List<State>, State>();
 
-			System.out.println("Création des états minimaux");
 			createAllMinimalState(minimalAutomaton, groupListStatesMap, transitionDestinationMap);
 			// now that we have added all state, let's add those transition
-			System.out.println("Liaison des transitions");
 			mapAllTransition(minimalAutomaton, transitionDestinationMap, groupListStatesMap);
 		}
 		return minimalAutomaton;
