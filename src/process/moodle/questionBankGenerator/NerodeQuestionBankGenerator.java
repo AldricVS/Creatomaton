@@ -43,21 +43,17 @@ class NerodeQuestionBankGenerator extends QuestionBankGenerator {
 	protected void defineQuestion() {
 		RandomAutomatonBuilder randomAutomatonBuilder = new RandomAutomatonBuilder();
 		randomAutomatonBuilder.setAlphabet(getAlphabet());
-		int nbState = getNumberOfStates();
-		randomAutomatonBuilder.setNumberOfStates(nbState);
+		randomAutomatonBuilder.setNumberOfStates(getNumberOfStates());
 		randomAutomatonBuilder.setNumberOfFinalStates(getNumberOfFinalStates());
-		randomAutomatonBuilder.setNumberOfEpsilonTransitions(getNumberOfEpsilonTransitions());
 		Automaton automaton = randomAutomatonBuilder.build();
 
-		System.out.println("Création de l'automate de Nerode");
-		
 		NerodeAutomatonBuilder nerodeBuilder = new NerodeAutomatonBuilder(automaton);
 		Automaton minimalAutomaton = nerodeBuilder.buildNerodeAutomaton();
 
-		System.out.println("Fin de la génération de Nerode, début de création de la réponse");
-		
-		String[][] answer = new String[nbState][nbState];
+		int nbState = minimalAutomaton.getNumberOfTotalStates();
 		LinkedList<LinkedList<ArrayList<State>>> tableState = nerodeBuilder.getNerodeStatesList();
+		int nbRow = tableState.size() + 1;
+		String[][] answer = new String[nbRow][nbState];
 		for (LinkedList<ArrayList<State>> rowList : tableState) {
 			int rowIndex = tableState.indexOf(rowList);
 			for (ArrayList<State> caseTable : rowList) {
@@ -74,18 +70,20 @@ class NerodeQuestionBankGenerator extends QuestionBankGenerator {
 				}
 			}
 		}
-		if (tableState.size() < nbState) {
-			for (int lastRowIndex = tableState.size(); lastRowIndex < nbState; lastRowIndex++) {
-				for (int caseIndex = 0; caseIndex < nbState; caseIndex++) {
-					answer[lastRowIndex][caseIndex] = "i";
+
+		for (int rowIndex = 0; rowIndex < nbRow; rowIndex++) {
+			for (int caseIndex = 0; caseIndex < nbState; caseIndex++) {
+				if (answer[rowIndex][caseIndex] == null) {
+					answer[rowIndex][caseIndex] = "i";
 				}
 			}
 		}
 
 		TableQuestionGenerator tableQuestionGenerator = (TableQuestionGenerator) getQuestionGenerator();
+		tableQuestionGenerator.setTableName("equi", "etat");;
 		tableQuestionGenerator.setAnswer(answer);
-		tableQuestionGenerator.setQuestionAutomaton(automaton);
-		tableQuestionGenerator.setAnswerAutomaton(minimalAutomaton);
+		tableQuestionGenerator.setQuestionAutomaton(minimalAutomaton);
+		tableQuestionGenerator.setShowStateNameImage(false);
 	}
 
 }

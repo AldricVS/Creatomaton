@@ -48,6 +48,11 @@ public abstract class QuestionGenerator {
 	protected boolean mustShowAnswerImage = true;
 
 	/**
+	 * If we show the name of the State or no
+	 */
+	protected boolean showStateNameImage = true;
+	
+	/**
 	 * The category of the question (moodle format). It must be explicitly defined
 	 * by the child class.
 	 */
@@ -195,6 +200,7 @@ public abstract class QuestionGenerator {
 			imageCreator.setAutomaton(automaton);
 			imageCreator.setFilename(DataFilePaths.TEMP_PATH + "/" + autoImageName);
 		}
+		imageCreator.setDoesTryToGetNames(showStateNameImage);
 		imageCreator.createImageFile();
 	}
 
@@ -363,5 +369,13 @@ public abstract class QuestionGenerator {
 
 	public void setMustShowAnswerImage(boolean mustShowAnswerImage) {
 		this.mustShowAnswerImage = mustShowAnswerImage;
+	}
+
+	public boolean isShowStateNameImage() {
+		return showStateNameImage;
+	}
+
+	public void setShowStateNameImage(boolean showStateNameImage) {
+		this.showStateNameImage = showStateNameImage;
 	}
 }

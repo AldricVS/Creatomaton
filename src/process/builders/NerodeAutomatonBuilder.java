@@ -1,5 +1,6 @@
 package process.builders;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -9,6 +10,7 @@ import java.util.Map;
 import data.Automaton;
 import data.State;
 import data.Transition;
+import process.file.ImageCreator;
 import process.util.StateListUtility;
 import process.util.TransitionListUtility;
 
@@ -52,7 +54,10 @@ public class NerodeAutomatonBuilder {
 	}
 
 	/**
-	 * @return the automatonList
+	 * Get the table of all step used to construct the minimal Automaton. If the
+	 * minimal Automaton hasn't been construct yet, return an empty List.
+	 * 
+	 * @return the table of all step used to create the current minimal Automaton
 	 */
 	public LinkedList<LinkedList<ArrayList<State>>> getNerodeStatesList() {
 		if (isListReady) {
@@ -61,30 +66,136 @@ public class NerodeAutomatonBuilder {
 		return new LinkedList<LinkedList<ArrayList<State>>>();
 	}
 
+	/**
+	 * Construct the minimal Automaton by Nerode. Also construct a table which
+	 * contain all step to the construct of the minimal Automaton.
+	 * 
+	 * @return the minimal Automaton constructed
+	 */
 	public Automaton buildNerodeAutomaton() {
-		buildCompleteAutomaton();
-		initListStates();
-		while (!checkMinimalByNerode()) {
-			buildNextNerodeState();
+		if (!isListReady) {
+			buildCompleteAutomaton();
+			initListStates();
+			while (!checkMinimalByNerode()) {
+				buildNextNerodeState();
+			}
+			isListReady = true;
 		}
-		isListReady = true;
 		Automaton nerodeAutomaton = buildAutomaton();
 		return nerodeAutomaton;
 	}
 
 	/**
-	 * Use {@link process.builders.AutomatonBuilder AutomatonBuilder} to add a well
-	 * state
+	 * En se basant sur la dernière List de nerodeStatesList, on va diviser en
+	 * sous-groupe pour qu'une seule lettre part vers un autre groupe
 	 */
-	private void buildCompleteAutomaton() {
-		AutomatonBuilder builder = new AutomatonBuilder(automaton);
-		Automaton automaton = builder.buildDeterministicAutomaton();
-		builder.setAutomaton(automaton);
-		setAutomaton(builder.addWellState());
+	private void buildNextNerodeState() {
+		stepStatesList = new LinkedList<ArrayList<State>>(nerodeStatesList.getLast());
+		List<ArrayList<State>> newSubGroupStatesList = new LinkedList<ArrayList<State>>();
+
+		for (List<State> groupOldList : stepStatesList) {
+			ArrayList<State> groupList = new ArrayList<State>(groupOldList);
+			newSubGroupStatesList.add(groupList);
+			// create a map with the alphabet
+			Map<Character, List<State>> mapLetter = initializeAlphabetMap();
+			// check that the destination of each State is only directed to one group
+			List<State> toRemoveInList = getListOfInvalidGroupState(groupList, mapLetter);
+			for (State state : toRemoveInList) {
+				ArrayList<State> newStateGroup = new ArrayList<State>();
+				newStateGroup.add(state);
+				newSubGroupStatesList.add(newStateGroup);
+				groupList.remove(state);
+			}
+		}
+		stepStatesList = new LinkedList<ArrayList<State>>(newSubGroupStatesList);
+		nerodeStatesList.addLast(stepStatesList);
 	}
 
 	/**
-	 * @return the minimal Automaton
+	 * Check that the automaton is minimal
+	 * 
+	 * @return true if the automaton is minimal, false otherwise
+	 */
+	private boolean checkMinimalByNerode() {
+		stepStatesList = nerodeStatesList.getLast();
+		// for each List of State
+		for (List<State> stateList : stepStatesList) {
+			// create a map with the alphabet
+			Map<Character, List<State>> mapLetter = initializeAlphabetMap();
+			// check that the destination of each State is only directed to one group
+			List<State> listInvalidGroupStates = getListOfInvalidGroupState(stateList, mapLetter);
+			if (!listInvalidGroupStates.isEmpty()) {
+				return false;
+			}
+			// we have finish with our group, get to the next one
+		}
+		// all group has been visited, the minimal automaton has been made
+		return true;
+	}
+
+	/**
+	 * @return a Map containing a key of all letter of the automaton's alphabet
+	 */
+	private Map<Character, List<State>> initializeAlphabetMap() {
+		Map<Character, List<State>> mapLetter = new HashMap<Character, List<State>>();
+		for (char letter : automaton.getAlphabet().toCharArray()) {
+			mapLetter.put(letter, null);
+		}
+		return mapLetter;
+	}
+
+	/**
+	 * @param groupList
+	 * @param mapLetter
+	 * @return
+	 */
+	private List<State> getListOfInvalidGroupState(List<State> groupList, Map<Character, List<State>> mapLetter) {
+		List<State> invalidStatesList = new LinkedList<State>();
+		System.out.println(groupList.size());
+		for (State state : groupList) {
+			// for that, we will see where each transition redirect to
+			for (Transition transition : state.getTransitions()) {
+				char transitionLetter = transition.getLetter();
+				State destination = transition.getDestination();
+				// check that the letter is here, otherwise there is an error
+				if (mapLetter.containsKey(transitionLetter)) {
+					// create destinationList, which consist of knowning where the transition link
+					List<State> destinationlist;
+					if ((destinationlist = mapLetter.get(transitionLetter)) == null) {
+						// here, a list hasn't been linked yet, so we search for the original one, and
+						// add it to our map
+						for (List<State> listStates : stepStatesList) {
+							if (listStates.contains(destination)) {
+								destinationlist = listStates;
+								break;
+							}
+						}
+						mapLetter.put(transitionLetter, destinationlist);
+					} else {
+						// the destination map isn't null, so we must have setup a group, check our
+						// destination belong to the destination group
+						if (!destinationlist.contains(destination)) {
+							// the destination lead to another group, so we must separe our state from his
+							// group in the next step
+							if (!invalidStatesList.contains(state)) {
+								invalidStatesList.add(state);
+							}
+						}
+					}
+				} else {
+					throw new IllegalArgumentException(
+							"The contained letter inside a transition isn't part of the alphabet");
+				}
+			}
+		}
+		return invalidStatesList;
+	}
+
+	/**
+	 * Construct the minimal Automaton based on the last row of the Nerode's table.
+	 * 
+	 * @return the minimal Automaton created, return an empty Automaton if it hasn't
+	 *         been constructed yet
 	 */
 	private Automaton buildAutomaton() {
 		Automaton minimalAutomaton = new Automaton(getAutomaton().getAlphabet());
@@ -152,109 +263,6 @@ public class NerodeAutomatonBuilder {
 	}
 
 	/**
-	 * Check that the automaton is minimal
-	 * 
-	 * @return true if the automaton is minimal, false otherwise
-	 */
-	private boolean checkMinimalByNerode() {
-		stepStatesList = nerodeStatesList.getLast();
-		// for each List of State
-		for (List<State> stateList : stepStatesList) {
-			// create a map with the alphabet
-			Map<Character, List<State>> mapLetter = initializeAlphabetMap();
-			// check that the destination of each State is only directed to one group
-			List<State> listInvalidGroupStates = getListOfInvalidGroupState(stateList, mapLetter);
-			if (!listInvalidGroupStates.isEmpty()) {
-				return false;
-			}
-			// we have finish with our group, get to the next one
-		}
-		// all group has been visited, the minimal automaton has been made
-		return true;
-	}
-
-	/**
-	 * En se basant sur la dernière List de nerodeStatesList, on va diviser en
-	 * sous-groupe pour qu'une seule lettre part vers un autre groupe
-	 */
-	private void buildNextNerodeState() {
-		stepStatesList = new LinkedList<ArrayList<State>>(nerodeStatesList.getLast());
-		List<ArrayList<State>> newSubGroupStatesList = new LinkedList<ArrayList<State>>();
-
-		for (List<State> groupOldList : stepStatesList) {
-			ArrayList<State> groupList = new ArrayList<State>(groupOldList);
-			newSubGroupStatesList.add(groupList);
-			// create a map with the alphabet
-			Map<Character, List<State>> mapLetter = initializeAlphabetMap();
-			// check that the destination of each State is only directed to one group
-			List<State> toRemoveInList = getListOfInvalidGroupState(groupList, mapLetter);
-			for (State state : toRemoveInList) {
-				ArrayList<State> newStateGroup = new ArrayList<State>();
-				newStateGroup.add(state);
-				newSubGroupStatesList.add(newStateGroup);
-				groupList.remove(state);
-			}
-		}
-		stepStatesList = new LinkedList<ArrayList<State>>(newSubGroupStatesList);
-		nerodeStatesList.addLast(stepStatesList);
-	}
-
-	/**
-	 * @param groupList
-	 * @param mapLetter
-	 * @return
-	 */
-	private List<State> getListOfInvalidGroupState(List<State> groupList, Map<Character, List<State>> mapLetter) {
-		List<State> invalidStatesList = new LinkedList<State>();
-		for (State state : groupList) {
-			// for that, we will see where each transition redirect to
-			for (Transition transition : state.getTransitions()) {
-				char transitionLetter = transition.getLetter();
-				State destination = transition.getDestination();
-				// check that the letter is here, otherwise there is an error
-				if (mapLetter.containsKey(transitionLetter)) {
-					// create destinationList, which consist of knowning where the transition link
-					List<State> destinationlist;
-					if ((destinationlist = mapLetter.get(transitionLetter)) == null) {
-						// here, a list hasn't been linked yet, so we search for the original one, and
-						// add it to our map
-						for (List<State> listStates : stepStatesList) {
-							if (listStates.contains(destination)) {
-								destinationlist = listStates;
-								break;
-							}
-						}
-						mapLetter.put(transitionLetter, destinationlist);
-					} else {
-						// the destination map isn't null, so we must have setup a group, check our
-						// destination belong to the destination group
-						if (!destinationlist.contains(destination)) {
-							// the destination lead to another group, so we must separe our state from his
-							// group in the next step
-							invalidStatesList.add(state);
-						}
-					}
-				} else {
-					throw new IllegalArgumentException(
-							"The contained letter inside a transition isn't part of the alphabet");
-				}
-			}
-		}
-		return invalidStatesList;
-	}
-
-	/**
-	 * @return a Map containing a key of all letter of the automaton's alphabet
-	 */
-	private Map<Character, List<State>> initializeAlphabetMap() {
-		Map<Character, List<State>> mapLetter = new HashMap<Character, List<State>>();
-		for (char letter : automaton.getAlphabet().toCharArray()) {
-			mapLetter.put(letter, null);
-		}
-		return mapLetter;
-	}
-
-	/**
 	 * 
 	 */
 	private void initListStates() {
@@ -271,5 +279,28 @@ public class NerodeAutomatonBuilder {
 		stepStatesList.add(finalStateList);
 		// add to the nerode table as the first "row"
 		nerodeStatesList.add(stepStatesList);
+	}
+
+	/**
+	 * Use {@link process.builders.AutomatonBuilder AutomatonBuilder} to
+	 * determinised and add a well state to our new Automaton
+	 */
+	private void buildCompleteAutomaton() {
+		AutomatonBuilder builder = new AutomatonBuilder(automaton);
+		Automaton automaton = builder.buildDeterministicAutomaton();
+		builder.setAutomaton(automaton);
+		automaton = builder.addWellState();
+		setAutomaton(automaton);
+
+		try {
+			ImageCreator image = new ImageCreator(automaton, "NerodeMoodleDeter");
+			image.setDoesTryToGetNames(false);
+			image.createImageFile();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 }
