@@ -118,11 +118,15 @@ public class AutomatonBuilder {
 	 */
 	public Automaton buildDeterministicAutomaton() {
 		AutomatonManager manager = new AutomatonManager(automaton);
+		if (manager.isDeterministic()) {
+			return automaton;
+		}
 		// check if automaton is synchronized
 		if (!manager.isSynchronized()) {
 			// if not, synchronize it
 			automaton = buildSynchronizedAutomaton();
 		}
+		
 
 		// listState have all state of the first determined state
 		List<State> listState = new ArrayList<State>();
