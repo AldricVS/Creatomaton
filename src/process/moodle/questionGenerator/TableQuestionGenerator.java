@@ -86,8 +86,9 @@ public class TableQuestionGenerator extends QuestionGenerator {
 				String caseString = rowString[j];
 				tableBuilder.append("<td>{:SA:="+caseString+"#BG~*#Invalid Answer}</td>");
 			}
-			tableBuilder.append("</tr><p>a");
+			tableBuilder.append("</tr>");
 		}
+		tableBuilder.append("</table><p>");
 		String tableString = tableBuilder.toString();
 		setQuestionTopText(questionText+tableString);
 		return super.generateQuestion(questionNumber);

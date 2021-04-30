@@ -86,13 +86,52 @@ public class NerodeAutomatonBuilder {
 	}
 
 	/**
+	 * Use {@link process.builders.AutomatonBuilder AutomatonBuilder} to
+	 * determinised and add a well state to our new Automaton
+	 */
+	private void buildCompleteAutomaton() {
+		AutomatonBuilder builder = new AutomatonBuilder(automaton);
+		Automaton automaton = builder.buildDeterministicAutomaton();
+		builder.setAutomaton(automaton);
+		automaton = builder.addWellState();
+		setAutomaton(automaton);
+		try {
+			ImageCreator image = new ImageCreator(automaton, "nerode_testGeneratorDeter");
+			image.setDoesTryToGetNames(false);
+			image.createImageFile();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void initListStates() {
+		// initialize the nerode table
+		nerodeStatesList = new LinkedList<LinkedList<ArrayList<State>>>();
+		// initialize the List of List
+		stepStatesList = new LinkedList<ArrayList<State>>();
+		// create the List
+		ArrayList<State> finalStateList = new ArrayList<State>(automaton.getFinalStates());
+		ArrayList<State> allStateList = new ArrayList<State>(automaton.getAllStates());
+		allStateList.removeAll(finalStateList);
+		// add them to the upper List
+		stepStatesList.add(allStateList);
+		stepStatesList.add(finalStateList);
+		// add to the nerode table as the first "row"
+		nerodeStatesList.add(stepStatesList);
+	}
+
+	/**
 	 * En se basant sur la dernière List de nerodeStatesList, on va diviser en
 	 * sous-groupe pour qu'une seule lettre part vers un autre groupe
 	 */
 	private void buildNextNerodeState() {
 		stepStatesList = new LinkedList<ArrayList<State>>(nerodeStatesList.getLast());
 		List<ArrayList<State>> newSubGroupStatesList = new LinkedList<ArrayList<State>>();
-
 		for (List<State> groupOldList : stepStatesList) {
 			ArrayList<State> groupList = new ArrayList<State>(groupOldList);
 			newSubGroupStatesList.add(groupList);
@@ -151,7 +190,6 @@ public class NerodeAutomatonBuilder {
 	 */
 	private List<State> getListOfInvalidGroupState(List<State> groupList, Map<Character, List<State>> mapLetter) {
 		List<State> invalidStatesList = new LinkedList<State>();
-		System.out.println(groupList.size());
 		for (State state : groupList) {
 			// for that, we will see where each transition redirect to
 			for (Transition transition : state.getTransitions()) {
@@ -260,47 +298,5 @@ public class NerodeAutomatonBuilder {
 				}
 			}
 		}
-	}
-
-	/**
-	 * 
-	 */
-	private void initListStates() {
-		// initialize the nerode table
-		nerodeStatesList = new LinkedList<LinkedList<ArrayList<State>>>();
-		// initialize the List of List
-		stepStatesList = new LinkedList<ArrayList<State>>();
-		// create the List
-		ArrayList<State> finalStateList = new ArrayList<State>(automaton.getFinalStates());
-		ArrayList<State> allStateList = new ArrayList<State>(automaton.getAllStates());
-		allStateList.removeAll(finalStateList);
-		// add them to the upper List
-		stepStatesList.add(allStateList);
-		stepStatesList.add(finalStateList);
-		// add to the nerode table as the first "row"
-		nerodeStatesList.add(stepStatesList);
-	}
-
-	/**
-	 * Use {@link process.builders.AutomatonBuilder AutomatonBuilder} to
-	 * determinised and add a well state to our new Automaton
-	 */
-	private void buildCompleteAutomaton() {
-		AutomatonBuilder builder = new AutomatonBuilder(automaton);
-		Automaton automaton = builder.buildDeterministicAutomaton();
-		builder.setAutomaton(automaton);
-		automaton = builder.addWellState();
-		setAutomaton(automaton);
-
-		try {
-			ImageCreator image = new ImageCreator(automaton, "NerodeMoodleDeter");
-			image.setDoesTryToGetNames(false);
-			image.createImageFile();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 	}
 }

@@ -1,5 +1,6 @@
 package process.moodle.questionBankGenerator;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -9,6 +10,7 @@ import data.Automaton;
 import data.State;
 import process.builders.NerodeAutomatonBuilder;
 import process.builders.RandomAutomatonBuilder;
+import process.file.ImageCreator;
 import process.moodle.questionGenerator.QuestionGenerator;
 import process.moodle.questionGenerator.TableQuestionGenerator;
 
@@ -49,10 +51,19 @@ class NerodeQuestionBankGenerator extends QuestionBankGenerator {
 
 		NerodeAutomatonBuilder nerodeBuilder = new NerodeAutomatonBuilder(automaton);
 		Automaton minimalAutomaton = nerodeBuilder.buildNerodeAutomaton();
-
 		int nbState = minimalAutomaton.getNumberOfTotalStates();
 		LinkedList<LinkedList<ArrayList<State>>> tableState = nerodeBuilder.getNerodeStatesList();
-		int nbRow = tableState.size() + 1;
+		int nbRow = tableState.size();
+		
+		try {
+			ImageCreator image = new ImageCreator(automaton, "nerode_testGenerator");
+			image.createImageFile();
+			image = new ImageCreator(minimalAutomaton, "nerode_testGeneratorMini");
+			image.createImageFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		String[][] answer = new String[nbRow][nbState];
 		for (LinkedList<ArrayList<State>> rowList : tableState) {
 			int rowIndex = tableState.indexOf(rowList);
